@@ -6,7 +6,9 @@ import com.minimo.launcher.utils.AppUtils
 import com.minimo.launcher.utils.InstalledApp
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UpdateAllAppsUseCase @Inject constructor(
     private val appUtils: AppUtils,
     private val appInfoDao: AppInfoDao

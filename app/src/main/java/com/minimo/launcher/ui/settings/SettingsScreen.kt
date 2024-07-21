@@ -1,7 +1,6 @@
 package com.minimo.launcher.ui.settings
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,12 +40,12 @@ fun SettingsScreen(onBackClick: () -> Unit, onHiddenAppsClick: () -> Unit) {
                     }
                 },
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
                 .padding(paddingValues),
         ) {
             SettingsItem(name = "Hidden Apps", onClick = onHiddenAppsClick)

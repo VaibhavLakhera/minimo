@@ -5,6 +5,7 @@ package com.minimo.launcher.ui.home
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.minimo.launcher.ui.components.EmptyScreenView
 import com.minimo.launcher.ui.components.RenameAppDialog
 import com.minimo.launcher.ui.components.SheetDragHandle
 import com.minimo.launcher.ui.home.components.AppNameItem
@@ -101,21 +104,34 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
         },
         sheetPeekHeight = 56.dp,
         sheetContainerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center
-        ) {
-            items(items = favouriteApps, key = { it.packageName }) { appInfo ->
-                HomeAppNameItem(
-                    modifier = Modifier.animateItemPlacement(),
-                    appName = appInfo.name,
-                    onClick = { viewModel.onLaunchAppClick(appInfo) },
-                    longClickDisabled = appInfo.isLauncherSettings,
-                    onRemoveFavouriteClick = { viewModel.onRemoveAppFromFavouriteClicked(appInfo.packageName) },
-                    onRenameClick = { viewModel.onRenameAppClick(appInfo) },
-                    onAppInfoClick = { context.launchAppInfo(appInfo.packageName) }
+        if (favouriteApps.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                EmptyScreenView(
+                    title = "No favourite apps",
+                    subTitle = "Long press an app to add it to this list and access it quickly"
                 )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center
+            ) {
+                items(items = favouriteApps, key = { it.packageName }) { appInfo ->
+                    HomeAppNameItem(
+                        modifier = Modifier.animateItemPlacement(),
+                        appName = appInfo.name,
+                        onClick = { viewModel.onLaunchAppClick(appInfo) },
+                        longClickDisabled = appInfo.isLauncherSettings,
+                        onRemoveFavouriteClick = { viewModel.onRemoveAppFromFavouriteClicked(appInfo.packageName) },
+                        onRenameClick = { viewModel.onRenameAppClick(appInfo) },
+                        onAppInfoClick = { context.launchAppInfo(appInfo.packageName) }
+                    )
+                }
             }
         }
     }

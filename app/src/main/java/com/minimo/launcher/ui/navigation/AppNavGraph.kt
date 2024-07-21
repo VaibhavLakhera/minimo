@@ -9,9 +9,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.minimo.launcher.ui.hidden_apps.HiddenAppsScreen
 import com.minimo.launcher.ui.home.HomeScreen
+import com.minimo.launcher.ui.intro.IntroScreen
 import com.minimo.launcher.ui.settings.SettingsScreen
 
 object Routes {
+    const val INTRO = "intro"
     const val HOME = "home"
     const val SETTINGS = "settings"
     const val HIDDEN_APPS = "hidden_apps"
@@ -27,28 +29,38 @@ fun AppNavGraph() {
         enterTransition = {
             slideIntoContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(700)
+                animationSpec = tween(500)
             )
         },
         exitTransition = {
             slideOutOfContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(700)
+                animationSpec = tween(500)
             )
         },
         popEnterTransition = {
             slideIntoContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                animationSpec = tween(700)
+                animationSpec = tween(500)
             )
         },
         popExitTransition = {
             slideOutOfContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                animationSpec = tween(700)
+                animationSpec = tween(500)
             )
         }
     ) {
+        composable(route = Routes.INTRO) {
+            IntroScreen(
+                viewModel = hiltViewModel(it),
+                onDoneClick = {
+                    navController.navigate(Routes.HOME) {
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
         composable(route = Routes.HOME) {
             HomeScreen(
                 viewModel = hiltViewModel(it),
