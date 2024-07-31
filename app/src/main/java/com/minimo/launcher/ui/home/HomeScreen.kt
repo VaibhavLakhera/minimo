@@ -50,9 +50,11 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
 
     BackHandler {
-        if (bottomSheetScaffoldState.bottomSheetState.targetValue != SheetValue.PartiallyExpanded) {
-            coroutineScope.launch {
+        coroutineScope.launch {
+            if (bottomSheetScaffoldState.bottomSheetState.currentValue != SheetValue.PartiallyExpanded) {
                 bottomSheetScaffoldState.bottomSheetState.partialExpand()
+            } else {
+                bottomSheetScaffoldState.bottomSheetState.expand()
             }
         }
     }

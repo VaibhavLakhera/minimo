@@ -16,6 +16,7 @@
         android:name=".MyApplication"
         android:allowBackup="false"
         android:clearTaskOnLaunch="true"
+        android:enableOnBackInvokedCallback="true"
         android:excludeFromRecents="true"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
@@ -25,13 +26,16 @@
         android:stateNotNeeded="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="DataExtractionRules">
+        tools:ignore="DataExtractionRules,UnusedAttribute">
 
         <activity
             android:name=".ui.main.MainActivity"
+            android:clearTaskOnLaunch="true"
+            android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -14,13 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.minimo.launcher.ui.components.EmptyScreenView
-import com.minimo.launcher.utils.chooseDefaultLauncher
+import com.minimo.launcher.utils.openHomeSettings
 
 @Composable
 internal fun IntroPage3(
-    onDoneClick: () -> Unit
+    onSkipClick: () -> Unit
 ) {
     val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -32,11 +33,13 @@ internal fun IntroPage3(
             horizontalPadding = 20.dp
         )
         Spacer(modifier = Modifier.height(32.dp))
-        Button(onClick = { context.chooseDefaultLauncher() }) {
+        Button(onClick = context::openHomeSettings) {
             Text(text = "Set Default Launcher")
         }
         Spacer(modifier = Modifier.height(4.dp))
-        TextButton(onClick = onDoneClick) {
+        TextButton(onClick = {
+            onSkipClick()
+        }) {
             Text(text = "Skip")
         }
     }

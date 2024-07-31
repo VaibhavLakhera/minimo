@@ -2,6 +2,8 @@ package com.minimo.launcher.ui.intro
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,31 +23,43 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minimo.launcher.ui.components.EmptyScreenView
 
 @Composable
-internal fun IntroPage2(viewModel: IntroViewModel) {
+internal fun IntroPage2(
+    viewModel: IntroViewModel,
+    onContinueClick: () -> Unit
+) {
     val allApps by viewModel.allAppsFlow.collectAsStateWithLifecycle(emptyList())
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 20.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                EmptyScreenView(
-                    title = "Your Everyday Favorites",
-                    subTitle = "Keep only the apps you use most",
-                    horizontalPadding = 20.dp
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(bottom = 24.dp)
+        ) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 20.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    EmptyScreenView(
+                        title = "Your Everyday Favorites",
+                        subTitle = "Keep only the apps you use most",
+                        horizontalPadding = 20.dp
+                    )
+                }
+            }
+            items(items = allApps, key = { it.packageName }) { appInfo ->
+                AddFavouriteAppItem(
+                    appName = appInfo.name,
+                    isFavourite = appInfo.isFavourite,
+                    onToggleFavouriteClick = { viewModel.onToggleFavouriteAppClick(appInfo) }
                 )
             }
         }
-        items(items = allApps, key = { it.packageName }) { appInfo ->
-            AddFavouriteAppItem(
-                appName = appInfo.name,
-                isFavourite = appInfo.isFavourite,
-                onToggleFavouriteClick = { viewModel.onToggleFavouriteAppClick(appInfo) }
-            )
-        }
+        IntroBottomButton(
+            text = "Continue",
+            onClick = onContinueClick
+        )
     }
 }
 

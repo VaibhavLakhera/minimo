@@ -1,11 +1,9 @@
 package com.minimo.launcher.utils
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import com.minimo.launcher.ui.main.MainActivity
 import timber.log.Timber
 
 fun Context.launchApp(packageName: String): Boolean {
@@ -33,12 +31,6 @@ fun Context.launchAppInfo(packageName: String) {
     }
 }
 
-fun Context.chooseDefaultLauncher() {
-    val intent = Intent(Intent.ACTION_MAIN)
-    intent.addCategory(Intent.CATEGORY_HOME)
-    intent.putExtra(
-        Intent.EXTRA_CHOOSER_TARGETS,
-        arrayOf(ComponentName(this, MainActivity::class.java))
-    )
-    startActivity(Intent.createChooser(intent, "Choose default launcher"))
+fun Context.openHomeSettings() {
+    startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
 }
