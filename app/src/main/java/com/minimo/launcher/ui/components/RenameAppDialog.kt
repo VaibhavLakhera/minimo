@@ -6,10 +6,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.KeyboardCapitalization
 
 @Composable
@@ -19,6 +21,12 @@ fun RenameAppDialog(
     onRenameClick: (String) -> Unit,
     onCancelClick: () -> Unit
 ) {
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     var newName by remember { mutableStateOf(currentName) }
     AlertDialog(
         onDismissRequest = onCancelClick,
@@ -26,11 +34,13 @@ fun RenameAppDialog(
         text = {
             LimitedOutlinedTextField(
                 value = newName,
+                focusRequester = focusRequester,
                 onValueChange = { newName = it },
                 placeholder = { Text(originalName) },
                 label = { Text("App Name") },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                maxLength = 30
+                maxLength = 30,
+                singleLine = true
             )
         },
         confirmButton = {
