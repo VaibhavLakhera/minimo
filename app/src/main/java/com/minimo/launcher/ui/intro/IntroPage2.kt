@@ -42,7 +42,7 @@ internal fun IntroPage2(
                     contentAlignment = Alignment.Center
                 ) {
                     EmptyScreenView(
-                        title = "Your Everyday Favorites",
+                        title = "Your Everyday Favourites",
                         subTitle = "Keep only the apps you use most",
                         horizontalPadding = 20.dp
                     )
@@ -72,7 +72,7 @@ private fun AddFavouriteAppItem(
     Row(
         modifier = Modifier
             .clickable(onClick = onToggleFavouriteClick)
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .padding(horizontal = 24.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
