@@ -32,7 +32,7 @@ fun HiddenAppsScreen(
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val hiddenApps by viewModel.hiddenAppsFlow.collectAsStateWithLifecycle(emptyList())
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -54,7 +54,7 @@ fun HiddenAppsScreen(
         },
         containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
-        if (hiddenApps.isEmpty()) {
+        if (state.initialLoaded && state.hiddenApps.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -70,7 +70,7 @@ fun HiddenAppsScreen(
                     .fillMaxSize()
                     .padding(paddingValues),
             ) {
-                items(items = hiddenApps, key = { it.packageName }) { appInfo ->
+                items(items = state.hiddenApps, key = { it.packageName }) { appInfo ->
                     HiddenAppNameItem(
                         modifier = Modifier.animateItemPlacement(),
                         appName = appInfo.name,

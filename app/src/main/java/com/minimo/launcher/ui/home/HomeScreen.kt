@@ -41,10 +41,7 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    val favouriteApps by viewModel.favouriteAppsFlow.collectAsStateWithLifecycle(emptyList())
-    val allApps by viewModel.allAppsFlow.collectAsStateWithLifecycle(emptyList())
-    val isBottomSheetExpanded by viewModel.isBottomSheetExpanded.collectAsStateWithLifecycle()
-    val renameAppDialog by viewModel.renameAppDialog.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
@@ -85,11 +82,11 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
     BottomSheetScaffold(
         scaffoldState = bottomSheetScaffoldState,
         sheetDragHandle = {
-            SheetDragHandle(isExpanded = isBottomSheetExpanded)
+            SheetDragHandle(isExpanded = state.isBottomSheetExpanded)
         },
         sheetContent = {
             LazyColumn(verticalArrangement = Arrangement.Center) {
-                items(items = allApps, key = { it.packageName }) { appInfo ->
+                items(items = state.allApps, key = { it.packageName }) { appInfo ->
                     AppNameItem(
                         modifier = Modifier.animateItemPlacement(),
                         appName = appInfo.name,
@@ -108,7 +105,7 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
         sheetContainerColor = MaterialTheme.colorScheme.surface,
         containerColor = MaterialTheme.colorScheme.surface
     ) {
-        if (favouriteApps.isEmpty()) {
+        if (state.initialLoaded && state.favouriteApps.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -123,7 +120,7 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center
             ) {
-                items(items = favouriteApps, key = { it.packageName }) { appInfo ->
+                items(items = state.favouriteApps, key = { it.packageName }) { appInfo ->
                     HomeAppNameItem(
                         modifier = Modifier.animateItemPlacement(),
                         appName = appInfo.name,
@@ -138,8 +135,8 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
         }
     }
 
-    if (renameAppDialog != null) {
-        val app = renameAppDialog!!
+    if (state.renameAppDialog != null) {
+        val app = state.renameAppDialog!!
         RenameAppDialog(
             originalName = app.appName,
             currentName = app.name,

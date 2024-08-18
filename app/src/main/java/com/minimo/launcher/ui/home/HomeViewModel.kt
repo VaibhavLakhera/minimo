@@ -11,7 +11,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,16 +28,36 @@ class HomeViewModel @Inject constructor(
 
             appInfoDao.getAllNonHiddenAppsFlow()
                 .collect { appInfoList ->
-                    _allAppsFlow.value = appUtils.mapToAppInfo(appInfoList, includeSettings = true)
+                    _state.update {
+                        _state.value.copy(
+                            allApps = appUtils.mapToAppInfo(appInfoList, includeSettings = true)
+                        )
+                    }
+                }
+        }
+
+        viewModelScope.launch {
+            appInfoDao.getFavouriteAppsFlow()
+                .collect { appInfoList ->
+                    _state.update {
+                        _state.value.copy(
+                            initialLoaded = true,
+                            favouriteApps = appUtils.mapToAppInfo(appInfoList)
+                        )
+                    }
                 }
         }
     }
 
-    private val _isBottomSheetExpanded = MutableStateFlow(false)
-    val isBottomSheetExpanded: StateFlow<Boolean> = _isBottomSheetExpanded
-
-    private val _renameAppDialog = MutableStateFlow<AppInfo?>(null)
-    val renameAppDialog: StateFlow<AppInfo?> = _renameAppDialog
+    private val _state = MutableStateFlow(
+        HomeScreenState(
+            initialLoaded = false,
+            favouriteApps = emptyList(),
+            allApps = emptyList(),
+            isBottomSheetExpanded = false
+        )
+    )
+    val state: StateFlow<HomeScreenState> = _state
 
     private val _launchApp = Channel<String>(Channel.BUFFERED)
     val launchApp: Flow<String> = _launchApp.receiveAsFlow()
@@ -46,15 +65,12 @@ class HomeViewModel @Inject constructor(
     private val _launchSettings = Channel<Unit>(Channel.BUFFERED)
     val launchSettings: Flow<Unit> = _launchSettings.receiveAsFlow()
 
-    val favouriteAppsFlow = appInfoDao.getFavouriteAppsFlow().map {
-        appUtils.mapToAppInfo(it)
-    }
-
-    private val _allAppsFlow = MutableStateFlow<List<AppInfo>>(emptyList())
-    val allAppsFlow: StateFlow<List<AppInfo>> = _allAppsFlow
-
     fun setBottomSheetExpanded(isExpanded: Boolean) {
-        _isBottomSheetExpanded.update { isExpanded }
+        _state.update {
+            _state.value.copy(
+                isBottomSheetExpanded = isExpanded
+            )
+        }
     }
 
     private fun onAddAppToFavouriteClick(packageName: String) {
@@ -94,11 +110,15 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onRenameAppClick(app: AppInfo) {
-        _renameAppDialog.update { app }
+        _state.update {
+            _state.value.copy(
+                renameAppDialog = app
+            )
+        }
     }
 
     fun onRenameApp(newName: String) {
-        val app = _renameAppDialog.value ?: return
+        val app = _state.value.renameAppDialog ?: return
         onDismissRenameAppDialog()
         viewModelScope.launch {
             val name = newName.ifBlank {
@@ -109,6 +129,10 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onDismissRenameAppDialog() {
-        _renameAppDialog.update { null }
+        _state.update {
+            _state.value.copy(
+                renameAppDialog = null
+            )
+        }
     }
 }
