@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.minimo.launcher.ui.theme.Dimens
 
 @Composable
 fun AppBottomSheetText(text: String, onClick: () -> Unit) {
@@ -17,6 +18,6 @@ fun AppBottomSheetText(text: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 16.dp, horizontal = 48.dp),
+            .padding(vertical = 16.dp, horizontal = Dimens.APP_HORIZONTAL_SPACING),
     )
 }

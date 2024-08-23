@@ -13,12 +13,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minimo.launcher.ui.theme.Dimens
 
 @Composable
 fun EmptyScreenView(
     title: String,
     subTitle: String?,
-    horizontalPadding: Dp = 48.dp
+    horizontalPadding: Dp = Dimens.APP_HORIZONTAL_SPACING
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

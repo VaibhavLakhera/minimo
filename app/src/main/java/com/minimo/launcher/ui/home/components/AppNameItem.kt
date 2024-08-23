@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minimo.launcher.ui.theme.Dimens
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -45,7 +46,7 @@ fun AppNameItem(
                         { appBottomSheetVisible = true }
                     }
                 )
-                .padding(horizontal = 48.dp, vertical = 16.dp),
+                .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 16.dp),
         )
         if (appBottomSheetVisible) {
             AppListBottomSheetDialog(

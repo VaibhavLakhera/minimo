@@ -32,5 +32,20 @@ fun Context.launchAppInfo(packageName: String) {
 }
 
 fun Context.openHomeSettings() {
-    startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
+    try {
+        startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
+    } catch (exception: Exception) {
+        Timber.e(exception)
+    }
+}
+
+fun Context.openPlayStorePage() {
+    try {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse("https://play.google.com/store/apps/details?id=${packageName}")
+        }
+        startActivity(intent)
+    } catch (exception: Exception) {
+        Timber.e(exception)
+    }
 }

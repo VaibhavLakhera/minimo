@@ -17,12 +17,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minimo.launcher.ui.theme.Dimens
+import com.minimo.launcher.utils.openHomeSettings
+import com.minimo.launcher.utils.openPlayStorePage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(onBackClick: () -> Unit, onHiddenAppsClick: () -> Unit) {
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -49,6 +55,8 @@ fun SettingsScreen(onBackClick: () -> Unit, onHiddenAppsClick: () -> Unit) {
                 .padding(paddingValues),
         ) {
             SettingsItem(name = "Hidden Apps", onClick = onHiddenAppsClick)
+            SettingsItem(name = "Set Default Launcher", onClick = context::openHomeSettings)
+            SettingsItem(name = "Rate Application", onClick = context::openPlayStorePage)
         }
     }
 }
@@ -65,6 +73,6 @@ private fun SettingsItem(name: String, onClick: () -> Unit) {
             .combinedClickable(
                 onClick = onClick
             )
-            .padding(horizontal = 48.dp, vertical = 16.dp),
+            .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 16.dp),
     )
 }

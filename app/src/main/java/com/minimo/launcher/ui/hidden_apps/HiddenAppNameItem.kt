@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minimo.launcher.ui.components.AppBottomSheetDialog
 import com.minimo.launcher.ui.components.AppBottomSheetText
+import com.minimo.launcher.ui.theme.Dimens
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -39,7 +40,7 @@ fun HiddenAppNameItem(
                     onClick = onClick,
                     onLongClick = { appBottomSheetVisible = true }
                 )
-                .padding(horizontal = 48.dp, vertical = 16.dp),
+                .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 16.dp),
         )
         if (appBottomSheetVisible) {
             HiddenAppBottomSheetDialog(

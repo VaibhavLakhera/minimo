@@ -28,9 +28,14 @@ class HomeViewModel @Inject constructor(
 
             appInfoDao.getAllNonHiddenAppsFlow()
                 .collect { appInfoList ->
+                    val allApps = appUtils.mapToAppInfo(appInfoList, includeSettings = true)
                     _state.update {
                         _state.value.copy(
-                            allApps = appUtils.mapToAppInfo(appInfoList, includeSettings = true)
+                            allApps = allApps,
+                            filteredAllApps = getAppsWithSearch(
+                                searchText = _state.value.searchText,
+                                apps = allApps
+                            )
                         )
                     }
                 }
@@ -49,14 +54,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private val _state = MutableStateFlow(
-        HomeScreenState(
-            initialLoaded = false,
-            favouriteApps = emptyList(),
-            allApps = emptyList(),
-            isBottomSheetExpanded = false
-        )
-    )
+    private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
 
     private val _launchApp = Channel<String>(Channel.BUFFERED)
@@ -70,6 +68,11 @@ class HomeViewModel @Inject constructor(
             _state.value.copy(
                 isBottomSheetExpanded = isExpanded
             )
+        }
+
+        // Clear out the search text when bottom sheet is collapsed
+        if (!isExpanded && _state.value.searchText.isNotBlank()) {
+            onSearchTextChange("")
         }
     }
 
@@ -133,6 +136,26 @@ class HomeViewModel @Inject constructor(
             _state.value.copy(
                 renameAppDialog = null
             )
+        }
+    }
+
+    fun onSearchTextChange(searchText: String) {
+        _state.update {
+            _state.value.copy(
+                searchText = searchText,
+                filteredAllApps = getAppsWithSearch(
+                    searchText = searchText,
+                    apps = _state.value.allApps
+                )
+            )
+        }
+    }
+
+    private fun getAppsWithSearch(searchText: String, apps: List<AppInfo>): List<AppInfo> {
+        if (searchText.isBlank()) return apps
+
+        return apps.filter { appInfo ->
+            appInfo.name.contains(searchText, ignoreCase = true)
         }
     }
 }

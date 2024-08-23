@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -31,15 +33,17 @@ import com.minimo.launcher.ui.components.RenameAppDialog
 import com.minimo.launcher.ui.components.SheetDragHandle
 import com.minimo.launcher.ui.home.components.AppNameItem
 import com.minimo.launcher.ui.home.components.HomeAppNameItem
+import com.minimo.launcher.ui.home.components.SearchItem
 import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.launchAppInfo
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val focusManager = LocalFocusManager.current
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -75,6 +79,7 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
 
             else -> {
                 viewModel.setBottomSheetExpanded(false)
+                focusManager.clearFocus()
             }
         }
     }
@@ -85,8 +90,15 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
             SheetDragHandle(isExpanded = state.isBottomSheetExpanded)
         },
         sheetContent = {
-            LazyColumn(verticalArrangement = Arrangement.Center) {
-                items(items = state.allApps, key = { it.packageName }) { appInfo ->
+            SearchItem(
+                searchText = state.searchText,
+                onSearchTextChange = viewModel::onSearchTextChange
+            )
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(top = 16.dp)
+            ) {
+                items(items = state.filteredAllApps, key = { it.packageName }) { appInfo ->
                     AppNameItem(
                         modifier = Modifier.animateItemPlacement(),
                         appName = appInfo.name,

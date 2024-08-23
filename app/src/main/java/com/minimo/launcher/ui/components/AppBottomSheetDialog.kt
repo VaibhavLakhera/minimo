@@ -16,6 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.minimo.launcher.ui.theme.Dimens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +34,10 @@ fun AppBottomSheetDialog(
             fontSize = 20.sp,
             style = TextStyle(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(vertical = 24.dp, horizontal = 48.dp)
+            modifier = Modifier.padding(
+                vertical = 24.dp,
+                horizontal = Dimens.APP_HORIZONTAL_SPACING
+            )
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(16.dp))
