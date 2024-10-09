@@ -34,7 +34,7 @@ interface that prioritizes functionality without unnecessary distractions.
 ## Tech stack & Libraries
 
 - Minimum SDK level 26.
-- Target SDK level 34.
+- Target SDK level 35.
 - [Kotlin](https://kotlinlang.org/) based,
   utilizing [Coroutines](https://github.com/Kotlin/kotlinx.coroutines) + [Flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/)
   for asynchronous operations.
