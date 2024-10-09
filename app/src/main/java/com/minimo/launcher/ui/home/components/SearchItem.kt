@@ -10,6 +10,7 @@ import com.minimo.launcher.ui.theme.Dimens
 
 @Composable
 fun SearchItem(
+    modifier: Modifier,
     searchText: String,
     onSearchTextChange: (String) -> Unit
 ) {
@@ -17,9 +18,9 @@ fun SearchItem(
         value = searchText,
         onValueChange = onSearchTextChange,
         placeholder = { Text(text = "Search app") },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING),
+            .padding(start = Dimens.APP_HORIZONTAL_SPACING),
         singleLine = true
     )
 }

@@ -16,7 +16,7 @@ fun AppListBottomSheetDialog(
 ) {
     AppBottomSheetDialog(appName = appName, onDismiss = onDismiss) {
         AppBottomSheetText(
-            text = if (isFavourite) "Remove Favourite" else "Favourite",
+            text = if (isFavourite) "Remove Favourite" else "Add Favourite",
             onClick = onToggleFavouriteClick
         )
         AppBottomSheetText(

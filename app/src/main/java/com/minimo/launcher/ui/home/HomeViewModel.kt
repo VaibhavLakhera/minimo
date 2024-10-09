@@ -28,7 +28,7 @@ class HomeViewModel @Inject constructor(
 
             appInfoDao.getAllNonHiddenAppsFlow()
                 .collect { appInfoList ->
-                    val allApps = appUtils.mapToAppInfo(appInfoList, includeSettings = true)
+                    val allApps = appUtils.mapToAppInfo(appInfoList)
                     _state.update {
                         _state.value.copy(
                             allApps = allApps,
@@ -59,9 +59,6 @@ class HomeViewModel @Inject constructor(
 
     private val _launchApp = Channel<String>(Channel.BUFFERED)
     val launchApp: Flow<String> = _launchApp.receiveAsFlow()
-
-    private val _launchSettings = Channel<Unit>(Channel.BUFFERED)
-    val launchSettings: Flow<Unit> = _launchSettings.receiveAsFlow()
 
     fun setBottomSheetExpanded(isExpanded: Boolean) {
         _state.update {
@@ -98,11 +95,7 @@ class HomeViewModel @Inject constructor(
 
     fun onLaunchAppClick(info: AppInfo) {
         viewModelScope.launch {
-            if (info.isLauncherSettings) {
-                _launchSettings.send(Unit)
-            } else {
-                _launchApp.send(info.packageName)
-            }
+            _launchApp.send(info.packageName)
         }
     }
 

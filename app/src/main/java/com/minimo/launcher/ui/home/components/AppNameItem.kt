@@ -24,7 +24,6 @@ fun AppNameItem(
     appName: String,
     isFavourite: Boolean,
     onClick: () -> Unit,
-    longClickDisabled: Boolean,
     onToggleFavouriteClick: () -> Unit,
     onRenameClick: () -> Unit,
     onHideAppClick: () -> Unit,
@@ -40,11 +39,7 @@ fun AppNameItem(
                 .fillMaxWidth()
                 .combinedClickable(
                     onClick = onClick,
-                    onLongClick = if (longClickDisabled) {
-                        null
-                    } else {
-                        { appBottomSheetVisible = true }
-                    }
+                    onLongClick = { appBottomSheetVisible = true }
                 )
                 .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 16.dp),
         )

@@ -19,7 +19,7 @@ interface that prioritizes functionality without unnecessary distractions.
 
 ## Key Features:
 
-- **App Management**: Personalize your app experience by favorite apps, renaming apps and hiding
+- **App Management**: Personalize your app experience by favourite apps, renaming apps and hiding
   those you don’t use frequently, keeping your home screen tidy and organized.
 - **Lightweight Performance**: Minimo is designed to be resource-efficient, ensuring smooth
   operation without draining your battery.

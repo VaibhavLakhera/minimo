@@ -41,23 +41,10 @@ class AppUtils @Inject constructor(
     }
 
     fun mapToAppInfo(
-        entities: List<AppInfoEntity>,
-        includeSettings: Boolean = false
+        entities: List<AppInfoEntity>
     ): List<AppInfo> {
-        val appInfos = entities.map { it.toAppInfo() }
-        if (includeSettings) {
-            val settingsAppInfo = AppInfo(
-                packageName = "",
-                appName = "Minimo Settings",
-                alternateAppName = "Minimo Settings",
-                isFavourite = false,
-                isHidden = false,
-                isLauncherSettings = true
-            )
-            return (appInfos + settingsAppInfo).sortedBy { it.alternateAppName.lowercase() }
-        } else {
-            return appInfos.sortedBy { it.alternateAppName.lowercase() }
-        }
+        return entities.map { it.toAppInfo() }
+            .sortedBy { it.alternateAppName.lowercase() }
     }
 
     private fun AppInfoEntity.toAppInfo(): AppInfo {
@@ -66,8 +53,7 @@ class AppUtils @Inject constructor(
             appName = appName,
             alternateAppName = alternateAppName,
             isFavourite = isFavourite,
-            isHidden = isHidden,
-            isLauncherSettings = false
+            isHidden = isHidden
         )
     }
 }

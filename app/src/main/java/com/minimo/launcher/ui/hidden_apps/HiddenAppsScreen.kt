@@ -1,6 +1,5 @@
 package com.minimo.launcher.ui.hidden_apps
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,7 +24,7 @@ import com.minimo.launcher.ui.components.EmptyScreenView
 import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.launchAppInfo
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HiddenAppsScreen(
     viewModel: HiddenAppsViewModel,
@@ -72,7 +71,7 @@ fun HiddenAppsScreen(
             ) {
                 items(items = state.hiddenApps, key = { it.packageName }) { appInfo ->
                     HiddenAppNameItem(
-                        modifier = Modifier.animateItemPlacement(),
+                        modifier = Modifier.animateItem(),
                         appName = appInfo.name,
                         onClick = { context.launchApp(appInfo.packageName) },
                         onRemoveHiddenClick = { viewModel.onRemoveAppFromHiddenClicked(appInfo.packageName) },

@@ -1,17 +1,21 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.minimo.launcher.ui.home
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -23,9 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.minimo.launcher.ui.components.EmptyScreenView
@@ -38,7 +42,7 @@ import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.launchAppInfo
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
     val context = LocalContext.current
@@ -64,13 +68,6 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
             viewModel.launchApp.collect(context::launchApp)
         }
     }
-    LaunchedEffect(Unit) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.launchSettings.collect {
-                onSettingsClick()
-            }
-        }
-    }
     LaunchedEffect(bottomSheetScaffoldState.bottomSheetState.targetValue) {
         when (bottomSheetScaffoldState.bottomSheetState.targetValue) {
             SheetValue.Expanded -> {
@@ -90,21 +87,28 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
             SheetDragHandle(isExpanded = state.isBottomSheetExpanded)
         },
         sheetContent = {
-            SearchItem(
-                searchText = state.searchText,
-                onSearchTextChange = viewModel::onSearchTextChange
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SearchItem(
+                    modifier = Modifier.weight(1f),
+                    searchText = state.searchText,
+                    onSearchTextChange = viewModel::onSearchTextChange
+                )
+                IconButton(
+                    onClick = onSettingsClick
+                ) {
+                    Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
+                }
+            }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(top = 16.dp)
             ) {
                 items(items = state.filteredAllApps, key = { it.packageName }) { appInfo ->
                     AppNameItem(
-                        modifier = Modifier.animateItemPlacement(),
+                        modifier = Modifier.animateItem(),
                         appName = appInfo.name,
                         isFavourite = appInfo.isFavourite,
                         onClick = { viewModel.onLaunchAppClick(appInfo) },
-                        longClickDisabled = appInfo.isLauncherSettings,
                         onToggleFavouriteClick = { viewModel.onToggleFavouriteAppClick(appInfo) },
                         onRenameClick = { viewModel.onRenameAppClick(appInfo) },
                         onHideAppClick = { viewModel.onHideAppClick(appInfo.packageName) },
@@ -116,10 +120,13 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
         sheetPeekHeight = 56.dp,
         sheetContainerColor = MaterialTheme.colorScheme.surface,
         containerColor = MaterialTheme.colorScheme.surface
-    ) {
+    ) { paddingValues ->
         if (state.initialLoaded && state.favouriteApps.isEmpty()) {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .consumeWindowInsets(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 EmptyScreenView(
@@ -129,16 +136,22 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
             }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .consumeWindowInsets(paddingValues),
+                contentPadding = paddingValues,
                 verticalArrangement = Arrangement.Center
             ) {
                 items(items = state.favouriteApps, key = { it.packageName }) { appInfo ->
                     HomeAppNameItem(
-                        modifier = Modifier.animateItemPlacement(),
+                        modifier = Modifier.animateItem(),
                         appName = appInfo.name,
                         onClick = { viewModel.onLaunchAppClick(appInfo) },
-                        longClickDisabled = appInfo.isLauncherSettings,
-                        onRemoveFavouriteClick = { viewModel.onRemoveAppFromFavouriteClicked(appInfo.packageName) },
+                        onRemoveFavouriteClick = {
+                            viewModel.onRemoveAppFromFavouriteClicked(
+                                appInfo.packageName
+                            )
+                        },
                         onRenameClick = { viewModel.onRenameAppClick(appInfo) },
                         onAppInfoClick = { context.launchAppInfo(appInfo.packageName) }
                     )
