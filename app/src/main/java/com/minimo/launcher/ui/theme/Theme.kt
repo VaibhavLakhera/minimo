@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.minimo.launcher.ui.entities.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -30,13 +31,15 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun AppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: ThemeMode,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colorScheme = when (themeMode) {
+        ThemeMode.Auto -> if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme
+        ThemeMode.Dark -> DarkColorScheme
+        ThemeMode.Light -> LightColorScheme
     }
+    val darkTheme = colorScheme == DarkColorScheme
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

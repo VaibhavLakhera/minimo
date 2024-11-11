@@ -12,12 +12,14 @@ import com.minimo.launcher.ui.home.HomeScreen
 import com.minimo.launcher.ui.intro.IntroScreen
 import com.minimo.launcher.ui.launch.LaunchScreen
 import com.minimo.launcher.ui.settings.SettingsScreen
+import com.minimo.launcher.ui.settings.appearance.AppearanceScreen
 
 object Routes {
     const val LAUNCH = "launch"
     const val INTRO = "intro"
     const val HOME = "home"
     const val SETTINGS = "settings"
+    const val SETTINGS_APPEARANCE = "settings_appearance"
     const val HIDDEN_APPS = "hidden_apps"
 }
 
@@ -72,11 +74,22 @@ fun AppNavGraph() {
                 },
                 onHiddenAppsClick = {
                     navController.navigate(Routes.HIDDEN_APPS)
+                },
+                onAppearanceClick = {
+                    navController.navigate(Routes.SETTINGS_APPEARANCE)
                 }
             )
         }
         composable(route = Routes.HIDDEN_APPS) {
             HiddenAppsScreen(
+                viewModel = hiltViewModel(it),
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(route = Routes.SETTINGS_APPEARANCE) {
+            AppearanceScreen(
                 viewModel = hiltViewModel(it),
                 onBackClick = {
                     navController.popBackStack()

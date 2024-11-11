@@ -26,7 +26,11 @@ import com.minimo.launcher.utils.openPlayStorePage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onBackClick: () -> Unit, onHiddenAppsClick: () -> Unit) {
+fun SettingsScreen(
+    onBackClick: () -> Unit,
+    onHiddenAppsClick: () -> Unit,
+    onAppearanceClick: () -> Unit
+) {
     val context = LocalContext.current
 
     Scaffold(
@@ -55,6 +59,7 @@ fun SettingsScreen(onBackClick: () -> Unit, onHiddenAppsClick: () -> Unit) {
                 .padding(paddingValues),
         ) {
             SettingsItem(name = "Hidden Apps", onClick = onHiddenAppsClick)
+            SettingsItem(name = "Appearance", onClick = onAppearanceClick)
             SettingsItem(name = "Set Default Launcher", onClick = context::openHomeSettings)
             SettingsItem(name = "Rate Application", onClick = context::openPlayStorePage)
         }
