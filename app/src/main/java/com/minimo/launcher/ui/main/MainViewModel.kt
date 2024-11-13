@@ -14,8 +14,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val preferenceHelper: PreferenceHelper
 ) : ViewModel() {
-    private val _state =
-        MutableStateFlow(MainState())
+    private val _state = MutableStateFlow(MainState())
     val state: StateFlow<MainState> = _state
 
     init {

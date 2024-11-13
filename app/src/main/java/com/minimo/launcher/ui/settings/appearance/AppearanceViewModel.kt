@@ -3,7 +3,7 @@ package com.minimo.launcher.ui.settings.appearance
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.PreferenceHelper
-import com.minimo.launcher.ui.entities.ThemeMode
+import com.minimo.launcher.ui.theme.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +15,7 @@ import javax.inject.Inject
 class AppearanceViewModel @Inject constructor(
     private val preferenceHelper: PreferenceHelper
 ) : ViewModel() {
-    private val _state =
-        MutableStateFlow(AppearanceState())
+    private val _state = MutableStateFlow(AppearanceState())
     val state: StateFlow<AppearanceState> = _state
 
     init {

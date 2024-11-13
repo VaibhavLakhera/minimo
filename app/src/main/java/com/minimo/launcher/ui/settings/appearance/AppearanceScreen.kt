@@ -27,8 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.minimo.launcher.ui.entities.ThemeMode
 import com.minimo.launcher.ui.theme.Dimens
+import com.minimo.launcher.ui.theme.ThemeMode
 
 @Composable
 fun AppearanceScreen(

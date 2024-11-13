@@ -1,7 +1,7 @@
 package com.minimo.launcher.ui.main
 
-import com.minimo.launcher.ui.entities.ThemeMode
+import com.minimo.launcher.ui.theme.ThemeMode
 
 data class MainState(
-    val themeMode: ThemeMode = ThemeMode.Auto
+    val themeMode: ThemeMode = ThemeMode.System
 )

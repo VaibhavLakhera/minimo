@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.minimo.launcher.ui.entities.ThemeMode
+import com.minimo.launcher.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -37,10 +37,12 @@ class PreferenceHelperImpl @Inject constructor(
     override fun getThemeMode(): Flow<ThemeMode> {
         return preferences.data.map {
             val mode = it[KEY_THEME_MODE]
-            if (!mode.isNullOrBlank()) {
+            if (!mode.isNullOrBlank()
+                && ThemeMode.entries.any { entry -> entry.name == mode }
+            ) {
                 ThemeMode.valueOf(mode)
             } else {
-                ThemeMode.Auto
+                ThemeMode.System
             }
         }
     }

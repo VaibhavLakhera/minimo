@@ -15,6 +15,9 @@ import javax.inject.Inject
 class LaunchViewModel @Inject constructor(
     private val preferenceHelper: PreferenceHelper
 ) : ViewModel() {
+    private val _navigateToRoute = Channel<String>(Channel.BUFFERED)
+    val navigateToRoute: Flow<String> = _navigateToRoute.receiveAsFlow()
+
     init {
         viewModelScope.launch {
             preferenceHelper.getIsIntroCompletedFlow().collect { isIntroCompleted ->
@@ -26,7 +29,4 @@ class LaunchViewModel @Inject constructor(
             }
         }
     }
-
-    private val _navigateToRoute = Channel<String>(Channel.BUFFERED)
-    val navigateToRoute: Flow<String> = _navigateToRoute.receiveAsFlow()
 }

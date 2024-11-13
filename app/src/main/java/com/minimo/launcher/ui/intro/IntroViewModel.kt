@@ -20,6 +20,9 @@ class IntroViewModel @Inject constructor(
     private val appUtils: AppUtils,
     private val preferenceHelper: PreferenceHelper
 ) : ViewModel() {
+    private val _allAppsFlow = MutableStateFlow<List<AppInfo>>(emptyList())
+    val allAppsFlow: StateFlow<List<AppInfo>> = _allAppsFlow
+
     init {
         viewModelScope.launch {
             updateAllAppsUseCase.invoke()
@@ -30,9 +33,6 @@ class IntroViewModel @Inject constructor(
                 }
         }
     }
-
-    private val _allAppsFlow = MutableStateFlow<List<AppInfo>>(emptyList())
-    val allAppsFlow: StateFlow<List<AppInfo>> = _allAppsFlow
 
     fun onToggleFavouriteAppClick(appInfo: AppInfo) {
         viewModelScope.launch {

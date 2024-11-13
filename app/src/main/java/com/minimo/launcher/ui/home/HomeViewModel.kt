@@ -22,6 +22,12 @@ class HomeViewModel @Inject constructor(
     private val appInfoDao: AppInfoDao,
     private val appUtils: AppUtils
 ) : ViewModel() {
+    private val _state = MutableStateFlow(HomeScreenState())
+    val state: StateFlow<HomeScreenState> = _state
+
+    private val _launchApp = Channel<String>(Channel.BUFFERED)
+    val launchApp: Flow<String> = _launchApp.receiveAsFlow()
+
     init {
         viewModelScope.launch {
             updateAllAppsUseCase.invoke()
@@ -53,12 +59,6 @@ class HomeViewModel @Inject constructor(
                 }
         }
     }
-
-    private val _state = MutableStateFlow(HomeScreenState())
-    val state: StateFlow<HomeScreenState> = _state
-
-    private val _launchApp = Channel<String>(Channel.BUFFERED)
-    val launchApp: Flow<String> = _launchApp.receiveAsFlow()
 
     fun setBottomSheetExpanded(isExpanded: Boolean) {
         _state.update {
