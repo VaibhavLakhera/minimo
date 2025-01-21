@@ -10,6 +10,7 @@ import com.minimo.launcher.utils.AppUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,6 +23,11 @@ class IntroViewModel @Inject constructor(
 ) : ViewModel() {
     private val _allAppsFlow = MutableStateFlow<List<AppInfo>>(emptyList())
     val allAppsFlow: StateFlow<List<AppInfo>> = _allAppsFlow
+
+    val favouriteAppsFlow =
+        _allAppsFlow.map { allApps ->
+            allApps.filter { it.isFavourite }
+        }
 
     init {
         viewModelScope.launch {

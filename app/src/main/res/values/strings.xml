@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">Minimo</string>
+    <string name="app_name">Minimo Launcher</string>
+
+    <string name="favourite_apps">Favourite Apps</string>
+    <string name="add_only_the_apps_you_use_most">Add only the apps you use most</string>
+
+    <string name="btn_continue">Continue</string>
+    <string name="add_at_least_to_continue">Add at least %1$s to continue</string>
 </resources>

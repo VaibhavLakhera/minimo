@@ -18,7 +18,7 @@ import com.minimo.launcher.ui.theme.Dimens
 @Composable
 fun EmptyScreenView(
     title: String,
-    subTitle: String?,
+    subTitle: String? = null,
     horizontalPadding: Dp = Dimens.APP_HORIZONTAL_SPACING
 ) {
     Column(
