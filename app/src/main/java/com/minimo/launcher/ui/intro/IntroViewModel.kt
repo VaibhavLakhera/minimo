@@ -7,10 +7,11 @@ import com.minimo.launcher.data.PreferenceHelper
 import com.minimo.launcher.data.usecase.UpdateAllAppsUseCase
 import com.minimo.launcher.ui.entities.AppInfo
 import com.minimo.launcher.utils.AppUtils
+import com.minimo.launcher.utils.Constants.INTRO_MINIMUM_FAVOURITE_COUNT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,21 +22,29 @@ class IntroViewModel @Inject constructor(
     private val appUtils: AppUtils,
     private val preferenceHelper: PreferenceHelper
 ) : ViewModel() {
-    private val _allAppsFlow = MutableStateFlow<List<AppInfo>>(emptyList())
-    val allAppsFlow: StateFlow<List<AppInfo>> = _allAppsFlow
-
-    val favouriteAppsFlow =
-        _allAppsFlow.map { allApps ->
-            allApps.filter { it.isFavourite }
-        }
+    private val _state = MutableStateFlow(IntroState())
+    val state: StateFlow<IntroState> = _state
 
     init {
         viewModelScope.launch {
             updateAllAppsUseCase.invoke()
+        }
 
+        viewModelScope.launch {
             appInfoDao.getAllNonHiddenAppsFlow()
                 .collect { appInfoList ->
-                    _allAppsFlow.value = appUtils.mapToAppInfo(appInfoList)
+                    val allApps = appUtils.mapToAppInfo(appInfoList)
+                    val minimumFavouriteAdded =
+                        allApps.count { it.isFavourite } >= INTRO_MINIMUM_FAVOURITE_COUNT
+
+                    _state.value = _state.value.copy(
+                        allApps = allApps,
+                        filteredAllApps = appUtils.getAppsWithSearch(
+                            searchText = _state.value.searchText,
+                            apps = allApps
+                        ),
+                        minimumFavouriteAdded = minimumFavouriteAdded
+                    )
                 }
         }
     }
@@ -53,6 +62,18 @@ class IntroViewModel @Inject constructor(
     fun setIntroCompleted() {
         viewModelScope.launch {
             preferenceHelper.setIsIntroCompleted(true)
+        }
+    }
+
+    fun onSearchTextChange(searchText: String) {
+        _state.update {
+            _state.value.copy(
+                searchText = searchText,
+                filteredAllApps = appUtils.getAppsWithSearch(
+                    searchText = searchText,
+                    apps = _state.value.allApps
+                )
+            )
         }
     }
 }

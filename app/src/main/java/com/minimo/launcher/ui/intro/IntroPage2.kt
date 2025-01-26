@@ -1,7 +1,6 @@
 package com.minimo.launcher.ui.intro
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minimo.launcher.R
-import com.minimo.launcher.ui.components.EmptyScreenView
-
-private const val MINIMUM_FAVOURITE_COUNT = 3
+import com.minimo.launcher.ui.home.components.SearchItem
+import com.minimo.launcher.ui.theme.Dimens
+import com.minimo.launcher.utils.Constants.INTRO_MINIMUM_FAVOURITE_COUNT
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,9 +34,7 @@ internal fun IntroPage2(
     viewModel: IntroViewModel,
     onContinueClick: () -> Unit
 ) {
-    val allApps by viewModel.allAppsFlow.collectAsStateWithLifecycle(emptyList())
-    val favouriteApps by viewModel.favouriteAppsFlow.collectAsStateWithLifecycle(emptyList())
-    val minimumFavouriteAdded = favouriteApps.size >= MINIMUM_FAVOURITE_COUNT
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
         CenterAlignedTopAppBar(
@@ -44,25 +42,18 @@ internal fun IntroPage2(
                 Text(stringResource(id = R.string.favourite_apps))
             }
         )
+        SearchItem(
+            modifier = Modifier.fillMaxWidth(),
+            searchText = state.searchText,
+            onSearchTextChange = viewModel::onSearchTextChange
+        )
         LazyColumn(
             modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(bottom = 24.dp)
+            contentPadding = PaddingValues(vertical = 20.dp)
         ) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 20.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    EmptyScreenView(
-                        title = stringResource(id = R.string.add_only_the_apps_you_use_most),
-                        horizontalPadding = 20.dp
-                    )
-                }
-            }
-            items(items = allApps, key = { it.packageName }) { appInfo ->
+            items(items = state.filteredAllApps, key = { it.packageName }) { appInfo ->
                 AddFavouriteAppItem(
+                    modifier = Modifier.animateItem(),
                     appName = appInfo.name,
                     isFavourite = appInfo.isFavourite,
                     onToggleFavouriteClick = { viewModel.onToggleFavouriteAppClick(appInfo) }
@@ -70,13 +61,13 @@ internal fun IntroPage2(
             }
         }
         IntroBottomButton(
-            text = if (minimumFavouriteAdded) {
+            text = if (state.minimumFavouriteAdded) {
                 stringResource(R.string.btn_continue)
             } else {
-                stringResource(R.string.add_at_least_to_continue, MINIMUM_FAVOURITE_COUNT)
+                stringResource(R.string.add_at_least_to_continue, INTRO_MINIMUM_FAVOURITE_COUNT)
             },
             onClick = {
-                if (minimumFavouriteAdded) {
+                if (state.minimumFavouriteAdded) {
                     onContinueClick()
                 }
             }
@@ -86,21 +77,23 @@ internal fun IntroPage2(
 
 @Composable
 private fun AddFavouriteAppItem(
+    modifier: Modifier,
     appName: String,
     isFavourite: Boolean,
     onToggleFavouriteClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clickable(onClick = onToggleFavouriteClick)
-            .padding(horizontal = 24.dp, vertical = 4.dp),
+            .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
+            modifier = Modifier.weight(1f),
             text = appName,
             fontSize = 20.sp
         )
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.width(16.dp))
         Switch(
             checked = isFavourite, onCheckedChange = {
                 onToggleFavouriteClick()

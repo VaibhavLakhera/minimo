@@ -47,6 +47,14 @@ class AppUtils @Inject constructor(
             .sortedBy { it.alternateAppName.lowercase() }
     }
 
+    fun getAppsWithSearch(searchText: String, apps: List<AppInfo>): List<AppInfo> {
+        if (searchText.isBlank()) return apps
+
+        return apps.filter { appInfo ->
+            appInfo.name.contains(searchText, ignoreCase = true)
+        }
+    }
+
     private fun AppInfoEntity.toAppInfo(): AppInfo {
         return AppInfo(
             packageName = packageName,

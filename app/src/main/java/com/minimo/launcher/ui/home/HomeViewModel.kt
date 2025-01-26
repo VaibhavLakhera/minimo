@@ -31,14 +31,16 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             updateAllAppsUseCase.invoke()
+        }
 
+        viewModelScope.launch {
             appInfoDao.getAllNonHiddenAppsFlow()
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
                     _state.update {
                         _state.value.copy(
                             allApps = allApps,
-                            filteredAllApps = getAppsWithSearch(
+                            filteredAllApps = appUtils.getAppsWithSearch(
                                 searchText = _state.value.searchText,
                                 apps = allApps
                             )
@@ -136,19 +138,11 @@ class HomeViewModel @Inject constructor(
         _state.update {
             _state.value.copy(
                 searchText = searchText,
-                filteredAllApps = getAppsWithSearch(
+                filteredAllApps = appUtils.getAppsWithSearch(
                     searchText = searchText,
                     apps = _state.value.allApps
                 )
             )
-        }
-    }
-
-    private fun getAppsWithSearch(searchText: String, apps: List<AppInfo>): List<AppInfo> {
-        if (searchText.isBlank()) return apps
-
-        return apps.filter { appInfo ->
-            appInfo.name.contains(searchText, ignoreCase = true)
         }
     }
 }

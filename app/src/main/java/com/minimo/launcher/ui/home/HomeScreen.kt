@@ -91,7 +91,8 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
                 SearchItem(
                     modifier = Modifier.weight(1f),
                     searchText = state.searchText,
-                    onSearchTextChange = viewModel::onSearchTextChange
+                    onSearchTextChange = viewModel::onSearchTextChange,
+                    endPadding = 0.dp
                 )
                 IconButton(
                     onClick = onSettingsClick

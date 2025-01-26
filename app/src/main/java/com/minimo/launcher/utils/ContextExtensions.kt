@@ -39,13 +39,17 @@ fun Context.openHomeSettings() {
     }
 }
 
-fun Context.openPlayStorePage() {
+fun Context.openPlayStorePage(id: String = packageName) {
     try {
         val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse("https://play.google.com/store/apps/details?id=${packageName}")
+            data = Uri.parse("https://play.google.com/store/apps/details?id=${id}")
         }
         startActivity(intent)
     } catch (exception: Exception) {
         Timber.e(exception)
     }
+}
+
+fun Context.openSeniorLauncherPlayStorePage() {
+    openPlayStorePage(id = "com.eldo.launcher")
 }

@@ -6,13 +6,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import com.minimo.launcher.ui.theme.Dimens
 
 @Composable
 fun SearchItem(
     modifier: Modifier,
     searchText: String,
-    onSearchTextChange: (String) -> Unit
+    onSearchTextChange: (String) -> Unit,
+    startPadding: Dp = Dimens.APP_HORIZONTAL_SPACING,
+    endPadding: Dp = Dimens.APP_HORIZONTAL_SPACING
 ) {
     OutlinedTextField(
         value = searchText,
@@ -20,7 +23,7 @@ fun SearchItem(
         placeholder = { Text(text = "Search app") },
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = Dimens.APP_HORIZONTAL_SPACING),
+            .padding(start = startPadding, end = endPadding),
         singleLine = true
     )
 }

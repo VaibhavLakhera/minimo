@@ -6,4 +6,8 @@
 
     <string name="btn_continue">Continue</string>
     <string name="add_at_least_to_continue">Add at least %1$s to continue</string>
+
+    <string name="discover_my_other_app">MY OTHER APP</string>
+    <string name="senior_launcher">Senior Launcher</string>
+    <string name="senior_launcher_description">Simplified Launcher for Seniors - Your smartphone, made simple!</string>
 </resources>
