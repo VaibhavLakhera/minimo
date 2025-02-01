@@ -70,7 +70,7 @@ fun AppNavGraph() {
         composable(route = Routes.SETTINGS) {
             SettingsScreen(
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 },
                 onHiddenAppsClick = {
                     navController.navigate(Routes.HIDDEN_APPS)
@@ -84,7 +84,7 @@ fun AppNavGraph() {
             HiddenAppsScreen(
                 viewModel = hiltViewModel(it),
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 }
             )
         }
@@ -92,7 +92,7 @@ fun AppNavGraph() {
             AppearanceScreen(
                 viewModel = hiltViewModel(it),
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 }
             )
         }
