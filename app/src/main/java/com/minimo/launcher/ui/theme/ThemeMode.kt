@@ -1,5 +1,5 @@
 package com.minimo.launcher.ui.theme
 
 enum class ThemeMode {
-    System, Dark, Light
+    System, Dark, Light, Black
 }

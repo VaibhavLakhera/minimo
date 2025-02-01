@@ -53,3 +53,23 @@ fun Context.openPlayStorePage(id: String = packageName) {
 fun Context.openSeniorLauncherPlayStorePage() {
     openPlayStorePage(id = "com.eldo.launcher")
 }
+
+fun Context.sendFeedback() {
+    try {
+        val recipient = "vaibhav.lakhera.dev@gmail.com"
+        val subject = "Minimo Launcher Feedback"
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+        }
+
+        if (emailIntent.resolveActivity(packageManager) != null) {
+            startActivity(emailIntent)
+        } else {
+            Timber.e("No email app found to handle the intent.")
+        }
+    } catch (e: Exception) {
+        Timber.e("Error sending email: ${e.message}")
+    }
+}

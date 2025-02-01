@@ -29,6 +29,7 @@ import com.minimo.launcher.ui.theme.Dimens
 import com.minimo.launcher.utils.openHomeSettings
 import com.minimo.launcher.utils.openPlayStorePage
 import com.minimo.launcher.utils.openSeniorLauncherPlayStorePage
+import com.minimo.launcher.utils.sendFeedback
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,6 +68,7 @@ fun SettingsScreen(
             SettingsItem(name = "Hidden Apps", onClick = onHiddenAppsClick)
             SettingsItem(name = "Appearance", onClick = onAppearanceClick)
             SettingsItem(name = "Set Default Launcher", onClick = context::openHomeSettings)
+            SettingsItem(name = "Send Feedback", onClick = context::sendFeedback)
             SettingsItem(name = "Rate Application", onClick = context::openPlayStorePage)
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             Text(
