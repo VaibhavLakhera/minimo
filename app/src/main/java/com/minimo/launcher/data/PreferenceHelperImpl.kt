@@ -1,5 +1,6 @@
 package com.minimo.launcher.data
 
+import androidx.compose.ui.text.style.TextAlign
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -16,6 +17,7 @@ class PreferenceHelperImpl @Inject constructor(
     companion object {
         private val KEY_INTRO_COMPLETED = booleanPreferencesKey("KEY_INTRO_COMPLETED")
         private val KEY_THEME_MODE = stringPreferencesKey("KEY_THEME_MODE")
+        private val KEY_HOME_APPS_ALIGN = stringPreferencesKey("KEY_HOME_APPS_ALIGN")
     }
 
     override suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -43,6 +45,24 @@ class PreferenceHelperImpl @Inject constructor(
                 ThemeMode.valueOf(mode)
             } else {
                 ThemeMode.System
+            }
+        }
+    }
+
+    override suspend fun setHomeAppsAlign(align: TextAlign) {
+        preferences.edit {
+            it[KEY_HOME_APPS_ALIGN] = align.toString()
+        }
+    }
+
+    override fun getHomeAppsAlign(): Flow<TextAlign> {
+        return preferences.data.map {
+            val align = it[KEY_HOME_APPS_ALIGN]
+            if (align.isNullOrBlank()) {
+                TextAlign.Start
+            } else {
+                val matched = TextAlign.values().find { entry -> entry.toString() == align }
+                matched ?: TextAlign.Start
             }
         }
     }

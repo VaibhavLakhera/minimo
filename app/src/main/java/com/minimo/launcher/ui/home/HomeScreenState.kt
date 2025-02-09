@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home
 
+import androidx.compose.ui.text.style.TextAlign
 import com.minimo.launcher.ui.entities.AppInfo
 
 data class HomeScreenState(
@@ -9,5 +10,6 @@ data class HomeScreenState(
     val filteredAllApps: List<AppInfo> = emptyList(),
     val isBottomSheetExpanded: Boolean = false,
     val renameAppDialog: AppInfo? = null,
-    val searchText: String = ""
+    val searchText: String = "",
+    val appsTextAlign: TextAlign = TextAlign.Start
 )

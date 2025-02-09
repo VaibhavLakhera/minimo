@@ -3,6 +3,7 @@ package com.minimo.launcher.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.AppInfoDao
+import com.minimo.launcher.data.PreferenceHelper
 import com.minimo.launcher.data.usecase.UpdateAllAppsUseCase
 import com.minimo.launcher.ui.entities.AppInfo
 import com.minimo.launcher.utils.AppUtils
@@ -20,7 +21,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val updateAllAppsUseCase: UpdateAllAppsUseCase,
     private val appInfoDao: AppInfoDao,
-    private val appUtils: AppUtils
+    private val appUtils: AppUtils,
+    private val preferenceHelper: PreferenceHelper
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
@@ -59,6 +61,14 @@ class HomeViewModel @Inject constructor(
                         )
                     }
                 }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getHomeAppsAlign().collect { align ->
+                _state.update {
+                    _state.value.copy(appsTextAlign = align)
+                }
+            }
         }
     }
 

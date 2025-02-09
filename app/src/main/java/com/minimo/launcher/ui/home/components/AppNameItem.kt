@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minimo.launcher.ui.theme.Dimens
@@ -23,6 +24,7 @@ fun AppNameItem(
     modifier: Modifier,
     appName: String,
     isFavourite: Boolean,
+    textAlign: TextAlign,
     onClick: () -> Unit,
     onToggleFavouriteClick: () -> Unit,
     onRenameClick: () -> Unit,
@@ -35,6 +37,7 @@ fun AppNameItem(
             text = appName,
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 20.sp,
+            textAlign = textAlign,
             modifier = Modifier
                 .fillMaxWidth()
                 .combinedClickable(

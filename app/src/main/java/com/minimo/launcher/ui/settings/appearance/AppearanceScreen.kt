@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,6 +76,7 @@ fun AppearanceScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
@@ -100,6 +105,34 @@ fun AppearanceScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(mode.name)
+                }
+            }
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            Text(
+                text = "HOME APPS ALIGNMENT",
+                modifier = Modifier.padding(
+                    horizontal = Dimens.APP_HORIZONTAL_SPACING,
+                    vertical = 8.dp
+                ),
+                fontWeight = FontWeight.Bold
+            )
+            listOf(TextAlign.Start, TextAlign.Center, TextAlign.End).forEach { align ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { viewModel.onHomeAppsAlignmentChanged(align) }
+                        .padding(
+                            horizontal = Dimens.APP_HORIZONTAL_SPACING - 12.dp,
+                            vertical = 8.dp
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = state.homeAppsAlign == align,
+                        onClick = { viewModel.onHomeAppsAlignmentChanged(align) }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(align.toString())
                 }
             }
         }

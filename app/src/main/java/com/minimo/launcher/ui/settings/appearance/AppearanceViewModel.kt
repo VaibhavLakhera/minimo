@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.appearance
 
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.PreferenceHelper
@@ -26,11 +27,24 @@ class AppearanceViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            preferenceHelper.getHomeAppsAlign().collect { align ->
+                _state.update {
+                    _state.value.copy(homeAppsAlign = align)
+                }
+            }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
         viewModelScope.launch {
             preferenceHelper.setThemeMode(mode)
+        }
+    }
+
+    fun onHomeAppsAlignmentChanged(align: TextAlign) {
+        viewModelScope.launch {
+            preferenceHelper.setHomeAppsAlign(align)
         }
     }
 }

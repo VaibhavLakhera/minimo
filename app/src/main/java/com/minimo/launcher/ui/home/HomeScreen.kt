@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomSheetScaffold
@@ -22,11 +23,20 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -41,6 +51,8 @@ import com.minimo.launcher.ui.home.components.SearchItem
 import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.launchAppInfo
 import kotlinx.coroutines.launch
+
+private const val swipeUpThreshold = 70f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +93,51 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
         }
     }
 
+    val lazyListState = rememberLazyListState()
+
+    fun onSwipeUpAtEnd() {
+        coroutineScope.launch {
+            bottomSheetScaffoldState.bottomSheetState.expand()
+        }
+    }
+
+    var swipeTriggered by remember { mutableStateOf(false) }
+    var accumulatedSwipeUp by remember { mutableFloatStateOf(0f) }
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            // Called as the user drags.
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                // Check if the list is at the bottom and the user is dragging upward (available.y negative)
+                if (!lazyListState.canScrollForward && available.y < 0) {
+                    accumulatedSwipeUp += -available.y // Track upward swipe distance
+                    if (accumulatedSwipeUp >= swipeUpThreshold && !swipeTriggered) {
+                        swipeTriggered = true
+                    }
+                }
+                return Offset.Zero
+            }
+
+            // Called when the gesture is finishing.
+            override suspend fun onPreFling(available: Velocity): Velocity {
+                if (swipeTriggered) {
+                    // Trigger the callback once when the user lifts the finger.
+                    onSwipeUpAtEnd()
+                    swipeTriggered = false
+                    accumulatedSwipeUp = 0f
+                }
+                return super.onPreFling(available)
+            }
+
+            // Reset the flag if fling completes.
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+                swipeTriggered = false
+                accumulatedSwipeUp = 0f
+                return super.onPostFling(consumed, available)
+            }
+        }
+    }
+
     BottomSheetScaffold(
         scaffoldState = bottomSheetScaffoldState,
         sheetDragHandle = {
@@ -114,6 +171,7 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
                         onRenameClick = { viewModel.onRenameAppClick(appInfo) },
                         onHideAppClick = { viewModel.onHideAppClick(appInfo.packageName) },
                         onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
+                        textAlign = state.appsTextAlign
                     )
                 }
             }
@@ -137,7 +195,9 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
             }
         } else {
             LazyColumn(
+                state = lazyListState,
                 modifier = Modifier
+                    .nestedScroll(nestedScrollConnection)
                     .fillMaxSize()
                     .consumeWindowInsets(paddingValues),
                 contentPadding = paddingValues,
@@ -154,7 +214,8 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
                             )
                         },
                         onRenameClick = { viewModel.onRenameAppClick(appInfo) },
-                        onAppInfoClick = { context.launchAppInfo(appInfo.packageName) }
+                        onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
+                        textAlign = state.appsTextAlign
                     )
                 }
             }
