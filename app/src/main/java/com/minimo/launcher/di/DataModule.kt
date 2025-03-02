@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import com.minimo.launcher.data.AppDatabase
+import com.minimo.launcher.utils.AppUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,4 +47,8 @@ class DataModule {
             },
         )
     }
+
+    @Singleton
+    @Provides
+    fun provideAppUtils(@ApplicationContext context: Context) = AppUtils(context)
 }

@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.appearance
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,9 +32,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minimo.launcher.ui.theme.Dimens
 import com.minimo.launcher.ui.theme.ThemeMode
+import com.minimo.launcher.utils.HomeClockAlignment
 
 @Composable
 fun AppearanceScreen(
@@ -47,7 +51,8 @@ fun AppearanceScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp)
-                    .height(64.dp),
+                    .height(64.dp)
+                    .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -133,6 +138,47 @@ fun AppearanceScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(align.toString())
+                }
+            }
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            Row(
+                modifier = Modifier
+                    .clickable(onClick = viewModel::onToggleShowHomeClock)
+                    .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Show Home Clock",
+                    fontSize = 20.sp
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Switch(
+                    checked = state.showHomeClock,
+                    onCheckedChange = {
+                        viewModel.onToggleShowHomeClock()
+                    }
+                )
+            }
+            if (state.showHomeClock) {
+                HomeClockAlignment.entries.forEach { align ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.onHomeClockAlignmentChanged(align) }
+                            .padding(
+                                horizontal = Dimens.APP_HORIZONTAL_SPACING - 12.dp,
+                                vertical = 8.dp
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = state.homeClockAlignment == align,
+                            onClick = { viewModel.onHomeClockAlignmentChanged(align) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(align.toString())
+                    }
                 }
             }
         }

@@ -19,7 +19,7 @@ class AppUtils @Inject constructor(
         val selfPackageName = context.packageName
 
         val installedApps = mutableListOf<InstalledApp>()
-        applications.forEach { application ->
+        for (application in applications) {
             val appName = application.loadLabel(packageManager).toString()
             val packageName = application.activityInfo.packageName
 

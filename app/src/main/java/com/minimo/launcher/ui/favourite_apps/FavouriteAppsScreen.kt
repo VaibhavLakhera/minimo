@@ -1,4 +1,4 @@
-package com.minimo.launcher.ui.hidden_apps
+package com.minimo.launcher.ui.favourite_apps
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,8 +28,8 @@ import com.minimo.launcher.ui.home.components.SearchItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HiddenAppsScreen(
-    viewModel: HiddenAppsViewModel,
+fun FavouriteAppsScreen(
+    viewModel: FavouriteAppsViewModel,
     onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -39,7 +39,7 @@ fun HiddenAppsScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        stringResource(R.string.hidden_apps)
+                        stringResource(R.string.favourite_apps)
                     )
                 },
                 navigationIcon = {
@@ -72,8 +72,8 @@ fun HiddenAppsScreen(
                     ToggleAppItem(
                         modifier = Modifier.animateItem(),
                         appName = appInfo.name,
-                        isChecked = appInfo.isHidden,
-                        onToggleClick = { viewModel.onToggleHiddenAppClick(appInfo) }
+                        isChecked = appInfo.isFavourite,
+                        onToggleClick = { viewModel.onToggleFavouriteAppClick(appInfo) }
                     )
                 }
             }

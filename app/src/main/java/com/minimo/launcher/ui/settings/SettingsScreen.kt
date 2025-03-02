@@ -4,9 +4,13 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -35,6 +39,7 @@ import com.minimo.launcher.utils.sendFeedback
 @Composable
 fun SettingsScreen(
     onBackClick: () -> Unit,
+    onFavouriteAppsClick: () -> Unit,
     onHiddenAppsClick: () -> Unit,
     onAppearanceClick: () -> Unit
 ) {
@@ -45,7 +50,7 @@ fun SettingsScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Settings"
+                        stringResource(R.string.settings)
                     )
                 },
                 navigationIcon = {
@@ -62,14 +67,28 @@ fun SettingsScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            SettingsItem(name = "Hidden Apps", onClick = onHiddenAppsClick)
-            SettingsItem(name = "Appearance", onClick = onAppearanceClick)
-            SettingsItem(name = "Set Default Launcher", onClick = context::openHomeSettings)
-            SettingsItem(name = "Send Feedback", onClick = context::sendFeedback)
-            SettingsItem(name = "Rate Application", onClick = context::openPlayStorePage)
+            SettingsItem(
+                name = stringResource(R.string.favourite_apps),
+                onClick = onFavouriteAppsClick
+            )
+            SettingsItem(name = stringResource(R.string.hidden_apps), onClick = onHiddenAppsClick)
+            SettingsItem(name = stringResource(R.string.appearance), onClick = onAppearanceClick)
+            SettingsItem(
+                name = stringResource(R.string.set_default_launcher),
+                onClick = context::openHomeSettings
+            )
+            SettingsItem(
+                name = stringResource(R.string.send_feedback),
+                onClick = context::sendFeedback
+            )
+            SettingsItem(
+                name = stringResource(R.string.rate_application),
+                onClick = context::openPlayStorePage
+            )
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
             Text(
                 text = stringResource(id = R.string.discover_my_other_app),
@@ -87,10 +106,14 @@ fun SettingsScreen(
                 .fillMaxWidth()
                 .clickable { context.openSeniorLauncherPlayStorePage() }
                 .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 16.dp)) {
-                Text(text = stringResource(R.string.senior_launcher))
+                Text(
+                    text = stringResource(R.string.senior_launcher),
+                    fontSize = 18.sp,
+                    lineHeight = 24.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = stringResource(R.string.senior_launcher_description),
-                    fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.secondary
                 )
             }

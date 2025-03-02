@@ -1,4 +1,4 @@
-package com.minimo.launcher.ui.hidden_apps
+package com.minimo.launcher.ui.favourite_apps
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,37 +13,35 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HiddenAppsViewModel @Inject constructor(
+class FavouriteAppsViewModel @Inject constructor(
     private val appInfoDao: AppInfoDao,
     private val appUtils: AppUtils
 ) : ViewModel() {
-    private val _state = MutableStateFlow(HiddenAppsState())
-    val state: StateFlow<HiddenAppsState> = _state
+    private val _state = MutableStateFlow(FavouriteAppsState())
+    val state: StateFlow<FavouriteAppsState> = _state
 
     init {
         viewModelScope.launch {
-            appInfoDao.getAllAppsFlow()
+            appInfoDao.getAllNonHiddenAppsFlow()
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
-                    _state.update {
-                        state.value.copy(
-                            allApps = allApps,
-                            filteredAllApps = appUtils.getAppsWithSearch(
-                                searchText = _state.value.searchText,
-                                apps = allApps
-                            ),
-                        )
-                    }
+                    _state.value = _state.value.copy(
+                        allApps = allApps,
+                        filteredAllApps = appUtils.getAppsWithSearch(
+                            searchText = _state.value.searchText,
+                            apps = allApps
+                        ),
+                    )
                 }
         }
     }
 
-    fun onToggleHiddenAppClick(appInfo: AppInfo) {
+    fun onToggleFavouriteAppClick(appInfo: AppInfo) {
         viewModelScope.launch {
-            if (appInfo.isHidden) {
-                appInfoDao.removeAppFromHidden(appInfo.packageName)
+            if (appInfo.isFavourite) {
+                appInfoDao.removeAppFromFavourite(appInfo.packageName)
             } else {
-                appInfoDao.addAppToHidden(appInfo.packageName)
+                appInfoDao.addAppToFavourite(appInfo.packageName)
             }
         }
     }

@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.minimo.launcher.R
 import com.minimo.launcher.ui.components.EmptyScreenView
 import com.minimo.launcher.utils.openHomeSettings
 
@@ -28,19 +30,19 @@ internal fun IntroPage3(
         verticalArrangement = Arrangement.Center
     ) {
         EmptyScreenView(
-            title = "Distraction free home screen",
-            subTitle = "Choose Minimo as your default launcher",
+            title = stringResource(R.string.app_tagline),
+            subTitle = stringResource(R.string.choose_minimo_as_your_default_launcher),
             horizontalPadding = 20.dp
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(onClick = context::openHomeSettings) {
-            Text(text = "Set Default Launcher")
+            Text(text = stringResource(R.string.set_default_launcher))
         }
         Spacer(modifier = Modifier.height(4.dp))
         TextButton(onClick = {
             onSkipClick()
         }) {
-            Text(text = "Skip")
+            Text(text = stringResource(R.string.skip))
         }
     }
 }

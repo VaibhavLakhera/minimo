@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.PreferenceHelper
 import com.minimo.launcher.ui.theme.ThemeMode
+import com.minimo.launcher.utils.HomeClockAlignment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +35,20 @@ class AppearanceViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            preferenceHelper.getHomeClockAlignment().collect { alignment ->
+                _state.update {
+                    _state.value.copy(homeClockAlignment = alignment)
+                }
+            }
+        }
+        viewModelScope.launch {
+            preferenceHelper.getShowHomeClock().collect { show ->
+                _state.update {
+                    _state.value.copy(showHomeClock = show)
+                }
+            }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -45,6 +60,18 @@ class AppearanceViewModel @Inject constructor(
     fun onHomeAppsAlignmentChanged(align: TextAlign) {
         viewModelScope.launch {
             preferenceHelper.setHomeAppsAlign(align)
+        }
+    }
+
+    fun onHomeClockAlignmentChanged(alignment: HomeClockAlignment) {
+        viewModelScope.launch {
+            preferenceHelper.setHomeClockAlignment(alignment)
+        }
+    }
+
+    fun onToggleShowHomeClock() {
+        viewModelScope.launch {
+            preferenceHelper.setShowHomeClock(_state.value.showHomeClock.not())
         }
     }
 }

@@ -19,6 +19,7 @@ import com.minimo.launcher.ui.theme.Dimens
 fun EmptyScreenView(
     title: String,
     subTitle: String? = null,
+    button: @Composable (() -> Unit)? = null,
     horizontalPadding: Dp = Dimens.APP_HORIZONTAL_SPACING
 ) {
     Column(
@@ -29,7 +30,8 @@ fun EmptyScreenView(
             text = title,
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            lineHeight = 24.sp
         )
         if (subTitle != null) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -38,6 +40,10 @@ fun EmptyScreenView(
                 fontWeight = FontWeight.Light,
                 textAlign = TextAlign.Center
             )
+        }
+        if (button != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+            button()
         }
     }
 }

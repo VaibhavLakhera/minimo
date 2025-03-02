@@ -3,6 +3,7 @@ package com.minimo.launcher.ui.home
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -14,11 +15,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +48,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.minimo.launcher.ui.components.EmptyScreenView
 import com.minimo.launcher.ui.components.RenameAppDialog
 import com.minimo.launcher.ui.components.SheetDragHandle
+import com.minimo.launcher.ui.components.TimeAndDateView
 import com.minimo.launcher.ui.home.components.AppNameItem
 import com.minimo.launcher.ui.home.components.HomeAppNameItem
 import com.minimo.launcher.ui.home.components.SearchItem
@@ -56,7 +60,11 @@ private const val swipeUpThreshold = 70f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    onSettingsClick: () -> Unit,
+    onAddFavouriteAppsClick: () -> Unit,
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val focusManager = LocalFocusManager.current
@@ -189,34 +197,48 @@ fun HomeScreen(viewModel: HomeViewModel, onSettingsClick: () -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 EmptyScreenView(
-                    title = "No favourite apps",
-                    subTitle = "Long press an app to add it to this list and access it quickly"
+                    title = "No favourites added",
+                    subTitle = "Add your favourite apps to access them easily",
+                    button = {
+                        Button(onClick = onAddFavouriteAppsClick) {
+                            Text(text = "Add favourite apps")
+                        }
+                    }
                 )
             }
         } else {
-            LazyColumn(
-                state = lazyListState,
+            Column(
                 modifier = Modifier
-                    .nestedScroll(nestedScrollConnection)
                     .fillMaxSize()
-                    .consumeWindowInsets(paddingValues),
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.Center
+                    .consumeWindowInsets(paddingValues)
             ) {
-                items(items = state.favouriteApps, key = { it.packageName }) { appInfo ->
-                    HomeAppNameItem(
-                        modifier = Modifier.animateItem(),
-                        appName = appInfo.name,
-                        onClick = { viewModel.onLaunchAppClick(appInfo) },
-                        onRemoveFavouriteClick = {
-                            viewModel.onRemoveAppFromFavouriteClicked(
-                                appInfo.packageName
-                            )
-                        },
-                        onRenameClick = { viewModel.onRenameAppClick(appInfo) },
-                        onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
-                        textAlign = state.appsTextAlign
-                    )
+                if (state.showHomeClock) {
+                    TimeAndDateView(state.homeClockAlignment)
+                }
+
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier
+                        .weight(1f)
+                        .nestedScroll(nestedScrollConnection),
+                    contentPadding = paddingValues,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    items(items = state.favouriteApps, key = { it.packageName }) { appInfo ->
+                        HomeAppNameItem(
+                            modifier = Modifier.animateItem(),
+                            appName = appInfo.name,
+                            onClick = { viewModel.onLaunchAppClick(appInfo) },
+                            onRemoveFavouriteClick = {
+                                viewModel.onRemoveAppFromFavouriteClicked(
+                                    appInfo.packageName
+                                )
+                            },
+                            onRenameClick = { viewModel.onRenameAppClick(appInfo) },
+                            onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
+                            textAlign = state.appsTextAlign
+                        )
+                    }
                 }
             }
         }

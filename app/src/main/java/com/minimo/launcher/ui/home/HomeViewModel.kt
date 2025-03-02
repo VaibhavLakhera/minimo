@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home
 
+import androidx.compose.ui.Alignment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.AppInfoDao
@@ -7,6 +8,7 @@ import com.minimo.launcher.data.PreferenceHelper
 import com.minimo.launcher.data.usecase.UpdateAllAppsUseCase
 import com.minimo.launcher.ui.entities.AppInfo
 import com.minimo.launcher.utils.AppUtils
+import com.minimo.launcher.utils.HomeClockAlignment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -67,6 +69,27 @@ class HomeViewModel @Inject constructor(
             preferenceHelper.getHomeAppsAlign().collect { align ->
                 _state.update {
                     _state.value.copy(appsTextAlign = align)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getHomeClockAlignment().collect { alignment ->
+                val horizontalAlignment = when (alignment) {
+                    HomeClockAlignment.Start -> Alignment.Start
+                    HomeClockAlignment.Center -> Alignment.CenterHorizontally
+                    HomeClockAlignment.End -> Alignment.End
+                }
+                _state.update {
+                    _state.value.copy(homeClockAlignment = horizontalAlignment)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getShowHomeClock().collect { show ->
+                _state.update {
+                    _state.value.copy(showHomeClock = show)
                 }
             }
         }

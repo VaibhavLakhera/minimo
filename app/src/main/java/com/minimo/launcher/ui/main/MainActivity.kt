@@ -26,7 +26,11 @@ class MainActivity : ComponentActivity() {
             val state by mainViewModel.state.collectAsState()
 
             AppTheme(themeMode = state.themeMode) {
-                AppNavGraph()
+                AppNavGraph(
+                    onBackPressed = {
+                        onBackPressedDispatcher.onBackPressed()
+                    }
+                )
             }
         }
     }

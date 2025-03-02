@@ -7,6 +7,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.minimo.launcher.ui.favourite_apps.FavouriteAppsScreen
 import com.minimo.launcher.ui.hidden_apps.HiddenAppsScreen
 import com.minimo.launcher.ui.home.HomeScreen
 import com.minimo.launcher.ui.intro.IntroScreen
@@ -21,10 +22,11 @@ object Routes {
     const val SETTINGS = "settings"
     const val SETTINGS_APPEARANCE = "settings_appearance"
     const val HIDDEN_APPS = "hidden_apps"
+    const val FAVOURITE_APPS = "favourite_apps"
 }
 
 @Composable
-fun AppNavGraph() {
+fun AppNavGraph(onBackPressed: () -> Unit) {
     val navController = rememberNavController()
 
     NavHost(
@@ -64,36 +66,42 @@ fun AppNavGraph() {
                 viewModel = hiltViewModel(it),
                 onSettingsClick = {
                     navController.navigate(Routes.SETTINGS)
+                },
+                onAddFavouriteAppsClick = {
+                    navController.navigate(Routes.FAVOURITE_APPS)
                 }
             )
         }
         composable(route = Routes.SETTINGS) {
             SettingsScreen(
-                onBackClick = {
-                    navController.navigateUp()
-                },
+                onBackClick = onBackPressed,
                 onHiddenAppsClick = {
                     navController.navigate(Routes.HIDDEN_APPS)
                 },
                 onAppearanceClick = {
                     navController.navigate(Routes.SETTINGS_APPEARANCE)
+                },
+                onFavouriteAppsClick = {
+                    navController.navigate(Routes.FAVOURITE_APPS)
                 }
             )
         }
         composable(route = Routes.HIDDEN_APPS) {
             HiddenAppsScreen(
                 viewModel = hiltViewModel(it),
-                onBackClick = {
-                    navController.navigateUp()
-                }
+                onBackClick = onBackPressed
             )
         }
         composable(route = Routes.SETTINGS_APPEARANCE) {
             AppearanceScreen(
                 viewModel = hiltViewModel(it),
-                onBackClick = {
-                    navController.navigateUp()
-                }
+                onBackClick = onBackPressed
+            )
+        }
+        composable(route = Routes.FAVOURITE_APPS) {
+            FavouriteAppsScreen(
+                viewModel = hiltViewModel(it),
+                onBackClick = onBackPressed
             )
         }
     }
