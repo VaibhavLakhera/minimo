@@ -151,6 +151,7 @@ fun HomeScreen(
         sheetDragHandle = {
             SheetDragHandle(isExpanded = state.isBottomSheetExpanded)
         },
+        sheetShadowElevation = 0.dp,
         sheetContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 SearchItem(
