@@ -10,7 +10,10 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 private val DarkColorScheme = darkColorScheme()
 
@@ -24,6 +27,7 @@ private val BlackColorScheme = darkColorScheme(
 @Composable
 fun AppTheme(
     themeMode: ThemeMode,
+    statusBarVisible: Boolean,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when (themeMode) {
@@ -37,12 +41,23 @@ fun AppTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.surface.toArgb()
-            window.navigationBarColor = colorScheme.surface.toArgb()
+            val surfaceColor = colorScheme.surface.toArgb()
+            window.statusBarColor = surfaceColor
+            window.navigationBarColor = surfaceColor
 
             val insetsController = WindowCompat.getInsetsController(window, view)
             insetsController.isAppearanceLightStatusBars = isLightTheme
             insetsController.isAppearanceLightNavigationBars = isLightTheme
+
+            if (statusBarVisible) {
+                insetsController.show(WindowInsetsCompat.Type.statusBars())
+            } else {
+                insetsController.systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                insetsController.hide(WindowInsetsCompat.Type.statusBars())
+            }
+
+            window.setBackgroundDrawable(surfaceColor.toDrawable())
         }
     }
 

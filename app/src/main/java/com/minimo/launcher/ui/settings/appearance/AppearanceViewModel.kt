@@ -1,10 +1,10 @@
 package com.minimo.launcher.ui.settings.appearance
 
-import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.PreferenceHelper
 import com.minimo.launcher.ui.theme.ThemeMode
+import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,13 +28,15 @@ class AppearanceViewModel @Inject constructor(
                 }
             }
         }
+
         viewModelScope.launch {
-            preferenceHelper.getHomeAppsAlign().collect { align ->
+            preferenceHelper.getHomeAppsAlignment().collect { alignment ->
                 _state.update {
-                    _state.value.copy(homeAppsAlign = align)
+                    _state.value.copy(homeAppsAlignment = alignment)
                 }
             }
         }
+
         viewModelScope.launch {
             preferenceHelper.getHomeClockAlignment().collect { alignment ->
                 _state.update {
@@ -42,10 +44,27 @@ class AppearanceViewModel @Inject constructor(
                 }
             }
         }
+
         viewModelScope.launch {
             preferenceHelper.getShowHomeClock().collect { show ->
                 _state.update {
                     _state.value.copy(showHomeClock = show)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getShowStatusBar().collect { show ->
+                _state.update {
+                    _state.value.copy(showStatusBar = show)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getHomeTextSizeFlow().collect { size ->
+                _state.update {
+                    _state.value.copy(homeTextSize = size.toFloat())
                 }
             }
         }
@@ -57,9 +76,9 @@ class AppearanceViewModel @Inject constructor(
         }
     }
 
-    fun onHomeAppsAlignmentChanged(align: TextAlign) {
+    fun onHomeAppsAlignmentChanged(alignment: HomeAppsAlignment) {
         viewModelScope.launch {
-            preferenceHelper.setHomeAppsAlign(align)
+            preferenceHelper.setHomeAppsAlignment(alignment)
         }
     }
 
@@ -72,6 +91,18 @@ class AppearanceViewModel @Inject constructor(
     fun onToggleShowHomeClock() {
         viewModelScope.launch {
             preferenceHelper.setShowHomeClock(_state.value.showHomeClock.not())
+        }
+    }
+
+    fun onToggleShowStatusBar() {
+        viewModelScope.launch {
+            preferenceHelper.setShowStatusBar(_state.value.showStatusBar.not())
+        }
+    }
+
+    fun onHomeTextSizeChanged(size: Int) {
+        viewModelScope.launch {
+            preferenceHelper.setHomeTextSize(size)
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.minimo.launcher.ui.home
 
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.AppInfoDao
@@ -8,6 +9,7 @@ import com.minimo.launcher.data.PreferenceHelper
 import com.minimo.launcher.data.usecase.UpdateAllAppsUseCase
 import com.minimo.launcher.ui.entities.AppInfo
 import com.minimo.launcher.utils.AppUtils
+import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -66,9 +68,14 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preferenceHelper.getHomeAppsAlign().collect { align ->
+            preferenceHelper.getHomeAppsAlignment().collect { alignment ->
+                val textAlign = when (alignment) {
+                    HomeAppsAlignment.Start -> TextAlign.Start
+                    HomeAppsAlignment.Center -> TextAlign.Center
+                    HomeAppsAlignment.End -> TextAlign.End
+                }
                 _state.update {
-                    _state.value.copy(appsTextAlign = align)
+                    _state.value.copy(appsTextAlign = textAlign)
                 }
             }
         }
@@ -90,6 +97,14 @@ class HomeViewModel @Inject constructor(
             preferenceHelper.getShowHomeClock().collect { show ->
                 _state.update {
                     _state.value.copy(showHomeClock = show)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getHomeTextSizeFlow().collect { size ->
+                _state.update {
+                    _state.value.copy(homeTextSize = size)
                 }
             }
         }

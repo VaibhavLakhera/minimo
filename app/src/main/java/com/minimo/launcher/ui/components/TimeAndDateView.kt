@@ -59,7 +59,7 @@ fun TimeAndDateView(
     ) {
         Text(
             text = currentDateTime.format(timeFormatter).uppercase(),
-            fontSize = 28.sp,
+            fontSize = 30.sp,
             fontWeight = FontWeight.Bold
         )
         Text(

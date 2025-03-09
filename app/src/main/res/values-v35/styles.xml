@@ -3,6 +3,5 @@
 
     <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/white</item>
-        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
 </resources>

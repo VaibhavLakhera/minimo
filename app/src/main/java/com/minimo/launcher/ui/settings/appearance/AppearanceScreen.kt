@@ -20,23 +20,28 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.minimo.launcher.ui.components.DropdownView
 import com.minimo.launcher.ui.theme.Dimens
 import com.minimo.launcher.ui.theme.ThemeMode
+import com.minimo.launcher.utils.Constants
+import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
+import kotlin.math.roundToInt
 
 @Composable
 fun AppearanceScreen(
@@ -85,62 +90,78 @@ fun AppearanceScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            Text(
-                text = "THEME",
+            DropdownWithName(
+                name = "Theme",
+                selectedOption = state.themeMode?.name.orEmpty(),
+                options = ThemeMode.entries.map { it.name },
+                onOptionSelected = { selected ->
+                    viewModel.onThemeModeChanged(ThemeMode.valueOf(selected))
+                }
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
                 modifier = Modifier.padding(
                     horizontal = Dimens.APP_HORIZONTAL_SPACING,
-                    vertical = 8.dp
-                ),
-                fontWeight = FontWeight.Bold
-            )
-            ThemeMode.entries.forEach { mode ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { viewModel.onThemeModeChanged(mode) }
-                        .padding(
-                            horizontal = Dimens.APP_HORIZONTAL_SPACING - 12.dp,
-                            vertical = 8.dp
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = state.themeMode == mode,
-                        onClick = { viewModel.onThemeModeChanged(mode) }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(mode.name)
-                }
+                )
+            ) {
+                Text(
+                    text = "Home App Size:",
+                    fontSize = 20.sp
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = state.homeTextSize.roundToInt().toString(),
+                    fontSize = 20.sp
+                )
             }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Slider(
+                modifier = Modifier
+                    .semantics { contentDescription = "Text size slider" }
+                    .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING),
+                value = state.homeTextSize,
+                onValueChange = {
+                    viewModel.onHomeTextSizeChanged(it.roundToInt())
+                },
+                valueRange = Constants.HOME_TEXT_SIZE_RANGE,
+                steps = 16,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             Text(
-                text = "HOME APPS ALIGNMENT",
-                modifier = Modifier.padding(
-                    horizontal = Dimens.APP_HORIZONTAL_SPACING,
-                    vertical = 8.dp
-                ),
-                fontWeight = FontWeight.Bold
+                "Sample App",
+                fontSize = state.homeTextSize.sp,
+                modifier = Modifier.padding(horizontal = Dimens.APP_HORIZONTAL_SPACING)
             )
-            listOf(TextAlign.Start, TextAlign.Center, TextAlign.End).forEach { align ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { viewModel.onHomeAppsAlignmentChanged(align) }
-                        .padding(
-                            horizontal = Dimens.APP_HORIZONTAL_SPACING - 12.dp,
-                            vertical = 8.dp
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = state.homeAppsAlign == align,
-                        onClick = { viewModel.onHomeAppsAlignmentChanged(align) }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(align.toString())
-                }
-            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            DropdownWithName(
+                name = "Home Apps Alignment",
+                selectedOption = state.homeAppsAlignment?.name.orEmpty(),
+                options = listOf(
+                    TextAlign.Start,
+                    TextAlign.Center,
+                    TextAlign.End
+                ).map { it.toString() },
+                onOptionSelected = { selected ->
+                    viewModel.onHomeAppsAlignmentChanged(HomeAppsAlignment.valueOf(selected))
+                }
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
             Row(
                 modifier = Modifier
                     .clickable(onClick = viewModel::onToggleShowHomeClock)
@@ -161,26 +182,67 @@ fun AppearanceScreen(
                 )
             }
             if (state.showHomeClock) {
-                HomeClockAlignment.entries.forEach { align ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { viewModel.onHomeClockAlignmentChanged(align) }
-                            .padding(
-                                horizontal = Dimens.APP_HORIZONTAL_SPACING - 12.dp,
-                                vertical = 8.dp
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = state.homeClockAlignment == align,
-                            onClick = { viewModel.onHomeClockAlignmentChanged(align) }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(align.toString())
+                DropdownWithName(
+                    name = "Home Clock Alignment",
+                    selectedOption = state.homeClockAlignment?.name.orEmpty(),
+                    options = HomeClockAlignment.entries.map { it.name },
+                    onOptionSelected = { selected ->
+                        viewModel.onHomeClockAlignmentChanged(HomeClockAlignment.valueOf(selected))
                     }
-                }
+                )
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Row(
+                modifier = Modifier
+                    .clickable(onClick = viewModel::onToggleShowStatusBar)
+                    .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Show Status Bar",
+                    fontSize = 20.sp
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Switch(
+                    checked = state.showStatusBar,
+                    onCheckedChange = {
+                        viewModel.onToggleShowStatusBar()
+                    }
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun DropdownWithName(
+    name: String,
+    selectedOption: String,
+    options: List<String>,
+    onOptionSelected: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = Dimens.APP_HORIZONTAL_SPACING,
+                vertical = 8.dp
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            name,
+            modifier = Modifier.weight(1f),
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        DropdownView(
+            selectedOption = selectedOption,
+            options = options,
+            onOptionSelected = onOptionSelected
+        )
     }
 }

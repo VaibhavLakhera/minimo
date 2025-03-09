@@ -1,13 +1,20 @@
 package com.minimo.launcher.ui.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -146,103 +154,118 @@ fun HomeScreen(
         }
     }
 
-    BottomSheetScaffold(
-        scaffoldState = bottomSheetScaffoldState,
-        sheetDragHandle = {
-            SheetDragHandle(isExpanded = state.isBottomSheetExpanded)
-        },
-        sheetShadowElevation = 0.dp,
-        sheetContent = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                SearchItem(
-                    modifier = Modifier.weight(1f),
-                    searchText = state.searchText,
-                    onSearchTextChange = viewModel::onSearchTextChange,
-                    endPadding = 0.dp
-                )
-                IconButton(
-                    onClick = onSettingsClick
-                ) {
-                    Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
-                }
-            }
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = 16.dp)
-            ) {
-                items(items = state.filteredAllApps, key = { it.packageName }) { appInfo ->
-                    AppNameItem(
-                        modifier = Modifier.animateItem(),
-                        appName = appInfo.name,
-                        isFavourite = appInfo.isFavourite,
-                        onClick = { viewModel.onLaunchAppClick(appInfo) },
-                        onToggleFavouriteClick = { viewModel.onToggleFavouriteAppClick(appInfo) },
-                        onRenameClick = { viewModel.onRenameAppClick(appInfo) },
-                        onHideAppClick = { viewModel.onHideAppClick(appInfo.packageName) },
-                        onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
-                        textAlign = state.appsTextAlign
-                    )
-                }
-            }
-        },
-        sheetPeekHeight = 56.dp,
-        sheetContainerColor = MaterialTheme.colorScheme.surface,
-        containerColor = MaterialTheme.colorScheme.surface
-    ) { paddingValues ->
-        if (state.initialLoaded && state.favouriteApps.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .consumeWindowInsets(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                EmptyScreenView(
-                    title = "No favourites added",
-                    subTitle = "Add your favourite apps to access them easily",
-                    button = {
-                        Button(onClick = onAddFavouriteAppsClick) {
-                            Text(text = "Add favourite apps")
-                        }
-                    }
-                )
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .consumeWindowInsets(paddingValues)
-            ) {
-                if (state.showHomeClock) {
-                    TimeAndDateView(state.homeClockAlignment)
-                }
+    val systemNavigationHeight =
+        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
+    Box {
+        BottomSheetScaffold(
+            scaffoldState = bottomSheetScaffoldState,
+            sheetDragHandle = {
+                SheetDragHandle(isExpanded = state.isBottomSheetExpanded)
+            },
+            sheetShadowElevation = 0.dp,
+            sheetContent = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    SearchItem(
+                        modifier = Modifier.weight(1f),
+                        searchText = state.searchText,
+                        onSearchTextChange = viewModel::onSearchTextChange,
+                        endPadding = 0.dp
+                    )
+                    IconButton(
+                        onClick = onSettingsClick
+                    ) {
+                        Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
+                    }
+                }
                 LazyColumn(
-                    state = lazyListState,
-                    modifier = Modifier
-                        .weight(1f)
-                        .nestedScroll(nestedScrollConnection),
-                    contentPadding = paddingValues,
-                    verticalArrangement = Arrangement.Center
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(top = 16.dp, bottom = systemNavigationHeight)
                 ) {
-                    items(items = state.favouriteApps, key = { it.packageName }) { appInfo ->
-                        HomeAppNameItem(
+                    items(items = state.filteredAllApps, key = { it.packageName }) { appInfo ->
+                        AppNameItem(
                             modifier = Modifier.animateItem(),
                             appName = appInfo.name,
+                            isFavourite = appInfo.isFavourite,
                             onClick = { viewModel.onLaunchAppClick(appInfo) },
-                            onRemoveFavouriteClick = {
-                                viewModel.onRemoveAppFromFavouriteClicked(
-                                    appInfo.packageName
-                                )
-                            },
+                            onToggleFavouriteClick = { viewModel.onToggleFavouriteAppClick(appInfo) },
                             onRenameClick = { viewModel.onRenameAppClick(appInfo) },
+                            onHideAppClick = { viewModel.onHideAppClick(appInfo.packageName) },
                             onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
                             textAlign = state.appsTextAlign
                         )
                     }
                 }
+            },
+            sheetPeekHeight = 56.dp + systemNavigationHeight,
+            sheetContainerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surface
+        ) { paddingValues ->
+            if (state.initialLoaded && state.favouriteApps.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .consumeWindowInsets(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    EmptyScreenView(
+                        title = "No favourites added",
+                        subTitle = "Add your favourite apps to access them easily",
+                        button = {
+                            Button(onClick = onAddFavouriteAppsClick) {
+                                Text(text = "Add favourite apps")
+                            }
+                        }
+                    )
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .consumeWindowInsets(paddingValues)
+                ) {
+                    if (state.showHomeClock) {
+                        TimeAndDateView(state.homeClockAlignment)
+                    }
+
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier
+                            .weight(1f)
+                            .nestedScroll(nestedScrollConnection),
+                        contentPadding = paddingValues,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        items(items = state.favouriteApps, key = { it.packageName }) { appInfo ->
+                            HomeAppNameItem(
+                                modifier = Modifier.animateItem(),
+                                appName = appInfo.name,
+                                onClick = { viewModel.onLaunchAppClick(appInfo) },
+                                onRemoveFavouriteClick = {
+                                    viewModel.onRemoveAppFromFavouriteClicked(
+                                        appInfo.packageName
+                                    )
+                                },
+                                onRenameClick = { viewModel.onRenameAppClick(appInfo) },
+                                onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
+                                textAlign = state.appsTextAlign,
+                                textSize = state.homeTextSize.sp
+                            )
+                        }
+                    }
+                }
             }
         }
+
+        // To cover the navigation bars with surface color.
+        Spacer(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .height(systemNavigationHeight)
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+        )
     }
 
     if (state.renameAppDialog != null) {

@@ -25,5 +25,13 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getShowStatusBar().collect { visible ->
+                _state.update {
+                    _state.value.copy(statusBarVisible = visible)
+                }
+            }
+        }
     }
 }

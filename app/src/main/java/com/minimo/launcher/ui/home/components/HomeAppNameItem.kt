@@ -14,8 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minimo.launcher.ui.theme.Dimens
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -27,14 +27,15 @@ fun HomeAppNameItem(
     onClick: () -> Unit,
     onRemoveFavouriteClick: () -> Unit,
     onRenameClick: () -> Unit,
-    onAppInfoClick: () -> Unit
+    onAppInfoClick: () -> Unit,
+    textSize: TextUnit
 ) {
     var appBottomSheetVisible by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
         Text(
             text = appName,
             color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 20.sp,
+            fontSize = textSize,
             textAlign = textAlign,
             modifier = Modifier
                 .fillMaxWidth()

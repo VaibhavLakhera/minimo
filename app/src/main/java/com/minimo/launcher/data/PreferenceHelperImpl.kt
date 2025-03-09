@@ -1,12 +1,14 @@
 package com.minimo.launcher.data
 
-import androidx.compose.ui.text.style.TextAlign
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.minimo.launcher.ui.theme.ThemeMode
+import com.minimo.launcher.utils.Constants
+import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -21,6 +23,8 @@ class PreferenceHelperImpl @Inject constructor(
         private val KEY_HOME_APPS_ALIGN = stringPreferencesKey("KEY_HOME_APPS_ALIGN")
         private val KEY_HOME_CLOCK_ALIGNMENT = stringPreferencesKey("KEY_HOME_CLOCK_ALIGNMENT")
         private val KEY_SHOW_HOME_CLOCK = booleanPreferencesKey("KEY_SHOW_HOME_CLOCK")
+        private val KEY_SHOW_STATUS_BAR = booleanPreferencesKey("KEY_SHOW_STATUS_BAR")
+        private val KEY_HOME_TEXT_SIZE = intPreferencesKey("KEY_HOME_TEXT_SIZE")
     }
 
     override suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -52,20 +56,21 @@ class PreferenceHelperImpl @Inject constructor(
         }
     }
 
-    override suspend fun setHomeAppsAlign(align: TextAlign) {
+    override suspend fun setHomeAppsAlignment(alignment: HomeAppsAlignment) {
         preferences.edit {
-            it[KEY_HOME_APPS_ALIGN] = align.toString()
+            it[KEY_HOME_APPS_ALIGN] = alignment.name
         }
     }
 
-    override fun getHomeAppsAlign(): Flow<TextAlign> {
+    override fun getHomeAppsAlignment(): Flow<HomeAppsAlignment> {
         return preferences.data.map {
-            val align = it[KEY_HOME_APPS_ALIGN]
-            if (align.isNullOrBlank()) {
-                TextAlign.Start
+            val alignment = it[KEY_HOME_APPS_ALIGN]
+            if (!alignment.isNullOrBlank()
+                && HomeAppsAlignment.entries.any { entry -> entry.name == alignment }
+            ) {
+                HomeAppsAlignment.valueOf(alignment)
             } else {
-                val matched = TextAlign.values().find { entry -> entry.toString() == align }
-                matched ?: TextAlign.Start
+                HomeAppsAlignment.Start
             }
         }
     }
@@ -97,5 +102,27 @@ class PreferenceHelperImpl @Inject constructor(
 
     override fun getShowHomeClock(): Flow<Boolean> {
         return preferences.data.map { it[KEY_SHOW_HOME_CLOCK] ?: false }
+    }
+
+    override suspend fun setShowStatusBar(show: Boolean) {
+        preferences.edit {
+            it[KEY_SHOW_STATUS_BAR] = show
+        }
+    }
+
+    override fun getShowStatusBar(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_SHOW_STATUS_BAR] ?: true }
+    }
+
+    override suspend fun setHomeTextSize(size: Int) {
+        preferences.edit { preferences ->
+            preferences[KEY_HOME_TEXT_SIZE] = size
+        }
+    }
+
+    override fun getHomeTextSizeFlow(): Flow<Int> {
+        return preferences.data.map {
+            it[KEY_HOME_TEXT_SIZE] ?: Constants.DEFAULT_HOME_TEXT_SIZE
+        }
     }
 }

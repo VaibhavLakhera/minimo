@@ -3,9 +3,18 @@ package com.minimo.launcher.ui.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import com.minimo.launcher.ui.navigation.AppNavGraph
 import com.minimo.launcher.ui.theme.AppTheme
@@ -19,18 +28,25 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         setupPackageUpdatedListener()
         setContent {
             val state by mainViewModel.state.collectAsState()
-
-            AppTheme(themeMode = state.themeMode) {
-                AppNavGraph(
-                    onBackPressed = {
-                        onBackPressedDispatcher.onBackPressed()
-                    }
-                )
+            val safeDrawingTop =
+                WindowInsets.statusBars.union(WindowInsets.ime).union(WindowInsets.displayCutout)
+            Box(modifier = Modifier.windowInsetsPadding(safeDrawingTop)) {
+                AppTheme(
+                    themeMode = state.themeMode,
+                    statusBarVisible = state.statusBarVisible
+                ) {
+                    AppNavGraph(
+                        onBackPressed = {
+                            onBackPressedDispatcher.onBackPressed()
+                        }
+                    )
+                }
             }
         }
     }
