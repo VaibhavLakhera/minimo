@@ -213,6 +213,28 @@ fun AppearanceScreen(
                     }
                 )
             }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Row(
+                modifier = Modifier
+                    .clickable(onClick = viewModel::onToggleAutoOpenKeyboardAllApps)
+                    .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Auto-Open Keyboard With All Apps",
+                    fontSize = 20.sp
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Switch(
+                    checked = state.autoOpenKeyboardAllApps,
+                    onCheckedChange = {
+                        viewModel.onToggleAutoOpenKeyboardAllApps()
+                    }
+                )
+            }
         }
     }
 }

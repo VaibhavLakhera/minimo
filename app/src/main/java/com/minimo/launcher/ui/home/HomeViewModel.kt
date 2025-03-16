@@ -108,6 +108,14 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getAutoOpenKeyboardAllApps().collect { open ->
+                _state.update {
+                    _state.value.copy(autoOpenKeyboardAllApps = open)
+                }
+            }
+        }
     }
 
     fun setBottomSheetExpanded(isExpanded: Boolean) {

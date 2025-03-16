@@ -29,7 +29,8 @@ fun AppNameItem(
     onToggleFavouriteClick: () -> Unit,
     onRenameClick: () -> Unit,
     onHideAppClick: () -> Unit,
-    onAppInfoClick: () -> Unit
+    onAppInfoClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
     var appBottomSheetVisible by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
@@ -42,7 +43,10 @@ fun AppNameItem(
                 .fillMaxWidth()
                 .combinedClickable(
                     onClick = onClick,
-                    onLongClick = { appBottomSheetVisible = true }
+                    onLongClick = {
+                        onLongClick()
+                        appBottomSheetVisible = true
+                    }
                 )
                 .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 16.dp),
         )

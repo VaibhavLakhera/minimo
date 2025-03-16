@@ -14,8 +14,8 @@ android {
         applicationId = "com.minimo.launcher"
         minSdk = 26
         targetSdk = 35
-        versionCode = 17
-        versionName = "1.4.0"
+        versionCode = 21
+        versionName = "1.5.0"
 
         resourceConfigurations.addAll(listOf("en"))
     }

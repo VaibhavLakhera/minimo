@@ -16,5 +16,6 @@ data class HomeScreenState(
     val appsTextAlign: TextAlign = TextAlign.Start,
     val showHomeClock: Boolean = false,
     val homeClockAlignment: Alignment.Horizontal = Alignment.Start,
-    val homeTextSize: Int = Constants.DEFAULT_HOME_TEXT_SIZE
+    val homeTextSize: Int = Constants.DEFAULT_HOME_TEXT_SIZE,
+    val autoOpenKeyboardAllApps: Boolean = false
 )

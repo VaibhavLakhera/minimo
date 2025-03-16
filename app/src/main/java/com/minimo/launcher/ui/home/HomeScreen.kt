@@ -38,14 +38,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,6 +66,7 @@ import com.minimo.launcher.ui.home.components.HomeAppNameItem
 import com.minimo.launcher.ui.home.components.SearchItem
 import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.launchAppInfo
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 private const val swipeUpThreshold = 70f
@@ -76,11 +81,14 @@ fun HomeScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+
+    val focusRequester = remember { FocusRequester() }
 
     BackHandler {
         coroutineScope.launch {
@@ -96,10 +104,23 @@ fun HomeScreen(
             viewModel.launchApp.collect(context::launchApp)
         }
     }
-    LaunchedEffect(bottomSheetScaffoldState.bottomSheetState.targetValue) {
-        when (bottomSheetScaffoldState.bottomSheetState.targetValue) {
+
+    fun hideKeyboardWithClearFocus() {
+        focusManager.clearFocus()
+        keyboardController?.hide()
+    }
+
+    LaunchedEffect(bottomSheetScaffoldState.bottomSheetState.currentValue) {
+        when (bottomSheetScaffoldState.bottomSheetState.currentValue) {
             SheetValue.Expanded -> {
-                viewModel.setBottomSheetExpanded(true)
+                if (!state.isBottomSheetExpanded) {
+                    viewModel.setBottomSheetExpanded(true)
+
+                    if (state.autoOpenKeyboardAllApps) {
+                        focusRequester.requestFocus()
+                        keyboardController?.show()
+                    }
+                }
             }
 
             else -> {
@@ -109,7 +130,18 @@ fun HomeScreen(
         }
     }
 
-    val lazyListState = rememberLazyListState()
+    val homeLazyListState = rememberLazyListState()
+    val allAppsLazyListState = rememberLazyListState()
+
+    LaunchedEffect(allAppsLazyListState) {
+        snapshotFlow { allAppsLazyListState.isScrollInProgress }
+            .distinctUntilChanged()
+            .collect { isScrolling ->
+                if (isScrolling) {
+                    hideKeyboardWithClearFocus()
+                }
+            }
+    }
 
     fun onSwipeUpAtEnd() {
         coroutineScope.launch {
@@ -125,7 +157,7 @@ fun HomeScreen(
             // Called as the user drags.
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 // Check if the list is at the bottom and the user is dragging upward (available.y negative)
-                if (!lazyListState.canScrollForward && available.y < 0) {
+                if (!homeLazyListState.canScrollForward && available.y < 0) {
                     accumulatedSwipeUp += -available.y // Track upward swipe distance
                     if (accumulatedSwipeUp >= swipeUpThreshold && !swipeTriggered) {
                         swipeTriggered = true
@@ -167,18 +199,24 @@ fun HomeScreen(
             sheetContent = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     SearchItem(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .focusRequester(focusRequester),
                         searchText = state.searchText,
                         onSearchTextChange = viewModel::onSearchTextChange,
                         endPadding = 0.dp
                     )
                     IconButton(
-                        onClick = onSettingsClick
+                        onClick = {
+                            hideKeyboardWithClearFocus()
+                            onSettingsClick()
+                        }
                     ) {
                         Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
                     }
                 }
                 LazyColumn(
+                    state = allAppsLazyListState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(top = 16.dp, bottom = systemNavigationHeight)
                 ) {
@@ -187,12 +225,16 @@ fun HomeScreen(
                             modifier = Modifier.animateItem(),
                             appName = appInfo.name,
                             isFavourite = appInfo.isFavourite,
-                            onClick = { viewModel.onLaunchAppClick(appInfo) },
+                            onClick = {
+                                hideKeyboardWithClearFocus()
+                                viewModel.onLaunchAppClick(appInfo)
+                            },
                             onToggleFavouriteClick = { viewModel.onToggleFavouriteAppClick(appInfo) },
                             onRenameClick = { viewModel.onRenameAppClick(appInfo) },
                             onHideAppClick = { viewModel.onHideAppClick(appInfo.packageName) },
                             onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
-                            textAlign = state.appsTextAlign
+                            textAlign = state.appsTextAlign,
+                            onLongClick = ::hideKeyboardWithClearFocus
                         )
                     }
                 }
@@ -230,7 +272,7 @@ fun HomeScreen(
                     }
 
                     LazyColumn(
-                        state = lazyListState,
+                        state = homeLazyListState,
                         modifier = Modifier
                             .weight(1f)
                             .nestedScroll(nestedScrollConnection),

@@ -68,6 +68,14 @@ class AppearanceViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getAutoOpenKeyboardAllApps().collect { open ->
+                _state.update {
+                    _state.value.copy(autoOpenKeyboardAllApps = open)
+                }
+            }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -103,6 +111,12 @@ class AppearanceViewModel @Inject constructor(
     fun onHomeTextSizeChanged(size: Int) {
         viewModelScope.launch {
             preferenceHelper.setHomeTextSize(size)
+        }
+    }
+
+    fun onToggleAutoOpenKeyboardAllApps() {
+        viewModelScope.launch {
+            preferenceHelper.setAutoOpenKeyboardAllApps(_state.value.autoOpenKeyboardAllApps.not())
         }
     }
 }

@@ -25,6 +25,8 @@ class PreferenceHelperImpl @Inject constructor(
         private val KEY_SHOW_HOME_CLOCK = booleanPreferencesKey("KEY_SHOW_HOME_CLOCK")
         private val KEY_SHOW_STATUS_BAR = booleanPreferencesKey("KEY_SHOW_STATUS_BAR")
         private val KEY_HOME_TEXT_SIZE = intPreferencesKey("KEY_HOME_TEXT_SIZE")
+        private val KEY_AUTO_OPEN_KEYBOARD_ALL_APPS =
+            booleanPreferencesKey("KEY_AUTO_OPEN_KEYBOARD_ALL_APPS")
     }
 
     override suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -124,5 +126,15 @@ class PreferenceHelperImpl @Inject constructor(
         return preferences.data.map {
             it[KEY_HOME_TEXT_SIZE] ?: Constants.DEFAULT_HOME_TEXT_SIZE
         }
+    }
+
+    override suspend fun setAutoOpenKeyboardAllApps(open: Boolean) {
+        preferences.edit {
+            it[KEY_AUTO_OPEN_KEYBOARD_ALL_APPS] = open
+        }
+    }
+
+    override fun getAutoOpenKeyboardAllApps(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_AUTO_OPEN_KEYBOARD_ALL_APPS] ?: false }
     }
 }

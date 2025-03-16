@@ -26,4 +26,7 @@ interface PreferenceHelper {
 
     suspend fun setHomeTextSize(size: Int)
     fun getHomeTextSizeFlow(): Flow<Int>
+
+    suspend fun setAutoOpenKeyboardAllApps(open: Boolean)
+    fun getAutoOpenKeyboardAllApps(): Flow<Boolean>
 }
