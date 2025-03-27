@@ -28,19 +28,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.minimo.launcher.R
 import com.minimo.launcher.ui.components.DropdownView
 import com.minimo.launcher.ui.theme.Dimens
 import com.minimo.launcher.ui.theme.ThemeMode
+import com.minimo.launcher.utils.AndroidUtils
 import com.minimo.launcher.utils.Constants
 import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
+import com.minimo.launcher.utils.StringUtils
 import kotlin.math.roundToInt
 
 @Composable
@@ -48,6 +52,7 @@ fun AppearanceScreen(
     viewModel: AppearanceViewModel,
     onBackClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -90,14 +95,43 @@ fun AppearanceScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            DropdownWithName(
-                name = "Theme",
-                selectedOption = state.themeMode?.name.orEmpty(),
-                options = ThemeMode.entries.map { it.name },
+            ThemeDropdown(
+                selectedOption = StringUtils.themeModeText(
+                    context = context,
+                    mode = state.themeMode
+                ),
+                options = listOf(
+                    ThemeMode.System to StringUtils.themeModeText(
+                        context,
+                        ThemeMode.System
+                    ),
+                    ThemeMode.Dark to StringUtils.themeModeText(
+                        context,
+                        ThemeMode.Dark
+                    ),
+                    ThemeMode.Light to StringUtils.themeModeText(
+                        context,
+                        ThemeMode.Light
+                    ),
+                    ThemeMode.Black to StringUtils.themeModeText(
+                        context,
+                        ThemeMode.Black
+                    ),
+                ),
                 onOptionSelected = { selected ->
-                    viewModel.onThemeModeChanged(ThemeMode.valueOf(selected))
+                    viewModel.onThemeModeChanged(selected)
                 }
             )
+            if (AndroidUtils.isDynamicThemeSupported()) {
+                Spacer(modifier = Modifier.height(4.dp))
+
+                ToggleItem(
+                    title = "Dynamic Colours",
+                    subtitle = "Adapt theme colours based on system settings",
+                    isChecked = state.dynamicTheme,
+                    onToggleClick = viewModel::onToggleDynamicTheme
+                )
+            }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
@@ -147,104 +181,88 @@ fun AppearanceScreen(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
-            DropdownWithName(
-                name = "Home Apps Alignment",
-                selectedOption = state.homeAppsAlignment?.name.orEmpty(),
+            AppsAlignmentDropdown(
+                selectedOption = StringUtils.homeAppsAlignmentText(
+                    context = context,
+                    alignment = state.homeAppsAlignment
+                ),
                 options = listOf(
-                    TextAlign.Start,
-                    TextAlign.Center,
-                    TextAlign.End
-                ).map { it.toString() },
+                    HomeAppsAlignment.Start to StringUtils.homeAppsAlignmentText(
+                        context,
+                        HomeAppsAlignment.Start
+                    ),
+                    HomeAppsAlignment.Center to StringUtils.homeAppsAlignmentText(
+                        context,
+                        HomeAppsAlignment.Center
+                    ),
+                    HomeAppsAlignment.End to StringUtils.homeAppsAlignmentText(
+                        context,
+                        HomeAppsAlignment.End
+                    ),
+                ),
                 onOptionSelected = { selected ->
-                    viewModel.onHomeAppsAlignmentChanged(HomeAppsAlignment.valueOf(selected))
+                    viewModel.onHomeAppsAlignmentChanged(selected)
                 }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
-            Row(
-                modifier = Modifier
-                    .clickable(onClick = viewModel::onToggleShowHomeClock)
-                    .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = "Show Home Clock",
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Switch(
-                    checked = state.showHomeClock,
-                    onCheckedChange = {
-                        viewModel.onToggleShowHomeClock()
-                    }
-                )
-            }
+            ToggleItem(
+                title = "Show Home Clock",
+                isChecked = state.showHomeClock,
+                onToggleClick = viewModel::onToggleShowHomeClock
+            )
             if (state.showHomeClock) {
-                DropdownWithName(
-                    name = "Home Clock Alignment",
-                    selectedOption = state.homeClockAlignment?.name.orEmpty(),
-                    options = HomeClockAlignment.entries.map { it.name },
+                ClockAlignmentDropdown(
+                    selectedOption = StringUtils.homeClockAlignmentText(
+                        context = context,
+                        alignment = state.homeClockAlignment
+                    ),
+                    options = listOf(
+                        HomeClockAlignment.Start to StringUtils.homeClockAlignmentText(
+                            context,
+                            HomeClockAlignment.Start
+                        ),
+                        HomeClockAlignment.Center to StringUtils.homeClockAlignmentText(
+                            context,
+                            HomeClockAlignment.Center
+                        ),
+                        HomeClockAlignment.End to StringUtils.homeClockAlignmentText(
+                            context,
+                            HomeClockAlignment.End
+                        ),
+                    ),
                     onOptionSelected = { selected ->
-                        viewModel.onHomeClockAlignmentChanged(HomeClockAlignment.valueOf(selected))
+                        viewModel.onHomeClockAlignmentChanged(selected)
                     }
                 )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
-            Row(
-                modifier = Modifier
-                    .clickable(onClick = viewModel::onToggleShowStatusBar)
-                    .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = "Show Status Bar",
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Switch(
-                    checked = state.showStatusBar,
-                    onCheckedChange = {
-                        viewModel.onToggleShowStatusBar()
-                    }
-                )
-            }
+            ToggleItem(
+                title = "Show Status Bar",
+                isChecked = state.showStatusBar,
+                onToggleClick = viewModel::onToggleShowStatusBar
+            )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
-            Row(
-                modifier = Modifier
-                    .clickable(onClick = viewModel::onToggleAutoOpenKeyboardAllApps)
-                    .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = "Auto-Open Keyboard With All Apps",
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Switch(
-                    checked = state.autoOpenKeyboardAllApps,
-                    onCheckedChange = {
-                        viewModel.onToggleAutoOpenKeyboardAllApps()
-                    }
-                )
-            }
+            ToggleItem(
+                title = "Show Keyboard",
+                subtitle = "Show keyboard when the drawer is opened",
+                isChecked = state.autoOpenKeyboardAllApps,
+                onToggleClick = viewModel::onToggleAutoOpenKeyboardAllApps
+            )
         }
     }
 }
 
 @Composable
-private fun DropdownWithName(
-    name: String,
+private fun ThemeDropdown(
     selectedOption: String,
-    options: List<String>,
-    onOptionSelected: (String) -> Unit
+    options: List<Pair<ThemeMode, String>>,
+    onOptionSelected: (ThemeMode) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -256,15 +274,116 @@ private fun DropdownWithName(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            name,
+            stringResource(R.string.theme),
             modifier = Modifier.weight(1f),
             fontSize = 20.sp
         )
         Spacer(modifier = Modifier.width(16.dp))
         DropdownView(
             selectedOption = selectedOption,
-            options = options,
-            onOptionSelected = onOptionSelected
+            options = options.map { it.second },
+            onOptionSelected = { selected ->
+                onOptionSelected(options.first { it.second == selected }.first)
+            }
+        )
+    }
+}
+
+@Composable
+private fun AppsAlignmentDropdown(
+    selectedOption: String,
+    options: List<Pair<HomeAppsAlignment, String>>,
+    onOptionSelected: (HomeAppsAlignment) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = Dimens.APP_HORIZONTAL_SPACING,
+                vertical = 8.dp
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            stringResource(R.string.home_apps_alignment),
+            modifier = Modifier.weight(1f),
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        DropdownView(
+            selectedOption = selectedOption,
+            options = options.map { it.second },
+            onOptionSelected = { selected ->
+                onOptionSelected(options.first { it.second == selected }.first)
+            }
+        )
+    }
+}
+
+@Composable
+private fun ClockAlignmentDropdown(
+    selectedOption: String,
+    options: List<Pair<HomeClockAlignment, String>>,
+    onOptionSelected: (HomeClockAlignment) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = Dimens.APP_HORIZONTAL_SPACING,
+                vertical = 8.dp
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            stringResource(R.string.clock_alignment),
+            modifier = Modifier.weight(1f),
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        DropdownView(
+            selectedOption = selectedOption,
+            options = options.map { it.second },
+            onOptionSelected = { selected ->
+                onOptionSelected(options.first { it.second == selected }.first)
+            }
+        )
+    }
+}
+
+@Composable
+private fun ToggleItem(
+    title: String,
+    subtitle: String? = null,
+    isChecked: Boolean,
+    onToggleClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .clickable(onClick = onToggleClick)
+            .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = title,
+                fontSize = 20.sp
+            )
+            if (!subtitle.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = subtitle
+                )
+            }
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Switch(
+            checked = isChecked,
+            onCheckedChange = {
+                onToggleClick()
+            }
         )
     }
 }

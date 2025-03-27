@@ -12,5 +12,6 @@ data class AppearanceState(
     val showHomeClock: Boolean = false,
     val showStatusBar: Boolean = true,
     val homeTextSize: Float = Constants.DEFAULT_HOME_TEXT_SIZE.toFloat(),
-    val autoOpenKeyboardAllApps: Boolean = false
+    val autoOpenKeyboardAllApps: Boolean = false,
+    val dynamicTheme: Boolean = false
 )

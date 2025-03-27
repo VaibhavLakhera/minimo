@@ -108,13 +108,12 @@ fun SettingsScreen(
                 .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 16.dp)) {
                 Text(
                     text = stringResource(R.string.senior_launcher),
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     lineHeight = 24.sp
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = stringResource(R.string.senior_launcher_description),
-                    color = MaterialTheme.colorScheme.secondary
+                    text = stringResource(R.string.senior_launcher_description)
                 )
             }
 

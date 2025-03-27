@@ -39,7 +39,8 @@ class MainActivity : ComponentActivity() {
             Box(modifier = Modifier.windowInsetsPadding(safeDrawingTop)) {
                 AppTheme(
                     themeMode = state.themeMode,
-                    statusBarVisible = state.statusBarVisible
+                    statusBarVisible = state.statusBarVisible,
+                    useDynamicTheme = state.useDynamicTheme
                 ) {
                     AppNavGraph(
                         onBackPressed = {

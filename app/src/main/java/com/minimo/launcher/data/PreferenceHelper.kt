@@ -29,4 +29,7 @@ interface PreferenceHelper {
 
     suspend fun setAutoOpenKeyboardAllApps(open: Boolean)
     fun getAutoOpenKeyboardAllApps(): Flow<Boolean>
+
+    suspend fun setDynamicTheme(enable: Boolean)
+    fun getDynamicTheme(): Flow<Boolean>
 }

@@ -76,6 +76,14 @@ class AppearanceViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getDynamicTheme().collect { enable ->
+                _state.update {
+                    _state.value.copy(dynamicTheme = enable)
+                }
+            }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -117,6 +125,12 @@ class AppearanceViewModel @Inject constructor(
     fun onToggleAutoOpenKeyboardAllApps() {
         viewModelScope.launch {
             preferenceHelper.setAutoOpenKeyboardAllApps(_state.value.autoOpenKeyboardAllApps.not())
+        }
+    }
+
+    fun onToggleDynamicTheme() {
+        viewModelScope.launch {
+            preferenceHelper.setDynamicTheme(_state.value.dynamicTheme.not())
         }
     }
 }

@@ -33,5 +33,13 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getDynamicTheme().collect { enable ->
+                _state.update {
+                    _state.value.copy(useDynamicTheme = enable)
+                }
+            }
+        }
     }
 }

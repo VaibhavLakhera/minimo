@@ -27,6 +27,7 @@ class PreferenceHelperImpl @Inject constructor(
         private val KEY_HOME_TEXT_SIZE = intPreferencesKey("KEY_HOME_TEXT_SIZE")
         private val KEY_AUTO_OPEN_KEYBOARD_ALL_APPS =
             booleanPreferencesKey("KEY_AUTO_OPEN_KEYBOARD_ALL_APPS")
+        private val KEY_DYNAMIC_THEME = booleanPreferencesKey("KEY_DYNAMIC_THEME")
     }
 
     override suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -136,5 +137,15 @@ class PreferenceHelperImpl @Inject constructor(
 
     override fun getAutoOpenKeyboardAllApps(): Flow<Boolean> {
         return preferences.data.map { it[KEY_AUTO_OPEN_KEYBOARD_ALL_APPS] ?: false }
+    }
+
+    override suspend fun setDynamicTheme(enable: Boolean) {
+        preferences.edit {
+            it[KEY_DYNAMIC_THEME] = enable
+        }
+    }
+
+    override fun getDynamicTheme(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_DYNAMIC_THEME] ?: false }
     }
 }
