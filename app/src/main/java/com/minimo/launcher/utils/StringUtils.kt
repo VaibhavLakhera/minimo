@@ -32,4 +32,13 @@ object StringUtils {
             else -> ""
         }
     }
+
+    fun homeClockModeText(context: Context, mode: HomeClockMode?): String {
+        return when (mode) {
+            HomeClockMode.Full -> context.getString(R.string.full)
+            HomeClockMode.TimeOnly -> context.getString(R.string.time_only)
+            HomeClockMode.DateOnly -> context.getString(R.string.date_only)
+            else -> ""
+        }
+    }
 }

@@ -44,6 +44,7 @@ import com.minimo.launcher.utils.AndroidUtils
 import com.minimo.launcher.utils.Constants
 import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
+import com.minimo.launcher.utils.HomeClockMode
 import com.minimo.launcher.utils.StringUtils
 import kotlin.math.roundToInt
 
@@ -213,6 +214,8 @@ fun AppearanceScreen(
                 onToggleClick = viewModel::onToggleShowHomeClock
             )
             if (state.showHomeClock) {
+                Spacer(modifier = Modifier.height(4.dp))
+
                 ClockAlignmentDropdown(
                     selectedOption = StringUtils.homeClockAlignmentText(
                         context = context,
@@ -234,6 +237,32 @@ fun AppearanceScreen(
                     ),
                     onOptionSelected = { selected ->
                         viewModel.onHomeClockAlignmentChanged(selected)
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                ClockModeDropdown(
+                    selectedOption = StringUtils.homeClockModeText(
+                        context = context,
+                        mode = state.homeClockMode
+                    ),
+                    options = listOf(
+                        HomeClockMode.Full to StringUtils.homeClockModeText(
+                            context,
+                            HomeClockMode.Full
+                        ),
+                        HomeClockMode.TimeOnly to StringUtils.homeClockModeText(
+                            context,
+                            HomeClockMode.TimeOnly
+                        ),
+                        HomeClockMode.DateOnly to StringUtils.homeClockModeText(
+                            context,
+                            HomeClockMode.DateOnly
+                        ),
+                    ),
+                    onOptionSelected = { selected ->
+                        viewModel.onHomeClockModeChanged(selected)
                     }
                 )
             }
@@ -383,6 +412,37 @@ private fun ToggleItem(
             checked = isChecked,
             onCheckedChange = {
                 onToggleClick()
+            }
+        )
+    }
+}
+
+@Composable
+private fun ClockModeDropdown(
+    selectedOption: String,
+    options: List<Pair<HomeClockMode, String>>,
+    onOptionSelected: (HomeClockMode) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = Dimens.APP_HORIZONTAL_SPACING,
+                vertical = 8.dp
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            stringResource(R.string.clock_mode),
+            modifier = Modifier.weight(1f),
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        DropdownView(
+            selectedOption = selectedOption,
+            options = options.map { it.second },
+            onOptionSelected = { selected ->
+                onOptionSelected(options.first { it.second == selected }.first)
             }
         )
     }

@@ -33,4 +33,7 @@
     <string name="dark">Dark</string>
     <string name="light">Light</string>
     <string name="black">Black</string>
+    <string name="full">Full</string>
+    <string name="time_only">Time Only</string>
+    <string name="date_only">Date Only</string>
 </resources>

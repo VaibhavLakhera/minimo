@@ -268,7 +268,7 @@ fun HomeScreen(
                         .consumeWindowInsets(paddingValues)
                 ) {
                     if (state.showHomeClock) {
-                        TimeAndDateView(state.homeClockAlignment)
+                        TimeAndDateView(state.homeClockAlignment, state.homeClockMode)
                     }
 
                     LazyColumn(

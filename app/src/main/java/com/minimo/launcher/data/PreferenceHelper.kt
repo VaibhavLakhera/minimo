@@ -3,6 +3,7 @@ package com.minimo.launcher.data
 import com.minimo.launcher.ui.theme.ThemeMode
 import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
+import com.minimo.launcher.utils.HomeClockMode
 import kotlinx.coroutines.flow.Flow
 
 interface PreferenceHelper {
@@ -32,4 +33,7 @@ interface PreferenceHelper {
 
     suspend fun setDynamicTheme(enable: Boolean)
     fun getDynamicTheme(): Flow<Boolean>
+
+    suspend fun setHomeClockMode(mode: HomeClockMode)
+    fun getHomeClockMode(): Flow<HomeClockMode>
 }

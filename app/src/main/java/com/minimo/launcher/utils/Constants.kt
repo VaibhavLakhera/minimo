@@ -14,3 +14,7 @@ enum class HomeAppsAlignment {
 enum class HomeClockAlignment {
     Start, Center, End
 }
+
+enum class HomeClockMode {
+    Full, TimeOnly, DateOnly
+}

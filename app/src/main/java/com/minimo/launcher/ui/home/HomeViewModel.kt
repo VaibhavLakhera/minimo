@@ -116,6 +116,14 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getHomeClockMode().collect { mode ->
+                _state.update {
+                    _state.value.copy(homeClockMode = mode)
+                }
+            }
+        }
     }
 
     fun setBottomSheetExpanded(isExpanded: Boolean) {

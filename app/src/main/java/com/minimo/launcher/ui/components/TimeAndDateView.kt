@@ -19,6 +19,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
 import com.minimo.launcher.ui.theme.Dimens
+import com.minimo.launcher.utils.HomeClockMode
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -26,7 +27,8 @@ import java.time.temporal.ChronoUnit
 
 @Composable
 fun TimeAndDateView(
-    horizontalAlignment: Alignment.Horizontal
+    horizontalAlignment: Alignment.Horizontal,
+    clockMode: HomeClockMode
 ) {
     var currentDateTime by remember { mutableStateOf(LocalDateTime.now()) }
 
@@ -57,14 +59,19 @@ fun TimeAndDateView(
                 vertical = 16.dp
             )
     ) {
-        Text(
-            text = currentDateTime.format(timeFormatter).uppercase(),
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = currentDateTime.format(dateFormatter),
-            fontSize = 18.sp
-        )
+        if (clockMode != HomeClockMode.DateOnly) {
+            Text(
+                text = currentDateTime.format(timeFormatter).uppercase(),
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        if (clockMode != HomeClockMode.TimeOnly) {
+            Text(
+                text = currentDateTime.format(dateFormatter),
+                fontSize = if (clockMode == HomeClockMode.DateOnly) 26.sp else 18.sp,
+                fontWeight = if (clockMode == HomeClockMode.DateOnly) FontWeight.Bold else null
+            )
+        }
     }
 }

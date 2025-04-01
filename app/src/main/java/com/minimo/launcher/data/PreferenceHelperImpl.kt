@@ -10,6 +10,7 @@ import com.minimo.launcher.ui.theme.ThemeMode
 import com.minimo.launcher.utils.Constants
 import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
+import com.minimo.launcher.utils.HomeClockMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -22,6 +23,7 @@ class PreferenceHelperImpl @Inject constructor(
         private val KEY_THEME_MODE = stringPreferencesKey("KEY_THEME_MODE")
         private val KEY_HOME_APPS_ALIGN = stringPreferencesKey("KEY_HOME_APPS_ALIGN")
         private val KEY_HOME_CLOCK_ALIGNMENT = stringPreferencesKey("KEY_HOME_CLOCK_ALIGNMENT")
+        private val KEY_HOME_CLOCK_MODE = stringPreferencesKey("KEY_HOME_CLOCK_MODE")
         private val KEY_SHOW_HOME_CLOCK = booleanPreferencesKey("KEY_SHOW_HOME_CLOCK")
         private val KEY_SHOW_STATUS_BAR = booleanPreferencesKey("KEY_SHOW_STATUS_BAR")
         private val KEY_HOME_TEXT_SIZE = intPreferencesKey("KEY_HOME_TEXT_SIZE")
@@ -147,5 +149,24 @@ class PreferenceHelperImpl @Inject constructor(
 
     override fun getDynamicTheme(): Flow<Boolean> {
         return preferences.data.map { it[KEY_DYNAMIC_THEME] ?: false }
+    }
+
+    override suspend fun setHomeClockMode(mode: HomeClockMode) {
+        preferences.edit {
+            it[KEY_HOME_CLOCK_MODE] = mode.name
+        }
+    }
+
+    override fun getHomeClockMode(): Flow<HomeClockMode> {
+        return preferences.data.map {
+            val mode = it[KEY_HOME_CLOCK_MODE]
+            if (!mode.isNullOrBlank()
+                && HomeClockMode.entries.any { entry -> entry.name == mode }
+            ) {
+                HomeClockMode.valueOf(mode)
+            } else {
+                HomeClockMode.Full
+            }
+        }
     }
 }
