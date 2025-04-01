@@ -6,6 +6,8 @@
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="ReservedSystemPermission" />
 
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />

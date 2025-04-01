@@ -30,7 +30,8 @@ fun AppNameItem(
     onRenameClick: () -> Unit,
     onHideAppClick: () -> Unit,
     onAppInfoClick: () -> Unit,
-    onLongClick: () -> Unit
+    onLongClick: () -> Unit,
+    onUninstallClick: () -> Unit
 ) {
     var appBottomSheetVisible by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
@@ -70,6 +71,10 @@ fun AppNameItem(
                 onAppInfoClick = {
                     appBottomSheetVisible = false
                     onAppInfoClick()
+                },
+                onUninstallClick = {
+                    appBottomSheetVisible = false
+                    onUninstallClick()
                 }
             )
         }

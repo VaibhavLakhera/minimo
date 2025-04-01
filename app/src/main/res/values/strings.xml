@@ -36,4 +36,10 @@
     <string name="full">Full</string>
     <string name="time_only">Time Only</string>
     <string name="date_only">Date Only</string>
+    <string name="remove_favourite">Remove Favourite</string>
+    <string name="add_favourite">Add Favourite</string>
+    <string name="rename">Rename</string>
+    <string name="hide_app">Hide App</string>
+    <string name="app_info">App Info</string>
+    <string name="uninstall">Uninstall</string>
 </resources>

@@ -66,6 +66,7 @@ import com.minimo.launcher.ui.home.components.HomeAppNameItem
 import com.minimo.launcher.ui.home.components.SearchItem
 import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.launchAppInfo
+import com.minimo.launcher.utils.uninstallApp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
@@ -234,7 +235,8 @@ fun HomeScreen(
                             onHideAppClick = { viewModel.onHideAppClick(appInfo.packageName) },
                             onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
                             textAlign = state.appsTextAlign,
-                            onLongClick = ::hideKeyboardWithClearFocus
+                            onLongClick = ::hideKeyboardWithClearFocus,
+                            onUninstallClick = { context.uninstallApp(appInfo.packageName) }
                         )
                     }
                 }

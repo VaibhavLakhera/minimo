@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.core.net.toUri
 import timber.log.Timber
 
 fun Context.launchApp(packageName: String): Boolean {
@@ -18,6 +19,16 @@ fun Context.launchApp(packageName: String): Boolean {
         Timber.e(exception)
     }
     return false
+}
+
+fun Context.uninstallApp(packageName: String) {
+    try {
+        val intent = Intent(Intent.ACTION_DELETE)
+        intent.data = "package:$packageName".toUri()
+        startActivity(intent)
+    } catch (exception: Exception) {
+        Timber.e(exception)
+    }
 }
 
 fun Context.launchAppInfo(packageName: String) {
@@ -42,7 +53,7 @@ fun Context.openHomeSettings() {
 fun Context.openPlayStorePage(id: String = packageName) {
     try {
         val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse("https://play.google.com/store/apps/details?id=${id}")
+            data = "https://play.google.com/store/apps/details?id=${id}".toUri()
         }
         startActivity(intent)
     } catch (exception: Exception) {
@@ -59,7 +70,7 @@ fun Context.sendFeedback() {
         val recipient = "vaibhav.lakhera.dev@gmail.com"
         val subject = "Minimo Launcher Feedback"
         val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:")
+            data = "mailto:".toUri()
             putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
             putExtra(Intent.EXTRA_SUBJECT, subject)
         }
