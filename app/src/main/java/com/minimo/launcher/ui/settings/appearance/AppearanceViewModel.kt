@@ -10,6 +10,7 @@ import com.minimo.launcher.utils.HomeClockMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -93,6 +94,14 @@ class AppearanceViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getDoubleTapToLock().collect { enable ->
+                _state.update {
+                    _state.value.copy(doubleTapToLock = enable)
+                }
+            }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -146,6 +155,25 @@ class AppearanceViewModel @Inject constructor(
     fun onToggleDynamicTheme() {
         viewModelScope.launch {
             preferenceHelper.setDynamicTheme(_state.value.dynamicTheme.not())
+        }
+    }
+
+    fun onToggleDoubleTapToLock() {
+        viewModelScope.launch {
+            preferenceHelper.setDoubleTapToLock(_state.value.doubleTapToLock.not())
+        }
+    }
+
+    /*
+    * On start of the screen, if the preference flag is enabled and
+    * lock screen permission is not active, then set the preference flag to false
+    * */
+    fun onLockScreenPermissionNotEnableOnStarted() {
+        viewModelScope.launch {
+            val doubleTapToLock = preferenceHelper.getDoubleTapToLock().firstOrNull() ?: false
+            if (doubleTapToLock) {
+                preferenceHelper.setDoubleTapToLock(false)
+            }
         }
     }
 }

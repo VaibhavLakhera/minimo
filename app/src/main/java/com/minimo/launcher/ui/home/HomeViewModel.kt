@@ -124,6 +124,14 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getDoubleTapToLock().collect { enable ->
+                _state.update {
+                    _state.value.copy(doubleTapToLock = enable)
+                }
+            }
+        }
     }
 
     fun setBottomSheetExpanded(isExpanded: Boolean) {

@@ -25,17 +25,19 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.minimo.launcher.R
 import com.minimo.launcher.ui.components.DropdownView
 import com.minimo.launcher.ui.theme.Dimens
@@ -46,6 +48,9 @@ import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
 import com.minimo.launcher.utils.StringUtils
+import com.minimo.launcher.utils.hasLockScreenPermission
+import com.minimo.launcher.utils.removeLockScreenPermission
+import com.minimo.launcher.utils.requestLockScreenPermission
 import kotlin.math.roundToInt
 
 @Composable
@@ -56,18 +61,28 @@ fun AppearanceScreen(
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            if (!context.hasLockScreenPermission()) {
+                viewModel.onLockScreenPermissionNotEnableOnStarted()
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(horizontal = 4.dp)
-                    .height(64.dp)
-                    .background(MaterialTheme.colorScheme.surface),
+                    .height(64.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Appearance",
+                    text = stringResource(R.string.appearance),
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -127,8 +142,8 @@ fun AppearanceScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 ToggleItem(
-                    title = "Dynamic Colours",
-                    subtitle = "Adapt theme colours based on system settings",
+                    title = stringResource(R.string.dynamic_colours),
+                    subtitle = stringResource(R.string.adapt_theme_colours_based_on_system_settings),
                     isChecked = state.dynamicTheme,
                     onToggleClick = viewModel::onToggleDynamicTheme
                 )
@@ -144,7 +159,7 @@ fun AppearanceScreen(
                 )
             ) {
                 Text(
-                    text = "Home App Size:",
+                    text = stringResource(R.string.home_app_size),
                     fontSize = 20.sp
                 )
 
@@ -160,7 +175,6 @@ fun AppearanceScreen(
 
             Slider(
                 modifier = Modifier
-                    .semantics { contentDescription = "Text size slider" }
                     .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING),
                 value = state.homeTextSize,
                 onValueChange = {
@@ -173,7 +187,7 @@ fun AppearanceScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                "Sample App",
+                stringResource(R.string.sample_app),
                 fontSize = state.homeTextSize.sp,
                 modifier = Modifier.padding(horizontal = Dimens.APP_HORIZONTAL_SPACING)
             )
@@ -209,7 +223,7 @@ fun AppearanceScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
-                title = "Show Home Clock",
+                title = stringResource(R.string.show_home_clock),
                 isChecked = state.showHomeClock,
                 onToggleClick = viewModel::onToggleShowHomeClock
             )
@@ -270,7 +284,7 @@ fun AppearanceScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
-                title = "Show Status Bar",
+                title = stringResource(R.string.show_status_bar),
                 isChecked = state.showStatusBar,
                 onToggleClick = viewModel::onToggleShowStatusBar
             )
@@ -278,10 +292,28 @@ fun AppearanceScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
-                title = "Show Keyboard",
-                subtitle = "Show keyboard when the drawer is opened",
+                title = stringResource(R.string.show_keyboard),
+                subtitle = stringResource(R.string.show_keyboard_when_the_drawer_is_opened),
                 isChecked = state.autoOpenKeyboardAllApps,
                 onToggleClick = viewModel::onToggleAutoOpenKeyboardAllApps
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            ToggleItem(
+                title = stringResource(R.string.double_tap_to_lock),
+                subtitle = stringResource(R.string.on_home_screen_double_tap_on_empty_space_to_lock),
+                isChecked = state.doubleTapToLock,
+                onToggleClick = {
+                    viewModel.onToggleDoubleTapToLock()
+                    if (state.doubleTapToLock) {
+                        context.removeLockScreenPermission()
+                    } else {
+                        if (!context.hasLockScreenPermission()) {
+                            context.requestLockScreenPermission()
+                        }
+                    }
+                }
             )
         }
     }

@@ -36,4 +36,7 @@ interface PreferenceHelper {
 
     suspend fun setHomeClockMode(mode: HomeClockMode)
     fun getHomeClockMode(): Flow<HomeClockMode>
+
+    suspend fun setDoubleTapToLock(enable: Boolean)
+    fun getDoubleTapToLock(): Flow<Boolean>
 }

@@ -2,6 +2,7 @@ package com.minimo.launcher.ui.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +48,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -66,6 +68,7 @@ import com.minimo.launcher.ui.home.components.HomeAppNameItem
 import com.minimo.launcher.ui.home.components.SearchItem
 import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.launchAppInfo
+import com.minimo.launcher.utils.lockScreen
 import com.minimo.launcher.utils.uninstallApp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -190,7 +193,17 @@ fun HomeScreen(
     val systemNavigationHeight =
         WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
-    Box {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onDoubleTap = {
+                    if (state.doubleTapToLock) {
+                        context.lockScreen()
+                    }
+                })
+            }
+    ) {
         BottomSheetScaffold(
             scaffoldState = bottomSheetScaffoldState,
             sheetDragHandle = {

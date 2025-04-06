@@ -42,4 +42,21 @@
     <string name="hide_app">Hide App</string>
     <string name="app_info">App Info</string>
     <string name="uninstall">Uninstall</string>
+    <string name="show_status_bar">Show Status Bar</string>
+    <string name="show_keyboard">Show Keyboard</string>
+    <string name="show_keyboard_when_the_drawer_is_opened">Show keyboard when the drawer is opened</string>
+    <string name="double_tap_to_lock">Double Tap To Lock</string>
+    <string name="on_home_screen_double_tap_on_empty_space_to_lock">On the home screen, double-tap on empty space to lock the screen</string>
+    <string name="dynamic_colours">Dynamic Colours</string>
+    <string name="adapt_theme_colours_based_on_system_settings">Adapt theme colours based on system settings</string>
+    <string name="home_app_size">Home App Size:</string>
+    <string name="sample_app">Sample App</string>
+    <string name="show_home_clock">Show Home Clock</string>
+    <string name="enable_device_admin_first">Enable Device Admin First!</string>
+    <string name="you_need_to_enable_admin_access_to_lock_the_screen">You need to enable admin access to lock the screen</string>
+    <string name="accessibility_service_description">Accessibility permission is needed for double tap to turn off the screen</string>
+    <string name="enable_accessibility_permission_for_minimo">Enable accessibility permission for Minimo</string>
+    <string name="disable_accessibility_permission_for_minimo">Disable accessibility permission for Minimo</string>
+    <string name="admin_enabled">Admin Enabled</string>
+    <string name="admin_disabled">Admin Disabled</string>
 </resources>

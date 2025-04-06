@@ -30,6 +30,7 @@ class PreferenceHelperImpl @Inject constructor(
         private val KEY_AUTO_OPEN_KEYBOARD_ALL_APPS =
             booleanPreferencesKey("KEY_AUTO_OPEN_KEYBOARD_ALL_APPS")
         private val KEY_DYNAMIC_THEME = booleanPreferencesKey("KEY_DYNAMIC_THEME")
+        private val KEY_DOUBLE_TAP_TO_LOCK = booleanPreferencesKey("KEY_DOUBLE_TAP_TO_LOCK")
     }
 
     override suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -168,5 +169,15 @@ class PreferenceHelperImpl @Inject constructor(
                 HomeClockMode.Full
             }
         }
+    }
+
+    override suspend fun setDoubleTapToLock(enable: Boolean) {
+        preferences.edit {
+            it[KEY_DOUBLE_TAP_TO_LOCK] = enable
+        }
+    }
+
+    override fun getDoubleTapToLock(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_DOUBLE_TAP_TO_LOCK] ?: false }
     }
 }
