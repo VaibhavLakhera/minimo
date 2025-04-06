@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.appearance
 
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,9 +27,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -60,6 +67,8 @@ fun AppearanceScreen(
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    var showEnableAccessibilityDialog by remember { mutableStateOf(false) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -305,16 +314,33 @@ fun AppearanceScreen(
                 subtitle = stringResource(R.string.on_home_screen_double_tap_on_empty_space_to_lock),
                 isChecked = state.doubleTapToLock,
                 onToggleClick = {
-                    viewModel.onToggleDoubleTapToLock()
                     if (state.doubleTapToLock) {
+                        viewModel.onToggleDoubleTapToLock()
                         context.removeLockScreenPermission()
                     } else {
-                        if (!context.hasLockScreenPermission()) {
-                            context.requestLockScreenPermission()
+                        if (context.hasLockScreenPermission()) {
+                            viewModel.onToggleDoubleTapToLock()
+                        } else {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                showEnableAccessibilityDialog = true
+                            } else {
+                                viewModel.onToggleDoubleTapToLock()
+                                context.requestLockScreenPermission()
+                            }
                         }
                     }
                 }
             )
+        }
+
+        if (showEnableAccessibilityDialog) {
+            EnableAccessibilityDialog(onConfirm = {
+                viewModel.onToggleDoubleTapToLock()
+                context.requestLockScreenPermission()
+                showEnableAccessibilityDialog = false
+            }, onDismiss = {
+                showEnableAccessibilityDialog = false
+            })
         }
     }
 }
@@ -478,4 +504,37 @@ private fun ClockModeDropdown(
             }
         )
     }
+}
+
+@Composable
+private fun EnableAccessibilityDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.enable_accessibility_dialog_title)) },
+        text = {
+            Text(
+                text = stringResource(
+                    R.string.enable_accessibility_dialog_message,
+                    stringResource(id = R.string.app_name)
+                )
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm
+            ) {
+                Text(text = stringResource(R.string.open_settings))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text(text = stringResource(id = R.string.dismiss))
+            }
+        }
+    )
 }

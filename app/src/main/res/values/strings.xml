@@ -59,4 +59,9 @@
     <string name="disable_accessibility_permission_for_minimo">Disable accessibility permission for Minimo</string>
     <string name="admin_enabled">Admin Enabled</string>
     <string name="admin_disabled">Admin Disabled</string>
+    <string name="dismiss">Dismiss</string>
+
+    <string name="enable_accessibility_dialog_title">Enable Accessibility</string>
+    <string name="enable_accessibility_dialog_message">Accessibility permission is required for double tap to turn off the screen.\nNo data is being collected during the process.\n\nTo allow the permission, enable accessibility for %s in the settings.</string>
+    <string name="open_settings">Open Settings</string>
 </resources>
