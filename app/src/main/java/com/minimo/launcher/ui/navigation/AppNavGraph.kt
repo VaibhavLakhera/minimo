@@ -4,9 +4,9 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.minimo.launcher.ui.favourite_apps.FavouriteAppsScreen
 import com.minimo.launcher.ui.hidden_apps.HiddenAppsScreen
 import com.minimo.launcher.ui.home.HomeScreen
@@ -26,9 +26,10 @@ object Routes {
 }
 
 @Composable
-fun AppNavGraph(onBackPressed: () -> Unit) {
-    val navController = rememberNavController()
-
+fun AppNavGraph(
+    navController: NavHostController,
+    onBackPressed: () -> Unit
+) {
     NavHost(
         navController = navController,
         startDestination = Routes.LAUNCH,

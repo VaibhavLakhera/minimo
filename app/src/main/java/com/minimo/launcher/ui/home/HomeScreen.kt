@@ -88,6 +88,7 @@ fun HomeScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val triggerHomePressed by viewModel.triggerHomePressed.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
@@ -103,6 +104,15 @@ fun HomeScreen(
             }
         }
     }
+
+    LaunchedEffect(triggerHomePressed) {
+        if (triggerHomePressed) {
+            if (bottomSheetScaffoldState.bottomSheetState.currentValue != SheetValue.PartiallyExpanded) {
+                bottomSheetScaffoldState.bottomSheetState.partialExpand()
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.launchApp.collect(context::launchApp)

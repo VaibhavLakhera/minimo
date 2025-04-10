@@ -3,6 +3,7 @@ package com.minimo.launcher.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.PreferenceHelper
+import com.minimo.launcher.utils.HomePressedNotifier
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val preferenceHelper: PreferenceHelper
+    private val preferenceHelper: PreferenceHelper,
+    private val homePressedNotifier: HomePressedNotifier
 ) : ViewModel() {
     private val _state = MutableStateFlow(MainState())
     val state: StateFlow<MainState> = _state
@@ -42,4 +44,12 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    fun onHomeButtonPressed() {
+        viewModelScope.launch {
+            homePressedNotifier.notifyHomePressed()
+        }
+    }
+
+    fun getHomePressedNotifier() = homePressedNotifier
 }
