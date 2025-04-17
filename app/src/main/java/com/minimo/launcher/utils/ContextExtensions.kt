@@ -193,3 +193,14 @@ private fun Context.removeDeviceAdmin() {
         Timber.e(exception)
     }
 }
+
+fun Context.showNotificationDrawer() {
+    try {
+        Class.forName("android.app.StatusBarManager")
+            .getMethod("expandNotificationsPanel")
+            .apply { isAccessible = true }
+            .invoke(getSystemService("statusbar"))
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}

@@ -288,6 +288,14 @@ fun AppearanceScreen(
                         viewModel.onHomeClockModeChanged(selected)
                     }
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                ToggleItem(
+                    title = stringResource(R.string.twenty_four_hour_format),
+                    isChecked = state.twentyFourHourFormat,
+                    onToggleClick = viewModel::onToggleTwentyFourHourFormat
+                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
@@ -331,6 +339,8 @@ fun AppearanceScreen(
                     }
                 }
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
         if (showEnableAccessibilityDialog) {

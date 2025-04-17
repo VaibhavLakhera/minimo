@@ -28,11 +28,14 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun TimeAndDateView(
     horizontalAlignment: Alignment.Horizontal,
-    clockMode: HomeClockMode
+    clockMode: HomeClockMode,
+    twentyFourHourFormat: Boolean
 ) {
     var currentDateTime by remember { mutableStateOf(LocalDateTime.now()) }
 
-    val timeFormatter = remember { DateTimeFormatter.ofPattern("hh:mm a") }
+    val timeFormatter = remember(twentyFourHourFormat) {
+        DateTimeFormatter.ofPattern(if (twentyFourHourFormat) "HH:mm" else "hh:mm a")
+    }
     val dateFormatter = remember { DateTimeFormatter.ofPattern("EEE, dd MMMM") }
 
     val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()

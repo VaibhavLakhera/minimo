@@ -39,4 +39,7 @@ interface PreferenceHelper {
 
     suspend fun setDoubleTapToLock(enable: Boolean)
     fun getDoubleTapToLock(): Flow<Boolean>
+
+    suspend fun setTwentyFourHourFormat(enable: Boolean)
+    fun getTwentyFourHourFormat(): Flow<Boolean>
 }

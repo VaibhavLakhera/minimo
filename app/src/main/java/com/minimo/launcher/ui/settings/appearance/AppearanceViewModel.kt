@@ -102,6 +102,14 @@ class AppearanceViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getTwentyFourHourFormat().collect { enable ->
+                _state.update {
+                    _state.value.copy(twentyFourHourFormat = enable)
+                }
+            }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -131,6 +139,12 @@ class AppearanceViewModel @Inject constructor(
     fun onToggleShowHomeClock() {
         viewModelScope.launch {
             preferenceHelper.setShowHomeClock(_state.value.showHomeClock.not())
+        }
+    }
+
+    fun onToggleTwentyFourHourFormat() {
+        viewModelScope.launch {
+            preferenceHelper.setTwentyFourHourFormat(_state.value.twentyFourHourFormat.not())
         }
     }
 

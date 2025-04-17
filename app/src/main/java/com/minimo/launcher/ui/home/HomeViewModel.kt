@@ -142,6 +142,14 @@ class HomeViewModel @Inject constructor(
             }
         }
 
+        viewModelScope.launch {
+            preferenceHelper.getTwentyFourHourFormat().collect { enable ->
+                _state.update {
+                    _state.value.copy(twentyFourHourFormat = enable)
+                }
+            }
+        }
+
         listenForHomePressedEvent()
     }
 

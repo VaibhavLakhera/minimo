@@ -69,11 +69,13 @@ import com.minimo.launcher.ui.home.components.SearchItem
 import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.launchAppInfo
 import com.minimo.launcher.utils.lockScreen
+import com.minimo.launcher.utils.showNotificationDrawer
 import com.minimo.launcher.utils.uninstallApp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-private const val swipeUpThreshold = 70f
+private const val swipeUpThreshold = -70f
+private const val swipeDownThreshold = 70f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,7 +153,7 @@ fun HomeScreen(
         snapshotFlow { allAppsLazyListState.isScrollInProgress }
             .distinctUntilChanged()
             .collect { isScrolling ->
-                if (isScrolling) {
+                if (isScrolling && allAppsLazyListState.canScrollBackward) {
                     hideKeyboardWithClearFocus()
                 }
             }
@@ -163,18 +165,29 @@ fun HomeScreen(
         }
     }
 
+    fun onSwipeDownAtEnd() {
+        context.showNotificationDrawer()
+    }
+
+    var accumulatedSwipe by remember { mutableFloatStateOf(0f) }
     var swipeTriggered by remember { mutableStateOf(false) }
-    var accumulatedSwipeUp by remember { mutableFloatStateOf(0f) }
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             // Called as the user drags.
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                // Check if the list is at the bottom and the user is dragging upward (available.y negative)
-                if (!homeLazyListState.canScrollForward && available.y < 0) {
-                    accumulatedSwipeUp += -available.y // Track upward swipe distance
-                    if (accumulatedSwipeUp >= swipeUpThreshold && !swipeTriggered) {
-                        swipeTriggered = true
+                // Add the new delta to the accumulatedSwipe.
+                accumulatedSwipe += available.y
+                // Only trigger if not already triggered.
+                if (!swipeTriggered) {
+                    when {
+                        accumulatedSwipe >= swipeDownThreshold -> {
+                            swipeTriggered = true
+                        }
+
+                        accumulatedSwipe <= swipeUpThreshold -> {
+                            swipeTriggered = true
+                        }
                     }
                 }
                 return Offset.Zero
@@ -183,18 +196,22 @@ fun HomeScreen(
             // Called when the gesture is finishing.
             override suspend fun onPreFling(available: Velocity): Velocity {
                 if (swipeTriggered) {
-                    // Trigger the callback once when the user lifts the finger.
-                    onSwipeUpAtEnd()
-                    swipeTriggered = false
-                    accumulatedSwipeUp = 0f
+                    if (accumulatedSwipe > 0) {
+                        onSwipeDownAtEnd()
+                    } else {
+                        onSwipeUpAtEnd()
+                    }
                 }
+                // Reset after gesture completes.
+                swipeTriggered = false
+                accumulatedSwipe = 0f
                 return super.onPreFling(available)
             }
 
             // Reset the flag if fling completes.
             override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
                 swipeTriggered = false
-                accumulatedSwipeUp = 0f
+                accumulatedSwipe = 0f
                 return super.onPostFling(consumed, available)
             }
         }
@@ -293,7 +310,11 @@ fun HomeScreen(
                         .consumeWindowInsets(paddingValues)
                 ) {
                     if (state.showHomeClock) {
-                        TimeAndDateView(state.homeClockAlignment, state.homeClockMode)
+                        TimeAndDateView(
+                            horizontalAlignment = state.homeClockAlignment,
+                            clockMode = state.homeClockMode,
+                            twentyFourHourFormat = state.twentyFourHourFormat
+                        )
                     }
 
                     LazyColumn(

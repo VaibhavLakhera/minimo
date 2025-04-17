@@ -31,6 +31,8 @@ class PreferenceHelperImpl @Inject constructor(
             booleanPreferencesKey("KEY_AUTO_OPEN_KEYBOARD_ALL_APPS")
         private val KEY_DYNAMIC_THEME = booleanPreferencesKey("KEY_DYNAMIC_THEME")
         private val KEY_DOUBLE_TAP_TO_LOCK = booleanPreferencesKey("KEY_DOUBLE_TAP_TO_LOCK")
+        private val KEY_TWENTY_FOUR_HOUR_FORMAT =
+            booleanPreferencesKey("KEY_TWENTY_FOUR_HOUR_FORMAT")
     }
 
     override suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -179,5 +181,15 @@ class PreferenceHelperImpl @Inject constructor(
 
     override fun getDoubleTapToLock(): Flow<Boolean> {
         return preferences.data.map { it[KEY_DOUBLE_TAP_TO_LOCK] ?: false }
+    }
+
+    override suspend fun setTwentyFourHourFormat(enable: Boolean) {
+        preferences.edit {
+            it[KEY_TWENTY_FOUR_HOUR_FORMAT] = enable
+        }
+    }
+
+    override fun getTwentyFourHourFormat(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_TWENTY_FOUR_HOUR_FORMAT] ?: false }
     }
 }

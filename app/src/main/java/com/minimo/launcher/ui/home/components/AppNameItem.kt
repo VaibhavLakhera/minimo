@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minimo.launcher.ui.theme.Dimens
@@ -50,6 +51,8 @@ fun AppNameItem(
                     }
                 )
                 .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 16.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         if (appBottomSheetVisible) {
             AppListBottomSheetDialog(

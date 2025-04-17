@@ -7,6 +7,7 @@
         tools:ignore="ReservedSystemPermission" />
 
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
 
     <queries>
         <intent>

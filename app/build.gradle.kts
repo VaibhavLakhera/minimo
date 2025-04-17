@@ -14,8 +14,8 @@ android {
         applicationId = "com.minimo.launcher"
         minSdk = 26
         targetSdk = 35
-        versionCode = 29
-        versionName = "1.9.0"
+        versionCode = 32
+        versionName = "1.10.0"
 
         resourceConfigurations.addAll(listOf("en"))
     }
@@ -69,7 +69,7 @@ composeCompiler {
 }
 
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2025.03.01"))
+    implementation(platform("androidx.compose:compose-bom:2025.04.00"))
 
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-graphics")
@@ -87,9 +87,9 @@ dependencies {
     ksp("com.google.dagger:hilt-compiler:2.54")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    implementation("androidx.room:room-runtime:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.room:room-runtime:2.7.0")
+    ksp("androidx.room:room-compiler:2.7.0")
+    implementation("androidx.room:room-ktx:2.7.0")
 
     implementation("androidx.datastore:datastore-preferences:1.1.4")
 
