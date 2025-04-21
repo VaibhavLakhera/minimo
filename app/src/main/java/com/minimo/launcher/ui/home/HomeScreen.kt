@@ -33,9 +33,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -159,59 +159,53 @@ fun HomeScreen(
             }
     }
 
-    fun onSwipeUpAtEnd() {
-        coroutineScope.launch {
-            bottomSheetScaffoldState.bottomSheetState.expand()
+    /**
+     * 0 -> No swipe
+     * -1 -> Down swipe
+     * 1 -> Up swipe
+     * */
+    var swipeYDirection by remember { mutableIntStateOf(0) }
+
+    // Temporary fix for swipe gestures when the LazyColumn is scrollable
+    val swipeMultiplier by remember {
+        derivedStateOf {
+            if (!homeLazyListState.canScrollBackward && !homeLazyListState.canScrollForward) {
+                1.0f
+            } else {
+                0.18f
+            }
         }
     }
 
-    fun onSwipeDownAtEnd() {
-        context.showNotificationDrawer()
-    }
-
-    var accumulatedSwipe by remember { mutableFloatStateOf(0f) }
-    var swipeTriggered by remember { mutableStateOf(false) }
-
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
-            // Called as the user drags.
+            // Called while swipe is ongoing
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                // Add the new delta to the accumulatedSwipe.
-                accumulatedSwipe += available.y
-                // Only trigger if not already triggered.
-                if (!swipeTriggered) {
-                    when {
-                        accumulatedSwipe >= swipeDownThreshold -> {
-                            swipeTriggered = true
-                        }
-
-                        accumulatedSwipe <= swipeUpThreshold -> {
-                            swipeTriggered = true
-                        }
-                    }
+                if (!homeLazyListState.canScrollBackward && available.y > (swipeDownThreshold * swipeMultiplier)) {
+                    swipeYDirection = -1
+                } else if (!homeLazyListState.canScrollForward && available.y < (swipeUpThreshold * swipeMultiplier)) {
+                    swipeYDirection = 1
                 }
                 return Offset.Zero
             }
 
-            // Called when the gesture is finishing.
+            // Called when the gesture is finishing
             override suspend fun onPreFling(available: Velocity): Velocity {
-                if (swipeTriggered) {
-                    if (accumulatedSwipe > 0) {
-                        onSwipeDownAtEnd()
-                    } else {
-                        onSwipeUpAtEnd()
+                if (swipeYDirection < 0) {
+                    context.showNotificationDrawer()
+                } else if (swipeYDirection > 0) {
+                    coroutineScope.launch {
+                        bottomSheetScaffoldState.bottomSheetState.expand()
                     }
                 }
                 // Reset after gesture completes.
-                swipeTriggered = false
-                accumulatedSwipe = 0f
+                swipeYDirection = 0
                 return super.onPreFling(available)
             }
 
-            // Reset the flag if fling completes.
+            // Reset the value after fling completes
             override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-                swipeTriggered = false
-                accumulatedSwipe = 0f
+                swipeYDirection = 0
                 return super.onPostFling(consumed, available)
             }
         }
