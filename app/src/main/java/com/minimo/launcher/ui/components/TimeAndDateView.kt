@@ -1,6 +1,7 @@
 package com.minimo.launcher.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -29,7 +30,8 @@ import java.time.temporal.ChronoUnit
 fun TimeAndDateView(
     horizontalAlignment: Alignment.Horizontal,
     clockMode: HomeClockMode,
-    twentyFourHourFormat: Boolean
+    twentyFourHourFormat: Boolean,
+    showBatteryLevel: Boolean,
 ) {
     var currentDateTime by remember { mutableStateOf(LocalDateTime.now()) }
 
@@ -53,6 +55,9 @@ fun TimeAndDateView(
         }
     }
 
+    val dateFontSize = if (clockMode == HomeClockMode.DateOnly) 26.sp else 18.sp
+    val dateFontWeight = if (clockMode == HomeClockMode.DateOnly) FontWeight.Bold else null
+
     Column(
         horizontalAlignment = horizontalAlignment,
         modifier = Modifier
@@ -70,11 +75,26 @@ fun TimeAndDateView(
             )
         }
         if (clockMode != HomeClockMode.TimeOnly) {
-            Text(
-                text = currentDateTime.format(dateFormatter),
-                fontSize = if (clockMode == HomeClockMode.DateOnly) 26.sp else 18.sp,
-                fontWeight = if (clockMode == HomeClockMode.DateOnly) FontWeight.Bold else null
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = currentDateTime.format(dateFormatter),
+                    fontSize = dateFontSize,
+                    fontWeight = dateFontWeight
+                )
+
+                if (showBatteryLevel) {
+                    Text(
+                        "  |  ",
+                        fontSize = dateFontSize,
+                        fontWeight = dateFontWeight
+                    )
+
+                    BatteryPercentView(
+                        fontSize = dateFontSize,
+                        fontWeight = dateFontWeight
+                    )
+                }
+            }
         }
     }
 }

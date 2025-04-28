@@ -110,6 +110,14 @@ class AppearanceViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getShowBatteryLevel().collect { enable ->
+                _state.update {
+                    _state.value.copy(showBatteryLevel = enable)
+                }
+            }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -145,6 +153,12 @@ class AppearanceViewModel @Inject constructor(
     fun onToggleTwentyFourHourFormat() {
         viewModelScope.launch {
             preferenceHelper.setTwentyFourHourFormat(_state.value.twentyFourHourFormat.not())
+        }
+    }
+
+    fun onToggleShowBatteryLevel() {
+        viewModelScope.launch {
+            preferenceHelper.setShowBatteryLevel(_state.value.showBatteryLevel.not())
         }
     }
 

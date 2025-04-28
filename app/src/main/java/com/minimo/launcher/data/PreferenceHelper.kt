@@ -42,4 +42,7 @@ interface PreferenceHelper {
 
     suspend fun setTwentyFourHourFormat(enable: Boolean)
     fun getTwentyFourHourFormat(): Flow<Boolean>
+
+    suspend fun setShowBatteryLevel(enable: Boolean)
+    fun getShowBatteryLevel(): Flow<Boolean>
 }

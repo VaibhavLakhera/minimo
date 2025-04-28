@@ -296,6 +296,18 @@ fun AppearanceScreen(
                     isChecked = state.twentyFourHourFormat,
                     onToggleClick = viewModel::onToggleTwentyFourHourFormat
                 )
+
+                if (state.homeClockMode == HomeClockMode.DateOnly ||
+                    state.homeClockMode == HomeClockMode.Full
+                ) {
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    ToggleItem(
+                        title = stringResource(R.string.show_battery_level),
+                        isChecked = state.showBatteryLevel,
+                        onToggleClick = viewModel::onToggleShowBatteryLevel
+                    )
+                }
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))

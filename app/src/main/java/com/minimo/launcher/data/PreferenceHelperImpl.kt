@@ -33,6 +33,7 @@ class PreferenceHelperImpl @Inject constructor(
         private val KEY_DOUBLE_TAP_TO_LOCK = booleanPreferencesKey("KEY_DOUBLE_TAP_TO_LOCK")
         private val KEY_TWENTY_FOUR_HOUR_FORMAT =
             booleanPreferencesKey("KEY_TWENTY_FOUR_HOUR_FORMAT")
+        private val KEY_SHOW_BATTERY_LEVEL = booleanPreferencesKey("KEY_SHOW_BATTERY_LEVEL")
     }
 
     override suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -191,5 +192,15 @@ class PreferenceHelperImpl @Inject constructor(
 
     override fun getTwentyFourHourFormat(): Flow<Boolean> {
         return preferences.data.map { it[KEY_TWENTY_FOUR_HOUR_FORMAT] ?: false }
+    }
+
+    override suspend fun setShowBatteryLevel(enable: Boolean) {
+        preferences.edit {
+            it[KEY_SHOW_BATTERY_LEVEL] = enable
+        }
+    }
+
+    override fun getShowBatteryLevel(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_SHOW_BATTERY_LEVEL] ?: false }
     }
 }

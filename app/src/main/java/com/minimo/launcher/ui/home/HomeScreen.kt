@@ -52,6 +52,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,12 +60,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.minimo.launcher.R
 import com.minimo.launcher.ui.components.EmptyScreenView
 import com.minimo.launcher.ui.components.RenameAppDialog
 import com.minimo.launcher.ui.components.SheetDragHandle
 import com.minimo.launcher.ui.components.TimeAndDateView
 import com.minimo.launcher.ui.home.components.AppNameItem
-import com.minimo.launcher.ui.home.components.HomeAppNameItem
 import com.minimo.launcher.ui.home.components.SearchItem
 import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.launchAppInfo
@@ -74,8 +75,8 @@ import com.minimo.launcher.utils.uninstallApp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-private const val swipeUpThreshold = -70f
-private const val swipeDownThreshold = 70f
+private const val swipeUpThreshold = -60f
+private const val swipeDownThreshold = 60f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -260,13 +261,14 @@ fun HomeScreen(
                             modifier = Modifier.animateItem(),
                             appName = appInfo.name,
                             isFavourite = appInfo.isFavourite,
+                            isHidden = appInfo.isHidden,
                             onClick = {
                                 hideKeyboardWithClearFocus()
                                 viewModel.onLaunchAppClick(appInfo)
                             },
                             onToggleFavouriteClick = { viewModel.onToggleFavouriteAppClick(appInfo) },
                             onRenameClick = { viewModel.onRenameAppClick(appInfo) },
-                            onHideAppClick = { viewModel.onHideAppClick(appInfo.packageName) },
+                            onToggleHideClick = { viewModel.onToggleHideClick(appInfo) },
                             onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
                             textAlign = state.appsTextAlign,
                             onLongClick = ::hideKeyboardWithClearFocus,
@@ -288,11 +290,11 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     EmptyScreenView(
-                        title = "No favourites added",
-                        subTitle = "Add your favourite apps to access them easily",
+                        title = stringResource(R.string.no_favourites_added),
+                        subTitle = stringResource(R.string.add_your_favourite_apps_to_access_them_easily),
                         button = {
                             Button(onClick = onAddFavouriteAppsClick) {
-                                Text(text = "Add favourite apps")
+                                Text(text = stringResource(R.string.add_favourite_apps))
                             }
                         }
                     )
@@ -307,7 +309,8 @@ fun HomeScreen(
                         TimeAndDateView(
                             horizontalAlignment = state.homeClockAlignment,
                             clockMode = state.homeClockMode,
-                            twentyFourHourFormat = state.twentyFourHourFormat
+                            twentyFourHourFormat = state.twentyFourHourFormat,
+                            showBatteryLevel = state.showBatteryLevel
                         )
                     }
 
@@ -320,19 +323,23 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         items(items = state.favouriteApps, key = { it.packageName }) { appInfo ->
-                            HomeAppNameItem(
+                            AppNameItem(
                                 modifier = Modifier.animateItem(),
                                 appName = appInfo.name,
+                                isFavourite = appInfo.isFavourite,
+                                isHidden = appInfo.isHidden,
                                 onClick = { viewModel.onLaunchAppClick(appInfo) },
-                                onRemoveFavouriteClick = {
-                                    viewModel.onRemoveAppFromFavouriteClicked(
-                                        appInfo.packageName
+                                onToggleFavouriteClick = {
+                                    viewModel.onToggleFavouriteAppClick(
+                                        appInfo
                                     )
                                 },
                                 onRenameClick = { viewModel.onRenameAppClick(appInfo) },
+                                onToggleHideClick = { viewModel.onToggleHideClick(appInfo) },
                                 onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
                                 textAlign = state.appsTextAlign,
-                                textSize = state.homeTextSize.sp
+                                textSize = state.homeTextSize.sp,
+                                onUninstallClick = { context.uninstallApp(appInfo.packageName) }
                             )
                         }
                     }

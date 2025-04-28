@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minimo.launcher.ui.theme.Dimens
@@ -25,13 +26,15 @@ fun AppNameItem(
     modifier: Modifier,
     appName: String,
     isFavourite: Boolean,
+    isHidden: Boolean,
     textAlign: TextAlign,
+    textSize: TextUnit = 20.sp,
     onClick: () -> Unit,
     onToggleFavouriteClick: () -> Unit,
     onRenameClick: () -> Unit,
-    onHideAppClick: () -> Unit,
+    onToggleHideClick: () -> Unit,
     onAppInfoClick: () -> Unit,
-    onLongClick: () -> Unit,
+    onLongClick: () -> Unit = { },
     onUninstallClick: () -> Unit
 ) {
     var appBottomSheetVisible by remember { mutableStateOf(false) }
@@ -39,7 +42,7 @@ fun AppNameItem(
         Text(
             text = appName,
             color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 20.sp,
+            fontSize = textSize,
             textAlign = textAlign,
             modifier = Modifier
                 .fillMaxWidth()
@@ -58,6 +61,7 @@ fun AppNameItem(
             AppListBottomSheetDialog(
                 appName = appName,
                 isFavourite = isFavourite,
+                isHidden = isHidden,
                 onDismiss = { appBottomSheetVisible = false },
                 onToggleFavouriteClick = {
                     appBottomSheetVisible = false
@@ -67,9 +71,9 @@ fun AppNameItem(
                     appBottomSheetVisible = false
                     onRenameClick()
                 },
-                onHideAppClick = {
+                onToggleHideClick = {
                     appBottomSheetVisible = false
-                    onHideAppClick()
+                    onToggleHideClick()
                 },
                 onAppInfoClick = {
                     appBottomSheetVisible = false

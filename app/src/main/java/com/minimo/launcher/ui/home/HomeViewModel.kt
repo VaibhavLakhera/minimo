@@ -49,13 +49,13 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            appInfoDao.getAllNonHiddenAppsFlow()
+            appInfoDao.getAllAppsFlow()
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
                     _state.update {
                         _state.value.copy(
                             allApps = allApps,
-                            filteredAllApps = appUtils.getAppsWithSearch(
+                            filteredAllApps = getAppsWithSearch(
                                 searchText = _state.value.searchText,
                                 apps = allApps
                             )
@@ -150,6 +150,14 @@ class HomeViewModel @Inject constructor(
             }
         }
 
+        viewModelScope.launch {
+            preferenceHelper.getShowBatteryLevel().collect { enable ->
+                _state.update {
+                    _state.value.copy(showBatteryLevel = enable)
+                }
+            }
+        }
+
         listenForHomePressedEvent()
     }
 
@@ -181,35 +189,29 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun onAddAppToFavouriteClick(packageName: String) {
-        viewModelScope.launch {
-            appInfoDao.addAppToFavourite(packageName)
-        }
-    }
-
     fun onToggleFavouriteAppClick(app: AppInfo) {
-        if (app.isFavourite) {
-            onRemoveAppFromFavouriteClicked(app.packageName)
-        } else {
-            onAddAppToFavouriteClick(app.packageName)
+        viewModelScope.launch {
+            if (app.isFavourite) {
+                appInfoDao.removeAppFromFavourite(app.packageName)
+            } else {
+                appInfoDao.addAppToFavourite(app.packageName)
+            }
         }
     }
 
-    fun onRemoveAppFromFavouriteClicked(packageName: String) {
+    fun onLaunchAppClick(app: AppInfo) {
         viewModelScope.launch {
-            appInfoDao.removeAppFromFavourite(packageName)
+            _launchApp.send(app.packageName)
         }
     }
 
-    fun onLaunchAppClick(info: AppInfo) {
+    fun onToggleHideClick(app: AppInfo) {
         viewModelScope.launch {
-            _launchApp.send(info.packageName)
-        }
-    }
-
-    fun onHideAppClick(packageName: String) {
-        viewModelScope.launch {
-            appInfoDao.addAppToHidden(packageName)
+            if (app.isHidden) {
+                appInfoDao.removeAppFromHidden(app.packageName)
+            } else {
+                appInfoDao.addAppToHidden(app.packageName)
+            }
         }
     }
 
@@ -244,11 +246,21 @@ class HomeViewModel @Inject constructor(
         _state.update {
             _state.value.copy(
                 searchText = searchText,
-                filteredAllApps = appUtils.getAppsWithSearch(
+                filteredAllApps = getAppsWithSearch(
                     searchText = searchText,
                     apps = _state.value.allApps
                 )
             )
+        }
+    }
+
+    private fun getAppsWithSearch(searchText: String, apps: List<AppInfo>): List<AppInfo> {
+        if (searchText.isBlank()) return apps.filterNot { appInfo ->
+            appInfo.isFavourite || appInfo.isHidden
+        }
+
+        return apps.filter { appInfo ->
+            appInfo.name.contains(searchText, ignoreCase = true)
         }
     }
 }

@@ -10,25 +10,30 @@ import com.minimo.launcher.ui.components.AppBottomSheetText
 fun AppListBottomSheetDialog(
     appName: String,
     isFavourite: Boolean,
+    isHidden: Boolean,
     onDismiss: () -> Unit,
     onToggleFavouriteClick: () -> Unit,
     onRenameClick: () -> Unit,
-    onHideAppClick: () -> Unit,
+    onToggleHideClick: () -> Unit,
     onAppInfoClick: () -> Unit,
     onUninstallClick: () -> Unit,
 ) {
     AppBottomSheetDialog(appName = appName, onDismiss = onDismiss) {
-        AppBottomSheetText(
-            text = if (isFavourite) stringResource(R.string.remove_favourite) else stringResource(R.string.add_favourite),
-            onClick = onToggleFavouriteClick
-        )
+        if (!isHidden) {
+            AppBottomSheetText(
+                text = if (isFavourite) stringResource(R.string.remove_favourite) else stringResource(
+                    R.string.add_favourite
+                ),
+                onClick = onToggleFavouriteClick
+            )
+        }
         AppBottomSheetText(
             text = stringResource(R.string.rename),
             onClick = onRenameClick
         )
         AppBottomSheetText(
-            text = stringResource(R.string.hide_app),
-            onClick = onHideAppClick
+            text = if (isHidden) stringResource(R.string.unhide_app) else stringResource(R.string.hide_app),
+            onClick = onToggleHideClick
         )
         AppBottomSheetText(
             text = stringResource(R.string.app_info),

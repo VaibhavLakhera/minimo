@@ -40,6 +40,7 @@
     <string name="add_favourite">Add Favourite</string>
     <string name="rename">Rename</string>
     <string name="hide_app">Hide App</string>
+    <string name="unhide_app">Unhide App</string>
     <string name="app_info">App Info</string>
     <string name="uninstall">Uninstall</string>
     <string name="show_status_bar">Show Status Bar</string>
@@ -65,4 +66,8 @@
     <string name="enable_accessibility_dialog_message">Accessibility permission is required for double tap to turn off the screen.\nNo data is being collected during the process.\n\nTo allow the permission, enable accessibility for %s in the settings.</string>
     <string name="open_settings">Open Settings</string>
     <string name="twenty_four_hour_format">24 Hour Format</string>
+    <string name="show_battery_level">Show Battery Level</string>
+    <string name="no_favourites_added">No favourites added</string>
+    <string name="add_your_favourite_apps_to_access_them_easily">Add your favourite apps to access them easily</string>
+    <string name="add_favourite_apps">Add favourite apps</string>
 </resources>

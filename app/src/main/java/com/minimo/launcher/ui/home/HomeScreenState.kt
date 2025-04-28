@@ -21,5 +21,6 @@ data class HomeScreenState(
     val autoOpenKeyboardAllApps: Boolean = false,
     val homeClockMode: HomeClockMode = HomeClockMode.Full,
     val doubleTapToLock: Boolean = false,
-    val twentyFourHourFormat: Boolean = false
+    val twentyFourHourFormat: Boolean = false,
+    val showBatteryLevel: Boolean = false
 )

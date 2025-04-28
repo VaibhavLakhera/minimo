@@ -17,5 +17,6 @@ data class AppearanceState(
     val dynamicTheme: Boolean = false,
     val homeClockMode: HomeClockMode? = null,
     val doubleTapToLock: Boolean = false,
-    val twentyFourHourFormat: Boolean = false
+    val twentyFourHourFormat: Boolean = false,
+    val showBatteryLevel: Boolean = false
 )
