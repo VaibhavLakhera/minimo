@@ -1,48 +1,208 @@
 package com.minimo.launcher.data
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.minimo.launcher.ui.theme.ThemeMode
+import com.minimo.launcher.utils.Constants
 import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
-interface PreferenceHelper {
-    suspend fun setIsIntroCompleted(isCompleted: Boolean)
-    fun getIsIntroCompletedFlow(): Flow<Boolean>
+@Singleton
+class PreferenceHelper @Inject constructor(
+    private val preferences: DataStore<Preferences>
+) {
+    companion object {
+        private val KEY_INTRO_COMPLETED = booleanPreferencesKey("KEY_INTRO_COMPLETED")
+        private val KEY_THEME_MODE = stringPreferencesKey("KEY_THEME_MODE")
+        private val KEY_HOME_APPS_ALIGN = stringPreferencesKey("KEY_HOME_APPS_ALIGN")
+        private val KEY_HOME_CLOCK_ALIGNMENT = stringPreferencesKey("KEY_HOME_CLOCK_ALIGNMENT")
+        private val KEY_HOME_CLOCK_MODE = stringPreferencesKey("KEY_HOME_CLOCK_MODE")
+        private val KEY_SHOW_HOME_CLOCK = booleanPreferencesKey("KEY_SHOW_HOME_CLOCK")
+        private val KEY_SHOW_STATUS_BAR = booleanPreferencesKey("KEY_SHOW_STATUS_BAR")
+        private val KEY_HOME_TEXT_SIZE = intPreferencesKey("KEY_HOME_TEXT_SIZE")
+        private val KEY_AUTO_OPEN_KEYBOARD_ALL_APPS =
+            booleanPreferencesKey("KEY_AUTO_OPEN_KEYBOARD_ALL_APPS")
+        private val KEY_DYNAMIC_THEME = booleanPreferencesKey("KEY_DYNAMIC_THEME")
+        private val KEY_DOUBLE_TAP_TO_LOCK = booleanPreferencesKey("KEY_DOUBLE_TAP_TO_LOCK")
+        private val KEY_TWENTY_FOUR_HOUR_FORMAT =
+            booleanPreferencesKey("KEY_TWENTY_FOUR_HOUR_FORMAT")
+        private val KEY_SHOW_BATTERY_LEVEL = booleanPreferencesKey("KEY_SHOW_BATTERY_LEVEL")
+    }
 
-    suspend fun setThemeMode(mode: ThemeMode)
-    fun getThemeMode(): Flow<ThemeMode>
+    suspend fun setIsIntroCompleted(isCompleted: Boolean) {
+        preferences.edit {
+            it[KEY_INTRO_COMPLETED] = isCompleted
+        }
+    }
 
-    suspend fun setHomeAppsAlignment(alignment: HomeAppsAlignment)
-    fun getHomeAppsAlignment(): Flow<HomeAppsAlignment>
+    fun getIsIntroCompletedFlow(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_INTRO_COMPLETED] ?: false }
+    }
 
-    suspend fun setHomeClockAlignment(alignment: HomeClockAlignment)
-    fun getHomeClockAlignment(): Flow<HomeClockAlignment>
+    suspend fun setThemeMode(mode: ThemeMode) {
+        preferences.edit {
+            it[KEY_THEME_MODE] = mode.name
+        }
+    }
 
-    suspend fun setShowHomeClock(show: Boolean)
-    fun getShowHomeClock(): Flow<Boolean>
+    fun getThemeMode(): Flow<ThemeMode> {
+        return preferences.data.map {
+            val mode = it[KEY_THEME_MODE]
+            if (!mode.isNullOrBlank()
+                && ThemeMode.entries.any { entry -> entry.name == mode }
+            ) {
+                ThemeMode.valueOf(mode)
+            } else {
+                ThemeMode.System
+            }
+        }
+    }
 
-    suspend fun setShowStatusBar(show: Boolean)
-    fun getShowStatusBar(): Flow<Boolean>
+    suspend fun setHomeAppsAlignment(alignment: HomeAppsAlignment) {
+        preferences.edit {
+            it[KEY_HOME_APPS_ALIGN] = alignment.name
+        }
+    }
 
-    suspend fun setHomeTextSize(size: Int)
-    fun getHomeTextSizeFlow(): Flow<Int>
+    fun getHomeAppsAlignment(): Flow<HomeAppsAlignment> {
+        return preferences.data.map {
+            val alignment = it[KEY_HOME_APPS_ALIGN]
+            if (!alignment.isNullOrBlank()
+                && HomeAppsAlignment.entries.any { entry -> entry.name == alignment }
+            ) {
+                HomeAppsAlignment.valueOf(alignment)
+            } else {
+                HomeAppsAlignment.Start
+            }
+        }
+    }
 
-    suspend fun setAutoOpenKeyboardAllApps(open: Boolean)
-    fun getAutoOpenKeyboardAllApps(): Flow<Boolean>
+    suspend fun setHomeClockAlignment(alignment: HomeClockAlignment) {
+        preferences.edit {
+            it[KEY_HOME_CLOCK_ALIGNMENT] = alignment.name
+        }
+    }
 
-    suspend fun setDynamicTheme(enable: Boolean)
-    fun getDynamicTheme(): Flow<Boolean>
+    fun getHomeClockAlignment(): Flow<HomeClockAlignment> {
+        return preferences.data.map {
+            val alignment = it[KEY_HOME_CLOCK_ALIGNMENT]
+            if (!alignment.isNullOrBlank()
+                && HomeClockAlignment.entries.any { entry -> entry.name == alignment }
+            ) {
+                HomeClockAlignment.valueOf(alignment)
+            } else {
+                HomeClockAlignment.Start
+            }
+        }
+    }
 
-    suspend fun setHomeClockMode(mode: HomeClockMode)
-    fun getHomeClockMode(): Flow<HomeClockMode>
+    suspend fun setShowHomeClock(show: Boolean) {
+        preferences.edit {
+            it[KEY_SHOW_HOME_CLOCK] = show
+        }
+    }
 
-    suspend fun setDoubleTapToLock(enable: Boolean)
-    fun getDoubleTapToLock(): Flow<Boolean>
+    fun getShowHomeClock(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_SHOW_HOME_CLOCK] ?: false }
+    }
 
-    suspend fun setTwentyFourHourFormat(enable: Boolean)
-    fun getTwentyFourHourFormat(): Flow<Boolean>
+    suspend fun setShowStatusBar(show: Boolean) {
+        preferences.edit {
+            it[KEY_SHOW_STATUS_BAR] = show
+        }
+    }
 
-    suspend fun setShowBatteryLevel(enable: Boolean)
-    fun getShowBatteryLevel(): Flow<Boolean>
+    fun getShowStatusBar(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_SHOW_STATUS_BAR] ?: true }
+    }
+
+    suspend fun setHomeTextSize(size: Int) {
+        preferences.edit { preferences ->
+            preferences[KEY_HOME_TEXT_SIZE] = size
+        }
+    }
+
+    fun getHomeTextSizeFlow(): Flow<Int> {
+        return preferences.data.map {
+            it[KEY_HOME_TEXT_SIZE] ?: Constants.DEFAULT_HOME_TEXT_SIZE
+        }
+    }
+
+    suspend fun setAutoOpenKeyboardAllApps(open: Boolean) {
+        preferences.edit {
+            it[KEY_AUTO_OPEN_KEYBOARD_ALL_APPS] = open
+        }
+    }
+
+    fun getAutoOpenKeyboardAllApps(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_AUTO_OPEN_KEYBOARD_ALL_APPS] ?: false }
+    }
+
+    suspend fun setDynamicTheme(enable: Boolean) {
+        preferences.edit {
+            it[KEY_DYNAMIC_THEME] = enable
+        }
+    }
+
+    fun getDynamicTheme(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_DYNAMIC_THEME] ?: false }
+    }
+
+    suspend fun setHomeClockMode(mode: HomeClockMode) {
+        preferences.edit {
+            it[KEY_HOME_CLOCK_MODE] = mode.name
+        }
+    }
+
+    fun getHomeClockMode(): Flow<HomeClockMode> {
+        return preferences.data.map {
+            val mode = it[KEY_HOME_CLOCK_MODE]
+            if (!mode.isNullOrBlank()
+                && HomeClockMode.entries.any { entry -> entry.name == mode }
+            ) {
+                HomeClockMode.valueOf(mode)
+            } else {
+                HomeClockMode.Full
+            }
+        }
+    }
+
+    suspend fun setDoubleTapToLock(enable: Boolean) {
+        preferences.edit {
+            it[KEY_DOUBLE_TAP_TO_LOCK] = enable
+        }
+    }
+
+    fun getDoubleTapToLock(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_DOUBLE_TAP_TO_LOCK] ?: false }
+    }
+
+    suspend fun setTwentyFourHourFormat(enable: Boolean) {
+        preferences.edit {
+            it[KEY_TWENTY_FOUR_HOUR_FORMAT] = enable
+        }
+    }
+
+    fun getTwentyFourHourFormat(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_TWENTY_FOUR_HOUR_FORMAT] ?: false }
+    }
+
+    suspend fun setShowBatteryLevel(enable: Boolean) {
+        preferences.edit {
+            it[KEY_SHOW_BATTERY_LEVEL] = enable
+        }
+    }
+
+    fun getShowBatteryLevel(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_SHOW_BATTERY_LEVEL] ?: false }
+    }
 }

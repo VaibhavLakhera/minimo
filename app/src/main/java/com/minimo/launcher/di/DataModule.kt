@@ -27,7 +27,9 @@ class DataModule {
         Room.databaseBuilder(
             application,
             AppDatabase::class.java, "minimo-launcher-db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(true)
+            .build()
 
     @Singleton
     @Provides
