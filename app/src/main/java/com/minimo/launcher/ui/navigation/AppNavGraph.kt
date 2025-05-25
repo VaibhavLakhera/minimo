@@ -13,16 +13,16 @@ import com.minimo.launcher.ui.home.HomeScreen
 import com.minimo.launcher.ui.intro.IntroScreen
 import com.minimo.launcher.ui.launch.LaunchScreen
 import com.minimo.launcher.ui.settings.SettingsScreen
-import com.minimo.launcher.ui.settings.appearance.AppearanceScreen
+import com.minimo.launcher.ui.settings.customisation.CustomisationScreen
 
 object Routes {
-    const val LAUNCH = "launch"
-    const val INTRO = "intro"
-    const val HOME = "home"
-    const val SETTINGS = "settings"
-    const val SETTINGS_APPEARANCE = "settings_appearance"
-    const val HIDDEN_APPS = "hidden_apps"
-    const val FAVOURITE_APPS = "favourite_apps"
+    const val LAUNCH = "LAUNCH"
+    const val INTRO = "INTRO"
+    const val HOME = "HOME"
+    const val SETTINGS = "SETTINGS"
+    const val SETTINGS_CUSTOMISATION = "SETTINGS_CUSTOMISATION"
+    const val HIDDEN_APPS = "HIDDEN_APPS"
+    const val FAVOURITE_APPS = "FAVOURITE_APPS"
 }
 
 @Composable
@@ -79,8 +79,8 @@ fun AppNavGraph(
                 onHiddenAppsClick = {
                     navController.navigate(Routes.HIDDEN_APPS)
                 },
-                onAppearanceClick = {
-                    navController.navigate(Routes.SETTINGS_APPEARANCE)
+                onCustomisationClick = {
+                    navController.navigate(Routes.SETTINGS_CUSTOMISATION)
                 },
                 onFavouriteAppsClick = {
                     navController.navigate(Routes.FAVOURITE_APPS)
@@ -93,8 +93,8 @@ fun AppNavGraph(
                 onBackClick = onBackPressed
             )
         }
-        composable(route = Routes.SETTINGS_APPEARANCE) {
-            AppearanceScreen(
+        composable(route = Routes.SETTINGS_CUSTOMISATION) {
+            CustomisationScreen(
                 viewModel = hiltViewModel(it),
                 onBackClick = onBackPressed
             )

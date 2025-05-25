@@ -23,7 +23,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getThemeMode().collect { mode ->
                 _state.update {
-                    _state.value.copy(themeMode = mode)
+                    it.copy(themeMode = mode)
                 }
             }
         }
@@ -31,7 +31,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getShowStatusBar().collect { visible ->
                 _state.update {
-                    _state.value.copy(statusBarVisible = visible)
+                    it.copy(statusBarVisible = visible)
                 }
             }
         }
@@ -39,7 +39,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getDynamicTheme().collect { enable ->
                 _state.update {
-                    _state.value.copy(useDynamicTheme = enable)
+                    it.copy(useDynamicTheme = enable)
                 }
             }
         }

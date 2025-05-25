@@ -1,4 +1,4 @@
-package com.minimo.launcher.ui.settings.appearance
+package com.minimo.launcher.ui.settings.customisation
 
 import android.os.Build
 import androidx.compose.foundation.background
@@ -61,8 +61,8 @@ import com.minimo.launcher.utils.requestLockScreenPermission
 import kotlin.math.roundToInt
 
 @Composable
-fun AppearanceScreen(
-    viewModel: AppearanceViewModel,
+fun CustomisationScreen(
+    viewModel: CustomisationViewModel,
     onBackClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -91,7 +91,7 @@ fun AppearanceScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = stringResource(R.string.appearance),
+                    text = stringResource(R.string.customisation),
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

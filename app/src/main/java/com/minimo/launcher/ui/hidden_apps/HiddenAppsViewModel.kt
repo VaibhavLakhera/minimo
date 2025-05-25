@@ -25,12 +25,20 @@ class HiddenAppsViewModel @Inject constructor(
             appInfoDao.getAllAppsFlow()
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
+                    val hiddenApps = allApps.filter { it.isHidden }
+                    val currentAllApps = if (_state.value.showHiddenOnly) {
+                        hiddenApps
+                    } else {
+                        allApps
+                    }
+
                     _state.update {
-                        state.value.copy(
+                        it.copy(
                             allApps = allApps,
+                            hiddenApps = hiddenApps,
                             filteredAllApps = appUtils.getAppsWithSearch(
-                                searchText = _state.value.searchText,
-                                apps = allApps
+                                searchText = it.searchText,
+                                apps = currentAllApps
                             ),
                         )
                     }
@@ -49,12 +57,44 @@ class HiddenAppsViewModel @Inject constructor(
     }
 
     fun onSearchTextChange(searchText: String) {
+        val currentAllApps = if (_state.value.showHiddenOnly) {
+            _state.value.hiddenApps
+        } else {
+            _state.value.allApps
+        }
+
         _state.update {
-            _state.value.copy(
+            it.copy(
                 searchText = searchText,
                 filteredAllApps = appUtils.getAppsWithSearch(
                     searchText = searchText,
-                    apps = _state.value.allApps
+                    apps = currentAllApps
+                )
+            )
+        }
+    }
+
+    fun onToggleAppBarMorePopup() {
+        _state.update {
+            it.copy(
+                showAppBarMorePopup = !it.showAppBarMorePopup
+            )
+        }
+    }
+
+    fun onToggleShowHiddenOnly() {
+        val showHiddenOnly = !_state.value.showHiddenOnly
+        _state.update {
+            it.copy(
+                showAppBarMorePopup = false,
+                showHiddenOnly = showHiddenOnly,
+                filteredAllApps = appUtils.getAppsWithSearch(
+                    searchText = it.searchText,
+                    apps = if (showHiddenOnly) {
+                        it.hiddenApps
+                    } else {
+                        it.allApps
+                    }
                 )
             )
         }

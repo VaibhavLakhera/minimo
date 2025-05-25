@@ -11,7 +11,7 @@
 
     <string name="favourite_apps">Favourite Apps</string>
     <string name="hidden_apps">Hidden Apps</string>
-    <string name="appearance">Appearance</string>
+    <string name="customisation">Customisation</string>
     <string name="set_default_launcher">Set Default Launcher</string>
     <string name="send_feedback">Send Feedback</string>
     <string name="rate_application">Rate Application</string>
@@ -24,7 +24,6 @@
     <string name="right">Right</string>
 
     <string name="theme">Theme</string>
-    <string name="dynamic_theme">Dynamic Theme</string>
     <string name="home_apps_alignment">Home Apps Alignment</string>
     <string name="clock_alignment">Clock Alignment</string>
     <string name="clock_mode">Clock Mode</string>
@@ -57,7 +56,6 @@
     <string name="you_need_to_enable_admin_access_to_lock_the_screen">You need to enable admin access to lock the screen</string>
     <string name="accessibility_service_description">Accessibility permission is needed for double tap to turn off the screen</string>
     <string name="enable_accessibility_permission_for_minimo">Enable accessibility permission for Minimo</string>
-    <string name="disable_accessibility_permission_for_minimo">Disable accessibility permission for Minimo</string>
     <string name="admin_enabled">Admin Enabled</string>
     <string name="admin_disabled">Admin Disabled</string>
     <string name="dismiss">Dismiss</string>
@@ -70,4 +68,6 @@
     <string name="no_favourites_added">No favourites added</string>
     <string name="add_your_favourite_apps_to_access_them_easily">Add your favourite apps to access them easily</string>
     <string name="add_favourite_apps">Add favourite apps</string>
+    <string name="favourites_only">Favourites only</string>
+    <string name="hidden_only">Hidden only</string>
 </resources>

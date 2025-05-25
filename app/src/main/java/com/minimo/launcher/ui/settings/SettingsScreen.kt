@@ -1,6 +1,5 @@
 package com.minimo.launcher.ui.settings
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
@@ -41,7 +40,7 @@ fun SettingsScreen(
     onBackClick: () -> Unit,
     onFavouriteAppsClick: () -> Unit,
     onHiddenAppsClick: () -> Unit,
-    onAppearanceClick: () -> Unit
+    onCustomisationClick: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -76,7 +75,10 @@ fun SettingsScreen(
                 onClick = onFavouriteAppsClick
             )
             SettingsItem(name = stringResource(R.string.hidden_apps), onClick = onHiddenAppsClick)
-            SettingsItem(name = stringResource(R.string.appearance), onClick = onAppearanceClick)
+            SettingsItem(
+                name = stringResource(R.string.customisation),
+                onClick = onCustomisationClick
+            )
             SettingsItem(
                 name = stringResource(R.string.set_default_launcher),
                 onClick = context::openHomeSettings
@@ -102,10 +104,11 @@ fun SettingsScreen(
                         bottom = 8.dp
                     )
             )
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .clickable { context.openSeniorLauncherPlayStorePage() }
-                .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 16.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { context.openSeniorLauncherPlayStorePage() }
+                    .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = 16.dp)) {
                 Text(
                     text = stringResource(R.string.senior_launcher),
                     fontSize = 20.sp,
@@ -121,7 +124,6 @@ fun SettingsScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SettingsItem(name: String, onClick: () -> Unit) {
     Text(

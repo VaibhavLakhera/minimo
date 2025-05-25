@@ -53,10 +53,10 @@ class HomeViewModel @Inject constructor(
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
                     _state.update {
-                        _state.value.copy(
+                        it.copy(
                             allApps = allApps,
                             filteredAllApps = getAppsWithSearch(
-                                searchText = _state.value.searchText,
+                                searchText = it.searchText,
                                 apps = allApps
                             )
                         )
@@ -68,7 +68,7 @@ class HomeViewModel @Inject constructor(
             appInfoDao.getFavouriteAppsFlow()
                 .collect { appInfoList ->
                     _state.update {
-                        _state.value.copy(
+                        it.copy(
                             initialLoaded = true,
                             favouriteApps = appUtils.mapToAppInfo(appInfoList)
                         )
@@ -84,7 +84,7 @@ class HomeViewModel @Inject constructor(
                     HomeAppsAlignment.End -> TextAlign.End
                 }
                 _state.update {
-                    _state.value.copy(appsTextAlign = textAlign)
+                    it.copy(appsTextAlign = textAlign)
                 }
             }
         }
@@ -97,7 +97,7 @@ class HomeViewModel @Inject constructor(
                     HomeClockAlignment.End -> Alignment.End
                 }
                 _state.update {
-                    _state.value.copy(homeClockAlignment = horizontalAlignment)
+                    it.copy(homeClockAlignment = horizontalAlignment)
                 }
             }
         }
@@ -105,7 +105,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getShowHomeClock().collect { show ->
                 _state.update {
-                    _state.value.copy(showHomeClock = show)
+                    it.copy(showHomeClock = show)
                 }
             }
         }
@@ -113,7 +113,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getHomeTextSizeFlow().collect { size ->
                 _state.update {
-                    _state.value.copy(homeTextSize = size)
+                    it.copy(homeTextSize = size)
                 }
             }
         }
@@ -121,7 +121,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getAutoOpenKeyboardAllApps().collect { open ->
                 _state.update {
-                    _state.value.copy(autoOpenKeyboardAllApps = open)
+                    it.copy(autoOpenKeyboardAllApps = open)
                 }
             }
         }
@@ -129,7 +129,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getHomeClockMode().collect { mode ->
                 _state.update {
-                    _state.value.copy(homeClockMode = mode)
+                    it.copy(homeClockMode = mode)
                 }
             }
         }
@@ -137,7 +137,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getDoubleTapToLock().collect { enable ->
                 _state.update {
-                    _state.value.copy(doubleTapToLock = enable)
+                    it.copy(doubleTapToLock = enable)
                 }
             }
         }
@@ -145,7 +145,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getTwentyFourHourFormat().collect { enable ->
                 _state.update {
-                    _state.value.copy(twentyFourHourFormat = enable)
+                    it.copy(twentyFourHourFormat = enable)
                 }
             }
         }
@@ -153,7 +153,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getShowBatteryLevel().collect { enable ->
                 _state.update {
-                    _state.value.copy(showBatteryLevel = enable)
+                    it.copy(showBatteryLevel = enable)
                 }
             }
         }
@@ -178,7 +178,7 @@ class HomeViewModel @Inject constructor(
 
     fun setBottomSheetExpanded(isExpanded: Boolean) {
         _state.update {
-            _state.value.copy(
+            it.copy(
                 isBottomSheetExpanded = isExpanded
             )
         }
@@ -217,7 +217,7 @@ class HomeViewModel @Inject constructor(
 
     fun onRenameAppClick(app: AppInfo) {
         _state.update {
-            _state.value.copy(
+            it.copy(
                 renameAppDialog = app
             )
         }
@@ -236,7 +236,7 @@ class HomeViewModel @Inject constructor(
 
     fun onDismissRenameAppDialog() {
         _state.update {
-            _state.value.copy(
+            it.copy(
                 renameAppDialog = null
             )
         }
@@ -244,11 +244,11 @@ class HomeViewModel @Inject constructor(
 
     fun onSearchTextChange(searchText: String) {
         _state.update {
-            _state.value.copy(
+            it.copy(
                 searchText = searchText,
                 filteredAllApps = getAppsWithSearch(
                     searchText = searchText,
-                    apps = _state.value.allApps
+                    apps = it.allApps
                 )
             )
         }

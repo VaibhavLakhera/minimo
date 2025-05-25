@@ -1,4 +1,4 @@
-package com.minimo.launcher.ui.settings.appearance
+package com.minimo.launcher.ui.settings.customisation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,17 +16,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AppearanceViewModel @Inject constructor(
+class CustomisationViewModel @Inject constructor(
     private val preferenceHelper: PreferenceHelper
 ) : ViewModel() {
-    private val _state = MutableStateFlow(AppearanceState())
-    val state: StateFlow<AppearanceState> = _state
+    private val _state = MutableStateFlow(CustomisationState())
+    val state: StateFlow<CustomisationState> = _state
 
     init {
         viewModelScope.launch {
             preferenceHelper.getThemeMode().collect { mode ->
                 _state.update {
-                    _state.value.copy(themeMode = mode)
+                    it.copy(themeMode = mode)
                 }
             }
         }
@@ -34,7 +34,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getHomeAppsAlignment().collect { alignment ->
                 _state.update {
-                    _state.value.copy(homeAppsAlignment = alignment)
+                    it.copy(homeAppsAlignment = alignment)
                 }
             }
         }
@@ -42,7 +42,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getHomeClockAlignment().collect { alignment ->
                 _state.update {
-                    _state.value.copy(homeClockAlignment = alignment)
+                    it.copy(homeClockAlignment = alignment)
                 }
             }
         }
@@ -50,7 +50,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getShowHomeClock().collect { show ->
                 _state.update {
-                    _state.value.copy(showHomeClock = show)
+                    it.copy(showHomeClock = show)
                 }
             }
         }
@@ -58,7 +58,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getShowStatusBar().collect { show ->
                 _state.update {
-                    _state.value.copy(showStatusBar = show)
+                    it.copy(showStatusBar = show)
                 }
             }
         }
@@ -66,7 +66,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getHomeTextSizeFlow().collect { size ->
                 _state.update {
-                    _state.value.copy(homeTextSize = size.toFloat())
+                    it.copy(homeTextSize = size.toFloat())
                 }
             }
         }
@@ -74,7 +74,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getAutoOpenKeyboardAllApps().collect { open ->
                 _state.update {
-                    _state.value.copy(autoOpenKeyboardAllApps = open)
+                    it.copy(autoOpenKeyboardAllApps = open)
                 }
             }
         }
@@ -82,7 +82,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getDynamicTheme().collect { enable ->
                 _state.update {
-                    _state.value.copy(dynamicTheme = enable)
+                    it.copy(dynamicTheme = enable)
                 }
             }
         }
@@ -90,7 +90,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getHomeClockMode().collect { mode ->
                 _state.update {
-                    _state.value.copy(homeClockMode = mode)
+                    it.copy(homeClockMode = mode)
                 }
             }
         }
@@ -98,7 +98,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getDoubleTapToLock().collect { enable ->
                 _state.update {
-                    _state.value.copy(doubleTapToLock = enable)
+                    it.copy(doubleTapToLock = enable)
                 }
             }
         }
@@ -106,7 +106,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getTwentyFourHourFormat().collect { enable ->
                 _state.update {
-                    _state.value.copy(twentyFourHourFormat = enable)
+                    it.copy(twentyFourHourFormat = enable)
                 }
             }
         }
@@ -114,7 +114,7 @@ class AppearanceViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.getShowBatteryLevel().collect { enable ->
                 _state.update {
-                    _state.value.copy(showBatteryLevel = enable)
+                    it.copy(showBatteryLevel = enable)
                 }
             }
         }

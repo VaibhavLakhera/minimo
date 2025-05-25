@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.provider.AlarmClock
 import android.provider.Settings
 import android.widget.Toast
 import androidx.core.net.toUri
@@ -200,7 +201,34 @@ fun Context.showNotificationDrawer() {
             .getMethod("expandNotificationsPanel")
             .apply { isAccessible = true }
             .invoke(getSystemService("statusbar"))
-    } catch (e: Exception) {
-        e.printStackTrace()
+    } catch (exception: Exception) {
+        Timber.e(exception)
+    }
+}
+
+fun Context.openDefaultClockApp() {
+    try {
+        val intent = Intent(AlarmClock.ACTION_SHOW_ALARMS)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
+    } catch (exception: Exception) {
+        Timber.e(exception)
+    }
+}
+
+fun Context.openDefaultCalendarApp() {
+    try {
+        val intent = Intent(
+            Intent.makeMainSelectorActivity(
+                Intent.ACTION_MAIN,
+                Intent.CATEGORY_APP_CALENDAR
+            )
+        )
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
+    } catch (exception: Exception) {
+        Timber.e(exception)
     }
 }

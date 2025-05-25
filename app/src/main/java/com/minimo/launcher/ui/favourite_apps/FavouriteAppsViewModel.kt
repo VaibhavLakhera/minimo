@@ -25,13 +25,23 @@ class FavouriteAppsViewModel @Inject constructor(
             appInfoDao.getAllNonHiddenAppsFlow()
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
-                    _state.value = _state.value.copy(
-                        allApps = allApps,
-                        filteredAllApps = appUtils.getAppsWithSearch(
-                            searchText = _state.value.searchText,
-                            apps = allApps
-                        ),
-                    )
+                    val favouriteApps = allApps.filter { it.isFavourite }
+                    val currentAllApps = if (_state.value.showFavouritesOnly) {
+                        favouriteApps
+                    } else {
+                        allApps
+                    }
+
+                    _state.update {
+                        it.copy(
+                            allApps = allApps,
+                            favouriteApps = favouriteApps,
+                            filteredAllApps = appUtils.getAppsWithSearch(
+                                searchText = it.searchText,
+                                apps = currentAllApps
+                            ),
+                        )
+                    }
                 }
         }
     }
@@ -47,12 +57,44 @@ class FavouriteAppsViewModel @Inject constructor(
     }
 
     fun onSearchTextChange(searchText: String) {
+        val currentAllApps = if (_state.value.showFavouritesOnly) {
+            _state.value.favouriteApps
+        } else {
+            _state.value.allApps
+        }
+
         _state.update {
-            _state.value.copy(
+            it.copy(
                 searchText = searchText,
                 filteredAllApps = appUtils.getAppsWithSearch(
                     searchText = searchText,
-                    apps = _state.value.allApps
+                    apps = currentAllApps
+                )
+            )
+        }
+    }
+
+    fun onToggleAppBarMorePopup() {
+        _state.update {
+            it.copy(
+                showAppBarMorePopup = !it.showAppBarMorePopup
+            )
+        }
+    }
+
+    fun onToggleShowFavouritesOnly() {
+        val showFavouritesOnly = !_state.value.showFavouritesOnly
+        _state.update {
+            it.copy(
+                showAppBarMorePopup = false,
+                showFavouritesOnly = showFavouritesOnly,
+                filteredAllApps = appUtils.getAppsWithSearch(
+                    searchText = it.searchText,
+                    apps = if (showFavouritesOnly) {
+                        it.favouriteApps
+                    } else {
+                        it.allApps
+                    }
                 )
             )
         }

@@ -27,9 +27,6 @@ interface AppInfoDao {
     @Query("UPDATE appInfoEntity SET is_favourite = 0 WHERE package_name = :packageName")
     suspend fun removeAppFromFavourite(packageName: String)
 
-    @Query("SELECT * FROM appInfoEntity WHERE is_hidden = 1 ORDER BY LOWER(alternate_app_name)")
-    fun getHiddenAppsFlow(): Flow<List<AppInfoEntity>>
-
     @Query("UPDATE appInfoEntity SET is_hidden = 1, is_favourite = 0 WHERE package_name = :packageName")
     suspend fun addAppToHidden(packageName: String)
 
@@ -41,10 +38,4 @@ interface AppInfoDao {
 
     @Query("DELETE FROM appInfoEntity WHERE package_name = :packageName")
     suspend fun deleteApp(packageName: String)
-
-    @Query("DELETE FROM appInfoEntity WHERE package_name IN (:packageNames)")
-    suspend fun deleteApps(packageNames: List<String>)
-
-    @Query("DELETE FROM appInfoEntity")
-    suspend fun deleteAllApps()
 }

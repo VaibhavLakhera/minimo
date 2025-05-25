@@ -37,14 +37,16 @@ class IntroViewModel @Inject constructor(
                     val minimumFavouriteAdded =
                         allApps.count { it.isFavourite } >= INTRO_MINIMUM_FAVOURITE_COUNT
 
-                    _state.value = _state.value.copy(
-                        allApps = allApps,
-                        filteredAllApps = appUtils.getAppsWithSearch(
-                            searchText = _state.value.searchText,
-                            apps = allApps
-                        ),
-                        minimumFavouriteAdded = minimumFavouriteAdded
-                    )
+                    _state.update {
+                        it.copy(
+                            allApps = allApps,
+                            filteredAllApps = appUtils.getAppsWithSearch(
+                                searchText = it.searchText,
+                                apps = allApps
+                            ),
+                            minimumFavouriteAdded = minimumFavouriteAdded
+                        )
+                    }
                 }
         }
     }
@@ -67,11 +69,11 @@ class IntroViewModel @Inject constructor(
 
     fun onSearchTextChange(searchText: String) {
         _state.update {
-            _state.value.copy(
+            it.copy(
                 searchText = searchText,
                 filteredAllApps = appUtils.getAppsWithSearch(
                     searchText = searchText,
-                    apps = _state.value.allApps
+                    apps = it.allApps
                 )
             )
         }
