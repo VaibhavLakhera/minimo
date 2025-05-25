@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.AlarmClock
+import android.provider.CalendarContract
 import android.provider.Settings
 import android.widget.Toast
 import androidx.core.net.toUri
@@ -209,15 +210,33 @@ fun Context.showNotificationDrawer() {
 fun Context.openDefaultClockApp() {
     try {
         val intent = Intent(AlarmClock.ACTION_SHOW_ALARMS)
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent)
-        }
+        startActivity(intent)
     } catch (exception: Exception) {
         Timber.e(exception)
     }
 }
 
 fun Context.openDefaultCalendarApp() {
+    if (!openDefaultCalendarAppOption1()) {
+        openDefaultCalendarOption2()
+    }
+}
+
+private fun Context.openDefaultCalendarAppOption1(): Boolean {
+    try {
+        val builder = CalendarContract.CONTENT_URI.buildUpon()
+        builder.appendPath("time")
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = builder.build()
+        startActivity(intent)
+        return true
+    } catch (exception: Exception) {
+        Timber.e(exception)
+        return false
+    }
+}
+
+private fun Context.openDefaultCalendarOption2() {
     try {
         val intent = Intent(
             Intent.makeMainSelectorActivity(
@@ -225,9 +244,7 @@ fun Context.openDefaultCalendarApp() {
                 Intent.CATEGORY_APP_CALENDAR
             )
         )
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent)
-        }
+        startActivity(intent)
     } catch (exception: Exception) {
         Timber.e(exception)
     }
