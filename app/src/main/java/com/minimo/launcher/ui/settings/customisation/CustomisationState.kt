@@ -18,5 +18,7 @@ data class CustomisationState(
     val homeClockMode: HomeClockMode? = null,
     val doubleTapToLock: Boolean = false,
     val twentyFourHourFormat: Boolean = false,
-    val showBatteryLevel: Boolean = false
+    val showBatteryLevel: Boolean = false,
+    val showHiddenAppsInSearch: Boolean = true,
+    val drawerSearchBarAtBottom: Boolean = false,
 )

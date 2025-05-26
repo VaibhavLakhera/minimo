@@ -36,6 +36,10 @@ class PreferenceHelper @Inject constructor(
         private val KEY_TWENTY_FOUR_HOUR_FORMAT =
             booleanPreferencesKey("KEY_TWENTY_FOUR_HOUR_FORMAT")
         private val KEY_SHOW_BATTERY_LEVEL = booleanPreferencesKey("KEY_SHOW_BATTERY_LEVEL")
+        private val KEY_SHOW_HIDDEN_APPS_IN_SEARCH =
+            booleanPreferencesKey("KEY_SHOW_HIDDEN_APPS_IN_SEARCH")
+        private val KEY_DRAWER_SEARCH_BAR_AT_BOTTOM =
+            booleanPreferencesKey("KEY_DRAWER_SEARCH_BAR_AT_BOTTOM")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -204,5 +208,25 @@ class PreferenceHelper @Inject constructor(
 
     fun getShowBatteryLevel(): Flow<Boolean> {
         return preferences.data.map { it[KEY_SHOW_BATTERY_LEVEL] ?: false }
+    }
+
+    suspend fun setShowHiddenAppsInSearch(enable: Boolean) {
+        preferences.edit {
+            it[KEY_SHOW_HIDDEN_APPS_IN_SEARCH] = enable
+        }
+    }
+
+    fun getShowHiddenAppsInSearch(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_SHOW_HIDDEN_APPS_IN_SEARCH] ?: true }
+    }
+
+    suspend fun setDrawerSearchBarAtBottom(enable: Boolean) {
+        preferences.edit {
+            it[KEY_DRAWER_SEARCH_BAR_AT_BOTTOM] = enable
+        }
+    }
+
+    fun getDrawerSearchBarAtBottom(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_DRAWER_SEARCH_BAR_AT_BOTTOM] ?: false }
     }
 }

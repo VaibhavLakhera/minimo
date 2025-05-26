@@ -352,6 +352,24 @@ fun CustomisationScreen(
                 }
             )
 
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            ToggleItem(
+                title = stringResource(R.string.show_hidden_apps),
+                subtitle = stringResource(R.string.show_hidden_apps_in_the_search_result_of_the_app_drawer),
+                isChecked = state.showHiddenAppsInSearch,
+                onToggleClick = viewModel::onToggleShowHiddenAppsInSearch
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            ToggleItem(
+                title = stringResource(R.string.search_bar_at_bottom),
+                subtitle = stringResource(R.string.change_the_position_of_the_app_drawer_search_bar_to_the_bottom),
+                isChecked = state.drawerSearchBarAtBottom,
+                onToggleClick = viewModel::onToggleDrawerSearchBarAtBottom
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
         }
 

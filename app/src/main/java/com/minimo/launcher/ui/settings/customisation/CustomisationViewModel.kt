@@ -10,6 +10,7 @@ import com.minimo.launcher.utils.HomeClockMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -118,6 +119,26 @@ class CustomisationViewModel @Inject constructor(
                 }
             }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getShowHiddenAppsInSearch()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(showHiddenAppsInSearch = enable)
+                    }
+                }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getDrawerSearchBarAtBottom()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(drawerSearchBarAtBottom = enable)
+                    }
+                }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -189,6 +210,19 @@ class CustomisationViewModel @Inject constructor(
     fun onToggleDoubleTapToLock() {
         viewModelScope.launch {
             preferenceHelper.setDoubleTapToLock(_state.value.doubleTapToLock.not())
+        }
+    }
+
+    fun onToggleShowHiddenAppsInSearch() {
+        viewModelScope.launch {
+            preferenceHelper.setShowHiddenAppsInSearch(_state.value.showHiddenAppsInSearch.not())
+        }
+    }
+
+
+    fun onToggleDrawerSearchBarAtBottom() {
+        viewModelScope.launch {
+            preferenceHelper.setDrawerSearchBarAtBottom(_state.value.drawerSearchBarAtBottom.not())
         }
     }
 

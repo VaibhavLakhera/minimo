@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -57,7 +58,8 @@ class HomeViewModel @Inject constructor(
                             allApps = allApps,
                             filteredAllApps = getAppsWithSearch(
                                 searchText = it.searchText,
-                                apps = allApps
+                                apps = allApps,
+                                includeHiddenApps = it.showHiddenAppsInSearch
                             )
                         )
                     }
@@ -158,6 +160,26 @@ class HomeViewModel @Inject constructor(
             }
         }
 
+        viewModelScope.launch {
+            preferenceHelper.getShowHiddenAppsInSearch()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(showHiddenAppsInSearch = enable)
+                    }
+                }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getDrawerSearchBarAtBottom()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(drawerSearchBarAtBottom = enable)
+                    }
+                }
+        }
+
         listenForHomePressedEvent()
     }
 
@@ -248,19 +270,38 @@ class HomeViewModel @Inject constructor(
                 searchText = searchText,
                 filteredAllApps = getAppsWithSearch(
                     searchText = searchText,
-                    apps = it.allApps
-                )
+                    apps = it.allApps,
+                    includeHiddenApps = it.showHiddenAppsInSearch
+                ),
             )
         }
     }
 
-    private fun getAppsWithSearch(searchText: String, apps: List<AppInfo>): List<AppInfo> {
-        if (searchText.isBlank()) return apps.filterNot { appInfo ->
-            appInfo.isFavourite || appInfo.isHidden
+    /**
+     * If searchText is blank, then it should always exclude the favourite and hidden apps from the list.
+     *
+     * If searchText is not blank, then it should use the "showHiddenApps" flag to decide whether or
+     * not to include the hidden apps in the result.
+     * */
+    private fun getAppsWithSearch(
+        searchText: String,
+        apps: List<AppInfo>,
+        includeHiddenApps: Boolean
+    ): List<AppInfo> {
+        if (searchText.isBlank()) {
+            return apps.filterNot { appInfo ->
+                appInfo.isFavourite || appInfo.isHidden
+            }
+        }
+
+        if (includeHiddenApps) {
+            return apps.filter { appInfo ->
+                appInfo.name.contains(searchText, ignoreCase = true)
+            }
         }
 
         return apps.filter { appInfo ->
-            appInfo.name.contains(searchText, ignoreCase = true)
+            !appInfo.isHidden && appInfo.name.contains(searchText, ignoreCase = true)
         }
     }
 }

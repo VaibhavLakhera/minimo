@@ -233,27 +233,23 @@ fun HomeScreen(
             },
             sheetShadowElevation = 0.dp,
             sheetContent = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    SearchItem(
-                        modifier = Modifier
-                            .weight(1f)
-                            .focusRequester(focusRequester),
+                if (!state.drawerSearchBarAtBottom) {
+                    AppDrawerSearch(
+                        focusRequester = focusRequester,
                         searchText = state.searchText,
                         onSearchTextChange = viewModel::onSearchTextChange,
-                        endPadding = 0.dp
-                    )
-                    IconButton(
-                        onClick = {
+                        onSettingsClick = {
                             hideKeyboardWithClearFocus()
                             onSettingsClick()
                         }
-                    ) {
-                        Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
-                    }
+                    )
                 }
+
                 LazyColumn(
                     state = allAppsLazyListState,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
                     contentPadding = PaddingValues(top = 16.dp, bottom = systemNavigationHeight)
                 ) {
                     items(items = state.filteredAllApps, key = { it.packageName }) { appInfo ->
@@ -275,6 +271,20 @@ fun HomeScreen(
                             onUninstallClick = { context.uninstallApp(appInfo.packageName) }
                         )
                     }
+                }
+
+                if (state.drawerSearchBarAtBottom) {
+                    AppDrawerSearch(
+                        focusRequester = focusRequester,
+                        searchText = state.searchText,
+                        onSearchTextChange = viewModel::onSearchTextChange,
+                        onSettingsClick = {
+                            hideKeyboardWithClearFocus()
+                            onSettingsClick()
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(systemNavigationHeight))
                 }
             },
             sheetPeekHeight = 56.dp + systemNavigationHeight,
@@ -365,5 +375,32 @@ fun HomeScreen(
             onRenameClick = viewModel::onRenameApp,
             onCancelClick = viewModel::onDismissRenameAppDialog
         )
+    }
+}
+
+@Composable
+private fun AppDrawerSearch(
+    focusRequester: FocusRequester,
+    searchText: String,
+    onSearchTextChange: (String) -> Unit,
+    onSettingsClick: () -> Unit,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        SearchItem(
+            modifier = Modifier
+                .weight(1f)
+                .focusRequester(focusRequester),
+            searchText = searchText,
+            onSearchTextChange = onSearchTextChange,
+            endPadding = 0.dp
+        )
+        IconButton(
+            onClick = onSettingsClick
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Settings,
+                contentDescription = "Settings"
+            )
+        }
     }
 }
