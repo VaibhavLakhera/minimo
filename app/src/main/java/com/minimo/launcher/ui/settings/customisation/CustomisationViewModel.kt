@@ -139,6 +139,16 @@ class CustomisationViewModel @Inject constructor(
                     }
                 }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getHomeAppSizeToAllApps()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(applyHomeAppSizeToAllApps = enable)
+                    }
+                }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -219,10 +229,15 @@ class CustomisationViewModel @Inject constructor(
         }
     }
 
-
     fun onToggleDrawerSearchBarAtBottom() {
         viewModelScope.launch {
             preferenceHelper.setDrawerSearchBarAtBottom(_state.value.drawerSearchBarAtBottom.not())
+        }
+    }
+
+    fun onToggleApplyHomeAppSizeToAllApps() {
+        viewModelScope.launch {
+            preferenceHelper.setHomeAppSizeToAllApps(_state.value.applyHomeAppSizeToAllApps.not())
         }
     }
 

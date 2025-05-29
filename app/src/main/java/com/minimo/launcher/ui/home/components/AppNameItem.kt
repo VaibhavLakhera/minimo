@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.minimo.launcher.ui.theme.Dimens
 
 @Composable
@@ -26,7 +26,7 @@ fun AppNameItem(
     isFavourite: Boolean,
     isHidden: Boolean,
     textAlign: TextAlign,
-    textSize: TextUnit = 20.sp,
+    textSize: TextUnit,
     onClick: () -> Unit,
     onToggleFavouriteClick: () -> Unit,
     onRenameClick: () -> Unit,
@@ -36,11 +36,13 @@ fun AppNameItem(
     onUninstallClick: () -> Unit
 ) {
     var appBottomSheetVisible by remember { mutableStateOf(false) }
+    val lineHeight by remember { derivedStateOf { textSize * 1.2 } }
     Box(modifier = modifier) {
         Text(
             text = appName,
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = textSize,
+            lineHeight = lineHeight,
             textAlign = textAlign,
             modifier = Modifier
                 .fillMaxWidth()

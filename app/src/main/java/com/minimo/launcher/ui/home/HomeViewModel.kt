@@ -180,6 +180,16 @@ class HomeViewModel @Inject constructor(
                 }
         }
 
+        viewModelScope.launch {
+            preferenceHelper.getHomeAppSizeToAllApps()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(applyHomeAppSizeToAllApps = enable)
+                    }
+                }
+        }
+
         listenForHomePressedEvent()
     }
 

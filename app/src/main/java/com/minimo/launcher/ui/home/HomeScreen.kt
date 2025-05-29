@@ -268,7 +268,8 @@ fun HomeScreen(
                             onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
                             textAlign = state.appsTextAlign,
                             onLongClick = ::hideKeyboardWithClearFocus,
-                            onUninstallClick = { context.uninstallApp(appInfo.packageName) }
+                            onUninstallClick = { context.uninstallApp(appInfo.packageName) },
+                            textSize = if (state.applyHomeAppSizeToAllApps) state.homeTextSize.sp else 20.sp,
                         )
                     }
                 }

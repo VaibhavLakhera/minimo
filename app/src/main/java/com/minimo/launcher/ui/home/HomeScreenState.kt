@@ -24,5 +24,6 @@ data class HomeScreenState(
     val twentyFourHourFormat: Boolean = false,
     val showBatteryLevel: Boolean = false,
     val showHiddenAppsInSearch: Boolean = true,
-    val drawerSearchBarAtBottom: Boolean = false
+    val drawerSearchBarAtBottom: Boolean = false,
+    val applyHomeAppSizeToAllApps: Boolean = false
 )

@@ -40,6 +40,8 @@ class PreferenceHelper @Inject constructor(
             booleanPreferencesKey("KEY_SHOW_HIDDEN_APPS_IN_SEARCH")
         private val KEY_DRAWER_SEARCH_BAR_AT_BOTTOM =
             booleanPreferencesKey("KEY_DRAWER_SEARCH_BAR_AT_BOTTOM")
+        private val KEY_APPLY_HOME_APP_SIZE_TO_ALL_APPS =
+            booleanPreferencesKey("KEY_APPLY_HOME_APP_SIZE_TO_ALL_APPS")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -228,5 +230,15 @@ class PreferenceHelper @Inject constructor(
 
     fun getDrawerSearchBarAtBottom(): Flow<Boolean> {
         return preferences.data.map { it[KEY_DRAWER_SEARCH_BAR_AT_BOTTOM] ?: false }
+    }
+
+    suspend fun setHomeAppSizeToAllApps(enable: Boolean) {
+        preferences.edit {
+            it[KEY_APPLY_HOME_APP_SIZE_TO_ALL_APPS] = enable
+        }
+    }
+
+    fun getHomeAppSizeToAllApps(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_APPLY_HOME_APP_SIZE_TO_ALL_APPS] ?: false }
     }
 }

@@ -198,10 +198,20 @@ fun CustomisationScreen(
             Text(
                 stringResource(R.string.sample_app),
                 fontSize = state.homeTextSize.sp,
+                lineHeight = state.homeTextSize.sp,
                 modifier = Modifier.padding(horizontal = Dimens.APP_HORIZONTAL_SPACING)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            ToggleItem(
+                title = stringResource(R.string.apply_to_all_apps),
+                subtitle = stringResource(R.string.apply_the_home_app_size_to_all_apps_in_the_app_drawer),
+                isChecked = state.applyHomeAppSizeToAllApps,
+                onToggleClick = viewModel::onToggleApplyHomeAppSizeToAllApps
+            )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 

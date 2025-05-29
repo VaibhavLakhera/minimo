@@ -3,18 +3,20 @@
 Designed for users who want to de-clutter their home screen, Minimo offers a clean and intuitive
 interface that prioritizes functionality without unnecessary distractions.
 
+No wallpaper. No icons. No distractions.
+
 ## Screenshots:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/d4d55cd9-b6b9-4784-a502-b4d22d7fe357" alt="Screenshot 1" width="28%" />
-  <img src="https://github.com/user-attachments/assets/8db82762-03e4-48ee-91d9-dbc3ef5a1eb6" alt="Screenshot 2" width="28%" />
-  <img src="https://github.com/user-attachments/assets/a1687a16-f7f5-4948-8f9e-0e0b907020c6" alt="Screenshot 3" width="28%" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/01.png" alt="Screenshot 1" width="28%" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/02.png" alt="Screenshot 2" width="28%" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/03.png" alt="Screenshot 3" width="28%" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/7cf250e9-4b17-43d3-8fcd-351a15498d0a" alt="Screenshot 4" width="28%" />
-  <img src="https://github.com/user-attachments/assets/dbc732b4-6755-4e06-bedd-53b57c8ad155" alt="Screenshot 5" width="28%" />
-  <img src="https://github.com/user-attachments/assets/c659de5c-b48d-48d0-9ce5-93992dd742f2" alt="Screenshot 6" width="28%" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/04.png" alt="Screenshot 4" width="28%" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/05.png" alt="Screenshot 5" width="28%" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/06.png" alt="Screenshot 6" width="28%" />
 </p>
 
 ## Key Features:
@@ -52,3 +54,8 @@ height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.minimo.launcher)
   - [DataStore](https://developer.android.com/jetpack/androidx/releases/datastore)
   - [Hilt](https://dagger.dev/hilt/)
 - [Timber](https://github.com/JakeWharton/timber)
+
+## My socials:
+
+[X/Twitter](https://x.com/VaibhavLakhera)
+[LinkedIn](https://www.linkedin.com/in/vaibhav-lakhera/)
