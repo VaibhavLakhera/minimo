@@ -149,6 +149,16 @@ class CustomisationViewModel @Inject constructor(
                     }
                 }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getBlackTheme()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(blackTheme = enable)
+                    }
+                }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -214,6 +224,12 @@ class CustomisationViewModel @Inject constructor(
     fun onToggleDynamicTheme() {
         viewModelScope.launch {
             preferenceHelper.setDynamicTheme(_state.value.dynamicTheme.not())
+        }
+    }
+
+    fun onToggleBlackTheme() {
+        viewModelScope.launch {
+            preferenceHelper.setBlackTheme(_state.value.blackTheme.not())
         }
     }
 

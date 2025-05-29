@@ -1,7 +1,9 @@
 package com.minimo.launcher.ui.theme
 
 import android.app.Activity
+import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -31,52 +33,55 @@ private val BlackColorScheme = darkColorScheme(
 @Composable
 fun AppTheme(
     themeMode: ThemeMode,
+    blackTheme: Boolean,
     useDynamicTheme: Boolean,
     statusBarVisible: Boolean,
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
     val isDynamicTheme = useDynamicTheme && AndroidUtils.isDynamicThemeSupported()
     var isLightTheme = false
-    val colorScheme = when (themeMode) {
-        ThemeMode.System -> if (isSystemInDarkTheme()) {
-            if (isDynamicTheme) {
-                dynamicDarkColorScheme(LocalContext.current)
+
+    fun getDarkTheme(context: Context): ColorScheme {
+        return if (isDynamicTheme) {
+            if (blackTheme) {
+                dynamicDarkColorScheme(context).copy(
+                    onSurface = Color.White,
+                    surface = Color.Black
+                )
+            } else {
+                dynamicDarkColorScheme(context)
+            }
+        } else {
+            if (blackTheme) {
+                BlackColorScheme
             } else {
                 DarkColorScheme
             }
+        }
+    }
+
+    fun getLightTheme(context: Context): ColorScheme {
+        return if (isDynamicTheme) {
+            dynamicLightColorScheme(context)
+        } else {
+            LightColorScheme
+        }
+    }
+
+    val colorScheme = when (themeMode) {
+        ThemeMode.System -> if (isSystemInDarkTheme()) {
+            getDarkTheme(context)
         } else {
             isLightTheme = true
-
-            if (isDynamicTheme) {
-                dynamicLightColorScheme(LocalContext.current)
-            } else {
-                LightColorScheme
-            }
+            getLightTheme(context)
         }
 
-        ThemeMode.Dark -> if (isDynamicTheme) {
-            dynamicDarkColorScheme(LocalContext.current)
-        } else {
-            DarkColorScheme
-        }
+        ThemeMode.Dark -> getDarkTheme(context)
 
         ThemeMode.Light -> {
             isLightTheme = true
-
-            if (isDynamicTheme) {
-                dynamicLightColorScheme(LocalContext.current)
-            } else {
-                LightColorScheme
-            }
-        }
-
-        ThemeMode.Black -> if (isDynamicTheme) {
-            dynamicDarkColorScheme(LocalContext.current).copy(
-                onSurface = Color.White,
-                surface = Color.Black
-            )
-        } else {
-            BlackColorScheme
+            getLightTheme(context)
         }
     }
 

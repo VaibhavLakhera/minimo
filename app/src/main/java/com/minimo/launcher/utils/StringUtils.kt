@@ -10,7 +10,6 @@ object StringUtils {
             ThemeMode.System -> context.getString(R.string.system)
             ThemeMode.Dark -> context.getString(R.string.dark)
             ThemeMode.Light -> context.getString(R.string.light)
-            ThemeMode.Black -> context.getString(R.string.black)
             else -> ""
         }
     }

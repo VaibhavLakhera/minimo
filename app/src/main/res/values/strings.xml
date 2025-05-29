@@ -31,7 +31,6 @@
     <string name="system">System</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
-    <string name="black">Black</string>
     <string name="full">Full</string>
     <string name="time_only">Time Only</string>
     <string name="date_only">Date Only</string>
@@ -76,4 +75,6 @@
     <string name="change_the_position_of_the_app_drawer_search_bar_to_the_bottom">Change the position of the app drawer search bar to the bottom</string>
     <string name="apply_to_all_apps">Apply To All Apps</string>
     <string name="apply_the_home_app_size_to_all_apps_in_the_app_drawer">Apply the home app size to all apps in the app drawer</string>
+    <string name="black_theme">Black Theme</string>
+    <string name="applied_only_when_the_app_theme_is_in_dark_mode">Applied only when the app theme is in dark mode</string>
 </resources>

@@ -137,16 +137,20 @@ fun CustomisationScreen(
                     ThemeMode.Light to StringUtils.themeModeText(
                         context,
                         ThemeMode.Light
-                    ),
-                    ThemeMode.Black to StringUtils.themeModeText(
-                        context,
-                        ThemeMode.Black
-                    ),
+                    )
                 ),
                 onOptionSelected = { selected ->
                     viewModel.onThemeModeChanged(selected)
                 }
             )
+
+            ToggleItem(
+                title = stringResource(R.string.black_theme),
+                subtitle = stringResource(R.string.applied_only_when_the_app_theme_is_in_dark_mode),
+                isChecked = state.blackTheme,
+                onToggleClick = viewModel::onToggleBlackTheme
+            )
+
             if (AndroidUtils.isDynamicThemeSupported()) {
                 Spacer(modifier = Modifier.height(4.dp))
 

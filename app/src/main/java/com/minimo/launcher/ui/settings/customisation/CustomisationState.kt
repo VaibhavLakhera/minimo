@@ -15,6 +15,7 @@ data class CustomisationState(
     val homeTextSize: Float = Constants.DEFAULT_HOME_TEXT_SIZE.toFloat(),
     val autoOpenKeyboardAllApps: Boolean = false,
     val dynamicTheme: Boolean = false,
+    val blackTheme: Boolean = false,
     val homeClockMode: HomeClockMode? = null,
     val doubleTapToLock: Boolean = false,
     val twentyFourHourFormat: Boolean = false,

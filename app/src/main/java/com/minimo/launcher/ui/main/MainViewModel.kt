@@ -7,6 +7,7 @@ import com.minimo.launcher.utils.HomePressedNotifier
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,27 +22,43 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            preferenceHelper.getThemeMode().collect { mode ->
-                _state.update {
-                    it.copy(themeMode = mode)
+            preferenceHelper.getThemeMode()
+                .distinctUntilChanged()
+                .collect { mode ->
+                    _state.update {
+                        it.copy(themeMode = mode)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getShowStatusBar().collect { visible ->
-                _state.update {
-                    it.copy(statusBarVisible = visible)
+            preferenceHelper.getShowStatusBar()
+                .distinctUntilChanged()
+                .collect { visible ->
+                    _state.update {
+                        it.copy(statusBarVisible = visible)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getDynamicTheme().collect { enable ->
-                _state.update {
-                    it.copy(useDynamicTheme = enable)
+            preferenceHelper.getDynamicTheme()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(useDynamicTheme = enable)
+                    }
                 }
-            }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getBlackTheme()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(blackTheme = enable)
+                    }
+                }
         }
     }
 

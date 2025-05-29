@@ -42,6 +42,7 @@ class PreferenceHelper @Inject constructor(
             booleanPreferencesKey("KEY_DRAWER_SEARCH_BAR_AT_BOTTOM")
         private val KEY_APPLY_HOME_APP_SIZE_TO_ALL_APPS =
             booleanPreferencesKey("KEY_APPLY_HOME_APP_SIZE_TO_ALL_APPS")
+        private val KEY_BLACK_THEME = booleanPreferencesKey("KEY_BLACK_THEME")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -63,7 +64,10 @@ class PreferenceHelper @Inject constructor(
     fun getThemeMode(): Flow<ThemeMode> {
         return preferences.data.map {
             val mode = it[KEY_THEME_MODE]
-            if (!mode.isNullOrBlank()
+            // Added mode check of "Black" for backward compatibility. Previously "Black" theme was part of ThemeMode.
+            if (mode == "Black") {
+                ThemeMode.Dark
+            } else if (!mode.isNullOrBlank()
                 && ThemeMode.entries.any { entry -> entry.name == mode }
             ) {
                 ThemeMode.valueOf(mode)
@@ -240,5 +244,23 @@ class PreferenceHelper @Inject constructor(
 
     fun getHomeAppSizeToAllApps(): Flow<Boolean> {
         return preferences.data.map { it[KEY_APPLY_HOME_APP_SIZE_TO_ALL_APPS] ?: false }
+    }
+
+    suspend fun setBlackTheme(enable: Boolean) {
+        preferences.edit {
+            it[KEY_BLACK_THEME] = enable
+        }
+    }
+
+    fun getBlackTheme(): Flow<Boolean> {
+        return preferences.data.map {
+            // Added themeMode check for backward compatibility. Previously "Black" theme was part of ThemeMode.
+            val themeMode = it[KEY_THEME_MODE]
+            if (themeMode == "Black") {
+                true
+            } else {
+                it[KEY_BLACK_THEME] ?: false
+            }
+        }
     }
 }
