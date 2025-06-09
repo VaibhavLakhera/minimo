@@ -43,6 +43,7 @@ class PreferenceHelper @Inject constructor(
         private val KEY_APPLY_HOME_APP_SIZE_TO_ALL_APPS =
             booleanPreferencesKey("KEY_APPLY_HOME_APP_SIZE_TO_ALL_APPS")
         private val KEY_BLACK_THEME = booleanPreferencesKey("KEY_BLACK_THEME")
+        private val KEY_AUTO_OPEN_APP = booleanPreferencesKey("KEY_AUTO_OPEN_APP")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -262,5 +263,15 @@ class PreferenceHelper @Inject constructor(
                 it[KEY_BLACK_THEME] ?: false
             }
         }
+    }
+
+    suspend fun setAutoOpenApp(enable: Boolean) {
+        preferences.edit {
+            it[KEY_AUTO_OPEN_APP] = enable
+        }
+    }
+
+    fun getAutoOpenApp(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_AUTO_OPEN_APP] ?: false }
     }
 }

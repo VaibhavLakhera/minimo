@@ -25,99 +25,123 @@ class CustomisationViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            preferenceHelper.getThemeMode().collect { mode ->
-                _state.update {
-                    it.copy(themeMode = mode)
+            preferenceHelper.getThemeMode()
+                .distinctUntilChanged()
+                .collect { mode ->
+                    _state.update {
+                        it.copy(themeMode = mode)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getHomeAppsAlignment().collect { alignment ->
-                _state.update {
-                    it.copy(homeAppsAlignment = alignment)
+            preferenceHelper.getHomeAppsAlignment()
+                .distinctUntilChanged()
+                .collect { alignment ->
+                    _state.update {
+                        it.copy(homeAppsAlignment = alignment)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getHomeClockAlignment().collect { alignment ->
-                _state.update {
-                    it.copy(homeClockAlignment = alignment)
+            preferenceHelper.getHomeClockAlignment()
+                .distinctUntilChanged()
+                .collect { alignment ->
+                    _state.update {
+                        it.copy(homeClockAlignment = alignment)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getShowHomeClock().collect { show ->
-                _state.update {
-                    it.copy(showHomeClock = show)
+            preferenceHelper.getShowHomeClock()
+                .distinctUntilChanged()
+                .collect { show ->
+                    _state.update {
+                        it.copy(showHomeClock = show)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getShowStatusBar().collect { show ->
-                _state.update {
-                    it.copy(showStatusBar = show)
+            preferenceHelper.getShowStatusBar()
+                .distinctUntilChanged()
+                .collect { show ->
+                    _state.update {
+                        it.copy(showStatusBar = show)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getHomeTextSizeFlow().collect { size ->
-                _state.update {
-                    it.copy(homeTextSize = size.toFloat())
+            preferenceHelper.getHomeTextSizeFlow()
+                .distinctUntilChanged()
+                .collect { size ->
+                    _state.update {
+                        it.copy(homeTextSize = size.toFloat())
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getAutoOpenKeyboardAllApps().collect { open ->
-                _state.update {
-                    it.copy(autoOpenKeyboardAllApps = open)
+            preferenceHelper.getAutoOpenKeyboardAllApps()
+                .distinctUntilChanged()
+                .collect { open ->
+                    _state.update {
+                        it.copy(autoOpenKeyboardAllApps = open)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getDynamicTheme().collect { enable ->
-                _state.update {
-                    it.copy(dynamicTheme = enable)
+            preferenceHelper.getDynamicTheme()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(dynamicTheme = enable)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getHomeClockMode().collect { mode ->
-                _state.update {
-                    it.copy(homeClockMode = mode)
+            preferenceHelper.getHomeClockMode()
+                .distinctUntilChanged()
+                .collect { mode ->
+                    _state.update {
+                        it.copy(homeClockMode = mode)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getDoubleTapToLock().collect { enable ->
-                _state.update {
-                    it.copy(doubleTapToLock = enable)
+            preferenceHelper.getDoubleTapToLock()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(doubleTapToLock = enable)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getTwentyFourHourFormat().collect { enable ->
-                _state.update {
-                    it.copy(twentyFourHourFormat = enable)
+            preferenceHelper.getTwentyFourHourFormat()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(twentyFourHourFormat = enable)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
-            preferenceHelper.getShowBatteryLevel().collect { enable ->
-                _state.update {
-                    it.copy(showBatteryLevel = enable)
+            preferenceHelper.getShowBatteryLevel()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(showBatteryLevel = enable)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
@@ -156,6 +180,16 @@ class CustomisationViewModel @Inject constructor(
                 .collect { enable ->
                     _state.update {
                         it.copy(blackTheme = enable)
+                    }
+                }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getAutoOpenApp()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(autoOpenApp = enable)
                     }
                 }
         }
@@ -267,6 +301,12 @@ class CustomisationViewModel @Inject constructor(
             if (doubleTapToLock) {
                 preferenceHelper.setDoubleTapToLock(false)
             }
+        }
+    }
+
+    fun onToggleAutoOpenApp() {
+        viewModelScope.launch {
+            preferenceHelper.setAutoOpenApp(_state.value.autoOpenApp.not())
         }
     }
 }

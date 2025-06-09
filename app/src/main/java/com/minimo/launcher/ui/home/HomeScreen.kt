@@ -98,6 +98,11 @@ fun HomeScreen(
 
     val focusRequester = remember { FocusRequester() }
 
+    fun hideKeyboardWithClearFocus() {
+        focusManager.clearFocus()
+        keyboardController?.hide()
+    }
+
     BackHandler {
         coroutineScope.launch {
             if (bottomSheetScaffoldState.bottomSheetState.currentValue != SheetValue.PartiallyExpanded) {
@@ -118,13 +123,11 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.launchApp.collect(context::launchApp)
+            viewModel.launchApp.collect { packageName ->
+                hideKeyboardWithClearFocus()
+                context.launchApp(packageName)
+            }
         }
-    }
-
-    fun hideKeyboardWithClearFocus() {
-        focusManager.clearFocus()
-        keyboardController?.hide()
     }
 
     LaunchedEffect(bottomSheetScaffoldState.bottomSheetState.currentValue) {
@@ -259,7 +262,6 @@ fun HomeScreen(
                             isFavourite = appInfo.isFavourite,
                             isHidden = appInfo.isHidden,
                             onClick = {
-                                hideKeyboardWithClearFocus()
                                 viewModel.onLaunchAppClick(appInfo)
                             },
                             onToggleFavouriteClick = { viewModel.onToggleFavouriteAppClick(appInfo) },

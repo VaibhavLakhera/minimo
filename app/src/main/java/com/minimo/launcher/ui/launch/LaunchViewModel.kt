@@ -7,6 +7,7 @@ import com.minimo.launcher.ui.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +21,9 @@ class LaunchViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            preferenceHelper.getIsIntroCompletedFlow().collect { isIntroCompleted ->
+            preferenceHelper.getIsIntroCompletedFlow()
+                .distinctUntilChanged()
+                .collect { isIntroCompleted ->
                 if (isIntroCompleted) {
                     _navigateToRoute.send(Routes.HOME)
                 } else {

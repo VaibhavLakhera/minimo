@@ -79,7 +79,9 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preferenceHelper.getHomeAppsAlignment().collect { alignment ->
+            preferenceHelper.getHomeAppsAlignment()
+                .distinctUntilChanged()
+                .collect { alignment ->
                 val textAlign = when (alignment) {
                     HomeAppsAlignment.Start -> TextAlign.Start
                     HomeAppsAlignment.Center -> TextAlign.Center
@@ -92,7 +94,9 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preferenceHelper.getHomeClockAlignment().collect { alignment ->
+            preferenceHelper.getHomeClockAlignment()
+                .distinctUntilChanged()
+                .collect { alignment ->
                 val horizontalAlignment = when (alignment) {
                     HomeClockAlignment.Start -> Alignment.Start
                     HomeClockAlignment.Center -> Alignment.CenterHorizontally
@@ -105,7 +109,9 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preferenceHelper.getShowHomeClock().collect { show ->
+            preferenceHelper.getShowHomeClock()
+                .distinctUntilChanged()
+                .collect { show ->
                 _state.update {
                     it.copy(showHomeClock = show)
                 }
@@ -113,7 +119,9 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preferenceHelper.getHomeTextSizeFlow().collect { size ->
+            preferenceHelper.getHomeTextSizeFlow()
+                .distinctUntilChanged()
+                .collect { size ->
                 _state.update {
                     it.copy(homeTextSize = size)
                 }
@@ -121,7 +129,9 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preferenceHelper.getAutoOpenKeyboardAllApps().collect { open ->
+            preferenceHelper.getAutoOpenKeyboardAllApps()
+                .distinctUntilChanged()
+                .collect { open ->
                 _state.update {
                     it.copy(autoOpenKeyboardAllApps = open)
                 }
@@ -129,7 +139,9 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preferenceHelper.getHomeClockMode().collect { mode ->
+            preferenceHelper.getHomeClockMode()
+                .distinctUntilChanged()
+                .collect { mode ->
                 _state.update {
                     it.copy(homeClockMode = mode)
                 }
@@ -137,7 +149,9 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preferenceHelper.getDoubleTapToLock().collect { enable ->
+            preferenceHelper.getDoubleTapToLock()
+                .distinctUntilChanged()
+                .collect { enable ->
                 _state.update {
                     it.copy(doubleTapToLock = enable)
                 }
@@ -145,7 +159,9 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preferenceHelper.getTwentyFourHourFormat().collect { enable ->
+            preferenceHelper.getTwentyFourHourFormat()
+                .distinctUntilChanged()
+                .collect { enable ->
                 _state.update {
                     it.copy(twentyFourHourFormat = enable)
                 }
@@ -153,7 +169,9 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preferenceHelper.getShowBatteryLevel().collect { enable ->
+            preferenceHelper.getShowBatteryLevel()
+                .distinctUntilChanged()
+                .collect { enable ->
                 _state.update {
                     it.copy(showBatteryLevel = enable)
                 }
@@ -186,6 +204,16 @@ class HomeViewModel @Inject constructor(
                 .collect { enable ->
                     _state.update {
                         it.copy(applyHomeAppSizeToAllApps = enable)
+                    }
+                }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getAutoOpenApp()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(autoOpenApp = enable)
                     }
                 }
         }
@@ -275,15 +303,19 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onSearchTextChange(searchText: String) {
+        val filteredAllApps = getAppsWithSearch(
+            searchText = searchText,
+            apps = _state.value.allApps,
+            includeHiddenApps = _state.value.showHiddenAppsInSearch
+        )
         _state.update {
             it.copy(
                 searchText = searchText,
-                filteredAllApps = getAppsWithSearch(
-                    searchText = searchText,
-                    apps = it.allApps,
-                    includeHiddenApps = it.showHiddenAppsInSearch
-                ),
+                filteredAllApps = filteredAllApps,
             )
+        }
+        if (_state.value.autoOpenApp && filteredAllApps.size == 1) {
+            _launchApp.trySend(filteredAllApps[0].packageName)
         }
     }
 

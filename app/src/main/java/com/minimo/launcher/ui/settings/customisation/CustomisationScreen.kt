@@ -384,6 +384,15 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleDrawerSearchBarAtBottom
             )
 
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            ToggleItem(
+                title = stringResource(R.string.auto_open_app),
+                subtitle = stringResource(R.string.automatically_open_the_app_if_it_is_the_only_search_result),
+                isChecked = state.autoOpenApp,
+                onToggleClick = viewModel::onToggleAutoOpenApp
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
         }
 
