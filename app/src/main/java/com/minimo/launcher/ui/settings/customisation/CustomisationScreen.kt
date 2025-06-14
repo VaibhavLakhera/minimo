@@ -393,6 +393,15 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleAutoOpenApp
             )
 
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            ToggleItem(
+                title = stringResource(R.string.hide_app_drawer_arrow),
+                subtitle = stringResource(R.string.hide_app_drawer_arrow_description),
+                isChecked = state.hideAppDrawerArrow,
+                onToggleClick = viewModel::onToggleHideAppDrawerArrow
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
         }
 

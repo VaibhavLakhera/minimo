@@ -24,4 +24,5 @@ data class CustomisationState(
     val drawerSearchBarAtBottom: Boolean = false,
     val applyHomeAppSizeToAllApps: Boolean = false,
     val autoOpenApp: Boolean = false,
+    val hideAppDrawerArrow: Boolean = false,
 )

@@ -98,6 +98,9 @@ fun HomeScreen(
 
     val focusRequester = remember { FocusRequester() }
 
+    val homeLazyListState = rememberLazyListState()
+    val allAppsLazyListState = rememberLazyListState()
+
     fun hideKeyboardWithClearFocus() {
         focusManager.clearFocus()
         keyboardController?.hide()
@@ -146,12 +149,10 @@ fun HomeScreen(
             else -> {
                 viewModel.setBottomSheetExpanded(false)
                 focusManager.clearFocus()
+                allAppsLazyListState.scrollToItem(0)
             }
         }
     }
-
-    val homeLazyListState = rememberLazyListState()
-    val allAppsLazyListState = rememberLazyListState()
 
     LaunchedEffect(allAppsLazyListState) {
         snapshotFlow { allAppsLazyListState.isScrollInProgress }
@@ -217,6 +218,16 @@ fun HomeScreen(
 
     val systemNavigationHeight =
         WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
+    val sheetPeekHeight by remember {
+        derivedStateOf {
+            if (state.hideAppDrawerArrow) {
+                systemNavigationHeight
+            } else {
+                56.dp + systemNavigationHeight
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -290,7 +301,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(systemNavigationHeight))
                 }
             },
-            sheetPeekHeight = 56.dp + systemNavigationHeight,
+            sheetPeekHeight = sheetPeekHeight,
             sheetContainerColor = MaterialTheme.colorScheme.surface,
             containerColor = MaterialTheme.colorScheme.surface
         ) { paddingValues ->

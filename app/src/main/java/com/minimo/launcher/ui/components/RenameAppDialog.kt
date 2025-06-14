@@ -15,9 +15,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
+import com.minimo.launcher.R
 
 @Composable
 fun RenameAppDialog(
@@ -42,7 +44,7 @@ fun RenameAppDialog(
     }
     AlertDialog(
         onDismissRequest = onCancelClick,
-        title = { Text("Rename App") },
+        title = { Text(stringResource(R.string.rename_app)) },
         text = {
             OutlinedTextField(
                 modifier = Modifier.focusRequester(focusRequester),
@@ -53,19 +55,19 @@ fun RenameAppDialog(
                     }
                 },
                 singleLine = true,
-                label = { Text("App Name") },
+                label = { Text(stringResource(R.string.app_name_label)) },
                 placeholder = { Text(originalName) },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
             )
         },
         confirmButton = {
             Button(onClick = { onRenameClick(newName.text.trim()) }) {
-                Text("Rename")
+                Text(stringResource(R.string.rename))
             }
         },
         dismissButton = {
             TextButton(onClick = onCancelClick) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )

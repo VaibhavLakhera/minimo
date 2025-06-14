@@ -218,6 +218,16 @@ class HomeViewModel @Inject constructor(
                 }
         }
 
+        viewModelScope.launch {
+            preferenceHelper.getHideAppDrawerArrow()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(hideAppDrawerArrow = enable)
+                    }
+                }
+        }
+
         listenForHomePressedEvent()
     }
 

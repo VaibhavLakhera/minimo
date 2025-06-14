@@ -193,6 +193,16 @@ class CustomisationViewModel @Inject constructor(
                     }
                 }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getHideAppDrawerArrow()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(hideAppDrawerArrow = enable)
+                    }
+                }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -307,6 +317,12 @@ class CustomisationViewModel @Inject constructor(
     fun onToggleAutoOpenApp() {
         viewModelScope.launch {
             preferenceHelper.setAutoOpenApp(_state.value.autoOpenApp.not())
+        }
+    }
+
+    fun onToggleHideAppDrawerArrow() {
+        viewModelScope.launch {
+            preferenceHelper.hideAppDrawerArrow(_state.value.hideAppDrawerArrow.not())
         }
     }
 }
