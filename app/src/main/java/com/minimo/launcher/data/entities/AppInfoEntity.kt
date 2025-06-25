@@ -7,6 +7,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "appInfoEntity")
 data class AppInfoEntity(
     @PrimaryKey
+    @ColumnInfo(name = "class_name")
+    val className: String,
+
     @ColumnInfo(name = "package_name")
     val packageName: String,
 

@@ -2,6 +2,7 @@ package com.minimo.launcher.utils
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import com.minimo.launcher.data.entities.AppInfoEntity
 import com.minimo.launcher.ui.entities.AppInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -12,26 +13,27 @@ class AppUtils @Inject constructor(
     private val context: Context
 ) {
     fun getInstalledApps(): List<InstalledApp> {
-        val packageManager = context.packageManager
+        val pm = context.packageManager
+        val intent = Intent(Intent.ACTION_MAIN, null).apply {
+            addCategory(Intent.CATEGORY_LAUNCHER)
+        }
 
-        val intent = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
-        val applications = packageManager.queryIntentActivities(intent, 0)
+        val activities = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
         val selfPackageName = context.packageName
 
         val installedApps = mutableListOf<InstalledApp>()
-        for (application in applications) {
-            val appName = application.loadLabel(packageManager).toString()
-            val packageName = application.activityInfo.packageName
+        for (resolveInfo in activities) {
+            val activityInfo = resolveInfo.activityInfo
+            val packageName = activityInfo.packageName
+            val className = activityInfo.name
+            val appName = resolveInfo.loadLabel(pm).toString()
 
-            /*
-            * Ignore the self package name.
-            * Add all user apps to the list.
-            * */
             if (packageName.contains(selfPackageName, true).not()) {
                 installedApps.add(
                     InstalledApp(
                         appName = appName,
-                        packageName = packageName
+                        packageName = packageName,
+                        className = className
                     )
                 )
             }
@@ -59,6 +61,7 @@ class AppUtils @Inject constructor(
         return AppInfo(
             packageName = packageName,
             appName = appName,
+            className = className,
             alternateAppName = alternateAppName,
             isFavourite = isFavourite,
             isHidden = isHidden
@@ -68,5 +71,6 @@ class AppUtils @Inject constructor(
 
 data class InstalledApp(
     val appName: String,
-    val packageName: String
+    val packageName: String,
+    val className: String
 )

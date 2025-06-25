@@ -114,7 +114,7 @@ fun FavouriteAppsScreen(
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(vertical = 20.dp)
             ) {
-                items(items = state.filteredAllApps, key = { it.packageName }) { appInfo ->
+                items(items = state.filteredAllApps, key = { it.className }) { appInfo ->
                     ToggleAppItem(
                         modifier = Modifier.animateItem(),
                         appName = appInfo.name,

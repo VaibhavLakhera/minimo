@@ -48,13 +48,14 @@ class UpdateAllAppsUseCase @Inject constructor(
         installedApps: List<InstalledApp>,
         dbApps: List<AppInfoEntity>
     ) {
-        val dbAppsPackages = dbApps.map { it.packageName }
+        val dbAppsPackages = dbApps.map { it.className }
         for (installedApp in installedApps) {
-            if (installedApp.packageName !in dbAppsPackages) {
+            if (installedApp.className !in dbAppsPackages) {
                 appInfoDao.addApps(
                     AppInfoEntity(
                         packageName = installedApp.packageName,
                         appName = installedApp.appName,
+                        className = installedApp.className,
                         alternateAppName = installedApp.appName,
                         isFavourite = false,
                         isHidden = false

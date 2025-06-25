@@ -2,12 +2,18 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "228ffaaeeebb672d8db44b4e38dcf0a8",
+    "identityHash": "548d0903b25a391220ba4ac72535646d",
     "entities": [
       {
         "tableName": "appInfoEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`package_name` TEXT NOT NULL, `app_name` TEXT NOT NULL, `alternate_app_name` TEXT NOT NULL DEFAULT '', `is_favourite` INTEGER NOT NULL DEFAULT 0, `is_hidden` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`package_name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`class_name` TEXT NOT NULL, `package_name` TEXT NOT NULL, `app_name` TEXT NOT NULL, `alternate_app_name` TEXT NOT NULL DEFAULT '', `is_favourite` INTEGER NOT NULL DEFAULT 0, `is_hidden` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`class_name`))",
         "fields": [
+          {
+            "fieldPath": "className",
+            "columnName": "class_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
           {
             "fieldPath": "packageName",
             "columnName": "package_name",
@@ -45,14 +51,14 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "package_name"
+            "class_name"
           ]
         }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '228ffaaeeebb672d8db44b4e38dcf0a8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '548d0903b25a391220ba4ac72535646d')"
     ]
   }
 }
