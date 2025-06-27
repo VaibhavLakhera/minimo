@@ -41,8 +41,8 @@ class HomeViewModel @Inject constructor(
     private val _triggerHomePressed = MutableStateFlow(false)
     val triggerHomePressed: StateFlow<Boolean> = _triggerHomePressed.asStateFlow()
 
-    private val _launchApp = Channel<String>(Channel.BUFFERED)
-    val launchApp: Flow<String> = _launchApp.receiveAsFlow()
+    private val _launchApp = Channel<AppInfo>(Channel.BUFFERED)
+    val launchApp: Flow<AppInfo> = _launchApp.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -262,25 +262,25 @@ class HomeViewModel @Inject constructor(
     fun onToggleFavouriteAppClick(app: AppInfo) {
         viewModelScope.launch {
             if (app.isFavourite) {
-                appInfoDao.removeAppFromFavourite(app.packageName)
+                appInfoDao.removeAppFromFavourite(app.className)
             } else {
-                appInfoDao.addAppToFavourite(app.packageName)
+                appInfoDao.addAppToFavourite(app.className)
             }
         }
     }
 
     fun onLaunchAppClick(app: AppInfo) {
         viewModelScope.launch {
-            _launchApp.send(app.packageName)
+            _launchApp.send(app)
         }
     }
 
     fun onToggleHideClick(app: AppInfo) {
         viewModelScope.launch {
             if (app.isHidden) {
-                appInfoDao.removeAppFromHidden(app.packageName)
+                appInfoDao.removeAppFromHidden(app.className)
             } else {
-                appInfoDao.addAppToHidden(app.packageName)
+                appInfoDao.addAppToHidden(app.className)
             }
         }
     }
@@ -300,7 +300,7 @@ class HomeViewModel @Inject constructor(
             val name = newName.ifBlank {
                 app.appName
             }
-            appInfoDao.renameApp(app.packageName, name)
+            appInfoDao.renameApp(app.className, name)
         }
     }
 
@@ -325,7 +325,7 @@ class HomeViewModel @Inject constructor(
             )
         }
         if (_state.value.autoOpenApp && filteredAllApps.size == 1) {
-            _launchApp.trySend(filteredAllApps[0].packageName)
+            _launchApp.trySend(filteredAllApps[0])
         }
     }
 

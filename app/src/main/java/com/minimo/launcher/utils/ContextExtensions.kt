@@ -4,8 +4,11 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.LauncherApps
 import android.net.Uri
 import android.os.Build
+import android.os.Process
+import android.os.UserManager
 import android.provider.AlarmClock
 import android.provider.CalendarContract
 import android.provider.Settings
@@ -14,18 +17,27 @@ import androidx.core.net.toUri
 import com.minimo.launcher.R
 import timber.log.Timber
 
-fun Context.launchApp(packageName: String): Boolean {
+fun Context.launchApp(packageName: String, className: String, userHandleHashCode: Int) {
+    val userManager = getSystemService(Context.USER_SERVICE) as UserManager
+    val userHandle = userManager.userProfiles.find { it.hashCode() == userHandleHashCode }
+
+    if (packageName.isBlank() || className.isBlank() || userHandle == null) return
+
+    val launcher = getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+    val component = ComponentName(packageName, className)
+
     try {
-        val intent = packageManager.getLaunchIntentForPackage(packageName)
-        if (intent != null) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-            return true
+        launcher.startMainActivity(component, userHandle, null, null)
+    } catch (exception: SecurityException) {
+        Timber.e(exception)
+        try {
+            launcher.startMainActivity(component, Process.myUserHandle(), null, null)
+        } catch (exception: Exception) {
+            Timber.e(exception)
         }
     } catch (exception: Exception) {
         Timber.e(exception)
     }
-    return false
 }
 
 fun Context.uninstallApp(packageName: String) {

@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import com.minimo.launcher.data.AppDatabase
+import com.minimo.launcher.data.DatabaseMigrations
 import com.minimo.launcher.utils.AppUtils
 import dagger.Module
 import dagger.Provides
@@ -29,6 +30,7 @@ class DataModule {
             AppDatabase::class.java, "minimo-launcher-db"
         )
             .fallbackToDestructiveMigration(true)
+            .addMigrations(DatabaseMigrations.MIGRATION_1_2(application))
             .build()
 
     @Singleton

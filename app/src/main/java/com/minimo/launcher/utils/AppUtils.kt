@@ -1,7 +1,8 @@
 package com.minimo.launcher.utils
 
 import android.content.Context
-import android.content.Intent
+import android.content.pm.LauncherApps
+import android.os.UserManager
 import com.minimo.launcher.data.entities.AppInfoEntity
 import com.minimo.launcher.ui.entities.AppInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -12,28 +13,34 @@ class AppUtils @Inject constructor(
     private val context: Context
 ) {
     fun getInstalledApps(): List<InstalledApp> {
-        val packageManager = context.packageManager
+        val userManager = context.getSystemService(Context.USER_SERVICE) as UserManager
+        val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
 
-        val intent = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
-        val applications = packageManager.queryIntentActivities(intent, 0)
         val selfPackageName = context.packageName
 
         val installedApps = mutableListOf<InstalledApp>()
-        for (application in applications) {
-            val appName = application.loadLabel(packageManager).toString()
-            val packageName = application.activityInfo.packageName
 
-            /*
-            * Ignore the self package name.
-            * Add all user apps to the list.
-            * */
-            if (packageName.contains(selfPackageName, true).not()) {
-                installedApps.add(
-                    InstalledApp(
-                        appName = appName,
-                        packageName = packageName
+        for (profile in userManager.userProfiles) {
+            val activities = launcherApps.getActivityList(null, profile)
+            for (activity in activities) {
+                val appName = activity.label.toString()
+                val packageName = activity.componentName.packageName
+                val className = activity.componentName.className
+
+                /*
+                * Ignore the self package name.
+                * Add all user apps to the list.
+                * */
+                if (packageName.contains(selfPackageName, true).not()) {
+                    installedApps.add(
+                        InstalledApp(
+                            appName = appName,
+                            packageName = packageName,
+                            className = className,
+                            userHandle = profile.hashCode()
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -58,6 +65,8 @@ class AppUtils @Inject constructor(
     private fun AppInfoEntity.toAppInfo(): AppInfo {
         return AppInfo(
             packageName = packageName,
+            className = className,
+            userHandle = userHandle,
             appName = appName,
             alternateAppName = alternateAppName,
             isFavourite = isFavourite,
@@ -68,5 +77,7 @@ class AppUtils @Inject constructor(
 
 data class InstalledApp(
     val appName: String,
-    val packageName: String
+    val packageName: String,
+    val className: String,
+    val userHandle: Int
 )

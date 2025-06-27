@@ -43,7 +43,7 @@ internal fun IntroPage2(
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(vertical = 20.dp)
         ) {
-            items(items = state.filteredAllApps, key = { it.packageName }) { appInfo ->
+            items(items = state.filteredAllApps, key = { it.id }) { appInfo ->
                 ToggleAppItem(
                     modifier = Modifier.animateItem(),
                     appName = appInfo.name,

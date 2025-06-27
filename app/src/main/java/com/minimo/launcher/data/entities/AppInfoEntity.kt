@@ -2,13 +2,17 @@ package com.minimo.launcher.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "appInfoEntity")
+@Entity(tableName = "appInfoEntity", primaryKeys = ["package_name", "class_name", "user_handle"])
 data class AppInfoEntity(
-    @PrimaryKey
     @ColumnInfo(name = "package_name")
     val packageName: String,
+
+    @ColumnInfo(name = "class_name")
+    val className: String,
+
+    @ColumnInfo(name = "user_handle")
+    val userHandle: Int,
 
     @ColumnInfo(name = "app_name")
     val appName: String,

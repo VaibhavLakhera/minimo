@@ -29,17 +29,17 @@ class UpdateAllAppsUseCase @Inject constructor(
         installedApps: List<InstalledApp>,
         dbApps: List<AppInfoEntity>
     ) {
-        val installedAppsMap = installedApps.associateBy { it.packageName }
+        val installedAppsMap = installedApps.associateBy { it.className + it.userHandle }
         for (dbApp in dbApps) {
-            if (installedAppsMap.containsKey(dbApp.packageName)) {
+            if (installedAppsMap.containsKey(dbApp.className + dbApp.userHandle)) {
                 // Update the app if it exists in the installed apps list
-                val installedApp = installedAppsMap[dbApp.packageName]
+                val installedApp = installedAppsMap[dbApp.className + dbApp.userHandle]
                 if (installedApp != null && dbApp.appName != installedApp.appName) {
                     appInfoDao.addApps(dbApp.copy(appName = installedApp.appName))
                 }
             } else {
                 // Delete the app if it is not in the installed apps list
-                appInfoDao.deleteApp(dbApp.packageName)
+                appInfoDao.deleteApp(dbApp.className)
             }
         }
     }
@@ -48,12 +48,14 @@ class UpdateAllAppsUseCase @Inject constructor(
         installedApps: List<InstalledApp>,
         dbApps: List<AppInfoEntity>
     ) {
-        val dbAppsPackages = dbApps.map { it.packageName }
+        val dbAppsPackages = dbApps.map { it.className + it.userHandle }
         for (installedApp in installedApps) {
-            if (installedApp.packageName !in dbAppsPackages) {
+            if (installedApp.className + installedApp.userHandle !in dbAppsPackages) {
                 appInfoDao.addApps(
                     AppInfoEntity(
                         packageName = installedApp.packageName,
+                        className = installedApp.className,
+                        userHandle = installedApp.userHandle,
                         appName = installedApp.appName,
                         alternateAppName = installedApp.appName,
                         isFavourite = false,
