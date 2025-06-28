@@ -126,9 +126,9 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.launchApp.collect { packageName ->
+            viewModel.launchApp.collect { app ->
                 hideKeyboardWithClearFocus()
-                context.launchApp(packageName)
+                context.launchApp(app.packageName, app.className, app.userHandle)
             }
         }
     }
@@ -266,7 +266,7 @@ fun HomeScreen(
                         .weight(1f),
                     contentPadding = PaddingValues(top = 16.dp, bottom = systemNavigationHeight)
                 ) {
-                    items(items = state.filteredAllApps, key = { it.packageName }) { appInfo ->
+                    items(items = state.filteredAllApps, key = { it.id }) { appInfo ->
                         AppNameItem(
                             modifier = Modifier.animateItem(),
                             appName = appInfo.name,
@@ -346,7 +346,7 @@ fun HomeScreen(
                         contentPadding = paddingValues,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        items(items = state.favouriteApps, key = { it.packageName }) { appInfo ->
+                        items(items = state.favouriteApps, key = { it.id }) { appInfo ->
                             AppNameItem(
                                 modifier = Modifier.animateItem(),
                                 appName = appInfo.name,
