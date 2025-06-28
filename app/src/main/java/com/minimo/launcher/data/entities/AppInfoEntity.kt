@@ -2,6 +2,7 @@ package com.minimo.launcher.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 
 @Entity(tableName = "appInfoEntity", primaryKeys = ["package_name", "class_name", "user_handle"])
 data class AppInfoEntity(
@@ -25,4 +26,8 @@ data class AppInfoEntity(
 
     @ColumnInfo(name = "is_hidden", defaultValue = "0")
     val isHidden: Boolean
-)
+) {
+    @get:Ignore
+    val id: String
+        get() = className + userHandle
+}

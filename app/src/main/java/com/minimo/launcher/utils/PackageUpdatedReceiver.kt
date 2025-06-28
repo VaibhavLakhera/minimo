@@ -4,7 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import com.minimo.launcher.data.usecase.UpdateAllAppsUseCase
+import com.minimo.launcher.data.usecase.AddUpdateAppsUseCase
+import com.minimo.launcher.data.usecase.RemoveAppsUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -17,7 +18,10 @@ import kotlin.coroutines.EmptyCoroutineContext
 @AndroidEntryPoint
 class PackageUpdatedReceiver : BroadcastReceiver() {
     @Inject
-    lateinit var updateAllAppsUseCase: UpdateAllAppsUseCase
+    lateinit var addUpdateAppsUseCase: AddUpdateAppsUseCase
+
+    @Inject
+    lateinit var removeAppsUseCase: RemoveAppsUseCase
 
     fun getFilter(): IntentFilter {
         val filter = IntentFilter()
@@ -29,11 +33,25 @@ class PackageUpdatedReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) = goAsync {
-        if (intent.action == Intent.ACTION_PACKAGE_ADDED
-            || intent.action == Intent.ACTION_PACKAGE_REMOVED
-            || intent.action == Intent.ACTION_PACKAGE_CHANGED
-        ) {
-            updateAllAppsUseCase.invoke()
+        val isReplacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
+        val packageName = intent.data?.schemeSpecificPart
+
+        if (packageName.isNullOrBlank()) return@goAsync
+
+        when (intent.action) {
+            Intent.ACTION_PACKAGE_ADDED -> {
+                addUpdateAppsUseCase.invoke(packageName)
+            }
+
+            Intent.ACTION_PACKAGE_REMOVED -> {
+                if (!isReplacing) {
+                    removeAppsUseCase.invoke(packageName)
+                }
+            }
+
+            Intent.ACTION_PACKAGE_CHANGED -> {
+                addUpdateAppsUseCase.invoke(packageName)
+            }
         }
     }
 }

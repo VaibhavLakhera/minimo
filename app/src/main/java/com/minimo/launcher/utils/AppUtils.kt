@@ -12,7 +12,7 @@ class AppUtils @Inject constructor(
     @ApplicationContext
     private val context: Context
 ) {
-    fun getInstalledApps(): List<InstalledApp> {
+    fun getInstalledApps(packageName: String? = null): List<InstalledApp> {
         val userManager = context.getSystemService(Context.USER_SERVICE) as UserManager
         val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
 
@@ -21,22 +21,22 @@ class AppUtils @Inject constructor(
         val installedApps = mutableListOf<InstalledApp>()
 
         for (profile in userManager.userProfiles) {
-            val activities = launcherApps.getActivityList(null, profile)
+            val activities = launcherApps.getActivityList(packageName, profile)
             for (activity in activities) {
                 val appName = activity.label.toString()
-                val packageName = activity.componentName.packageName
-                val className = activity.componentName.className
+                val appPackageName = activity.componentName.packageName
+                val appClassName = activity.componentName.className
 
                 /*
                 * Ignore the self package name.
                 * Add all user apps to the list.
                 * */
-                if (packageName.contains(selfPackageName, true).not()) {
+                if (appPackageName.contains(selfPackageName, true).not()) {
                     installedApps.add(
                         InstalledApp(
                             appName = appName,
-                            packageName = packageName,
-                            className = className,
+                            packageName = appPackageName,
+                            className = appClassName,
                             userHandle = profile.hashCode()
                         )
                     )
@@ -51,7 +51,6 @@ class AppUtils @Inject constructor(
         entities: List<AppInfoEntity>
     ): List<AppInfo> {
         return entities.map { it.toAppInfo() }
-            .sortedBy { it.alternateAppName.lowercase() }
     }
 
     fun getAppsWithSearch(searchText: String, apps: List<AppInfo>): List<AppInfo> {
@@ -80,4 +79,7 @@ data class InstalledApp(
     val packageName: String,
     val className: String,
     val userHandle: Int
-)
+) {
+    val id: String
+        get() = className + userHandle
+}

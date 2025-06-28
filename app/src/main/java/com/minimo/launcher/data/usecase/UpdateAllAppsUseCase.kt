@@ -29,18 +29,34 @@ class UpdateAllAppsUseCase @Inject constructor(
         installedApps: List<InstalledApp>,
         dbApps: List<AppInfoEntity>
     ) {
-        val installedAppsMap = installedApps.associateBy { it.className + it.userHandle }
+        val installedAppsMap = installedApps.associateBy { it.id }
+        val addApps = mutableListOf<AppInfoEntity>()
+        val deleteAppClassNames = mutableListOf<String>()
+
         for (dbApp in dbApps) {
-            if (installedAppsMap.containsKey(dbApp.className + dbApp.userHandle)) {
+            if (installedAppsMap.containsKey(dbApp.id)) {
                 // Update the app if it exists in the installed apps list
-                val installedApp = installedAppsMap[dbApp.className + dbApp.userHandle]
-                if (installedApp != null && dbApp.appName != installedApp.appName) {
-                    appInfoDao.addApps(dbApp.copy(appName = installedApp.appName))
+                val installedApp = installedAppsMap[dbApp.id]
+                if (installedApp != null) {
+                    addApps.add(
+                        dbApp.copy(
+                            appName = installedApp.appName,
+                            alternateAppName = if (dbApp.appName == dbApp.alternateAppName) "" else dbApp.alternateAppName
+                        )
+                    )
                 }
             } else {
                 // Delete the app if it is not in the installed apps list
-                appInfoDao.deleteApp(dbApp.className)
+                deleteAppClassNames.add(dbApp.className)
             }
+        }
+
+        if (addApps.isNotEmpty()) {
+            appInfoDao.addApps(addApps)
+        }
+
+        if (deleteAppClassNames.isNotEmpty()) {
+            appInfoDao.deleteAppByClass(deleteAppClassNames)
         }
     }
 
@@ -48,21 +64,27 @@ class UpdateAllAppsUseCase @Inject constructor(
         installedApps: List<InstalledApp>,
         dbApps: List<AppInfoEntity>
     ) {
-        val dbAppsPackages = dbApps.map { it.className + it.userHandle }
+        val dbAppsPackages = dbApps.map { it.id }
+        val newApps = mutableListOf<AppInfoEntity>()
+
         for (installedApp in installedApps) {
-            if (installedApp.className + installedApp.userHandle !in dbAppsPackages) {
-                appInfoDao.addApps(
+            if (installedApp.id !in dbAppsPackages) {
+                newApps.add(
                     AppInfoEntity(
                         packageName = installedApp.packageName,
                         className = installedApp.className,
                         userHandle = installedApp.userHandle,
                         appName = installedApp.appName,
-                        alternateAppName = installedApp.appName,
+                        alternateAppName = "",
                         isFavourite = false,
                         isHidden = false
                     )
                 )
             }
+        }
+
+        if (newApps.isNotEmpty()) {
+            appInfoDao.addApps(newApps)
         }
     }
 }
