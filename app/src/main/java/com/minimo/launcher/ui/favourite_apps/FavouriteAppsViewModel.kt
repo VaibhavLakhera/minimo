@@ -22,7 +22,7 @@ class FavouriteAppsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            appInfoDao.getAllNonHiddenAppsFlow()
+            appInfoDao.getAllNonHiddenAppsFlow(userHandle = appUtils.getCurrentUserHandle())
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
                     val favouriteApps = allApps.filter { it.isFavourite }

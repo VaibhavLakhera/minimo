@@ -31,7 +31,7 @@ class IntroViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            appInfoDao.getAllNonHiddenAppsFlow()
+            appInfoDao.getAllNonHiddenAppsFlow(userHandle = appUtils.getCurrentUserHandle())
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
                     val minimumFavouriteAdded =

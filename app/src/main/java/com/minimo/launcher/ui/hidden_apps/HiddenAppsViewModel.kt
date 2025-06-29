@@ -22,7 +22,7 @@ class HiddenAppsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            appInfoDao.getAllAppsFlow()
+            appInfoDao.getAllAppsFlow(userHandle = appUtils.getCurrentUserHandle())
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
                     val hiddenApps = allApps.filter { it.isHidden }
