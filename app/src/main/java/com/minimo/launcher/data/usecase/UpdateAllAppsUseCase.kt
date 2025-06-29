@@ -5,7 +5,6 @@ import com.minimo.launcher.data.entities.AppInfoEntity
 import com.minimo.launcher.utils.AppUtils
 import com.minimo.launcher.utils.InstalledApp
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,7 +18,7 @@ class UpdateAllAppsUseCase @Inject constructor(
         val installedApps = withContext(Dispatchers.IO) {
             appUtils.getInstalledApps()
         }
-        val dbApps = appInfoDao.getAllAppsFlow().first()
+        val dbApps = appInfoDao.getAllApps()
 
         updateExistingAppsInDb(installedApps, dbApps)
         addNewAppsToDb(installedApps, dbApps)

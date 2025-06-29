@@ -2,6 +2,7 @@ package com.minimo.launcher.utils
 
 import android.content.Context
 import android.content.pm.LauncherApps
+import android.os.Process
 import android.os.UserManager
 import com.minimo.launcher.data.entities.AppInfoEntity
 import com.minimo.launcher.ui.entities.AppInfo
@@ -72,6 +73,8 @@ class AppUtils @Inject constructor(
             isHidden = isHidden
         )
     }
+
+    fun getCurrentUserHandle() = Process.myUserHandle().hashCode()
 }
 
 data class InstalledApp(

@@ -9,20 +9,23 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AppInfoDao {
-    @Query("SELECT * FROM appInfoEntity WHERE user_handle = 0 ORDER BY COALESCE( NULLIF(alternate_app_name, ''), app_name ) COLLATE NOCASE")
-    fun getAllAppsFlow(): Flow<List<AppInfoEntity>>
+    @Query("SELECT * FROM appInfoEntity WHERE user_handle = :userHandle ORDER BY COALESCE( NULLIF(alternate_app_name, ''), app_name ) COLLATE NOCASE")
+    fun getAllAppsFlow(userHandle: Int): Flow<List<AppInfoEntity>>
 
-    @Query("SELECT * FROM appInfoEntity WHERE is_hidden = 0 AND user_handle = 0 ORDER BY COALESCE( NULLIF(alternate_app_name, ''), app_name ) COLLATE NOCASE")
-    fun getAllNonHiddenAppsFlow(): Flow<List<AppInfoEntity>>
+    @Query("SELECT * FROM appInfoEntity ORDER BY COALESCE( NULLIF(alternate_app_name, ''), app_name ) COLLATE NOCASE")
+    suspend fun getAllApps(): List<AppInfoEntity>
 
-    @Query("SELECT * FROM appInfoEntity WHERE package_name = :packageName AND user_handle = 0")
+    @Query("SELECT * FROM appInfoEntity WHERE is_hidden = 0 AND user_handle = :userHandle ORDER BY COALESCE( NULLIF(alternate_app_name, ''), app_name ) COLLATE NOCASE")
+    fun getAllNonHiddenAppsFlow(userHandle: Int): Flow<List<AppInfoEntity>>
+
+    @Query("SELECT * FROM appInfoEntity WHERE package_name = :packageName")
     suspend fun getAppsByPackageName(packageName: String): List<AppInfoEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addApps(apps: List<AppInfoEntity>)
 
-    @Query("SELECT * FROM appInfoEntity WHERE is_favourite = 1 AND user_handle = 0 ORDER BY COALESCE( NULLIF(alternate_app_name, ''), app_name ) COLLATE NOCASE")
-    fun getFavouriteAppsFlow(): Flow<List<AppInfoEntity>>
+    @Query("SELECT * FROM appInfoEntity WHERE is_favourite = 1 AND user_handle = :userHandle ORDER BY COALESCE( NULLIF(alternate_app_name, ''), app_name ) COLLATE NOCASE")
+    fun getFavouriteAppsFlow(userHandle: Int): Flow<List<AppInfoEntity>>
 
     @Query("UPDATE appInfoEntity SET is_favourite = 1 WHERE class_name = :className")
     suspend fun addAppToFavourite(className: String)

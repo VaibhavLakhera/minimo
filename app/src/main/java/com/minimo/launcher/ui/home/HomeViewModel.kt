@@ -50,7 +50,7 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            appInfoDao.getAllAppsFlow()
+            appInfoDao.getAllAppsFlow(userHandle = appUtils.getCurrentUserHandle())
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
                     _state.update {
@@ -67,7 +67,7 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            appInfoDao.getFavouriteAppsFlow()
+            appInfoDao.getFavouriteAppsFlow(userHandle = appUtils.getCurrentUserHandle())
                 .collect { appInfoList ->
                     _state.update {
                         it.copy(

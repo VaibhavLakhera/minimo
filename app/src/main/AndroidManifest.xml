@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <permission
+    <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="ReservedSystemPermission" />
+        tools:ignore="QueryAllPackagesPermission" />
 
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
