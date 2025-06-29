@@ -13,5 +13,5 @@ data class AppInfo(
         get() = alternateAppName.ifEmpty { appName }
 
     val id: String
-        get() = className + userHandle
+        get() = packageName + className + userHandle
 }

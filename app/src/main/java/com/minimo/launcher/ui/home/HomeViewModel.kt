@@ -262,9 +262,9 @@ class HomeViewModel @Inject constructor(
     fun onToggleFavouriteAppClick(app: AppInfo) {
         viewModelScope.launch {
             if (app.isFavourite) {
-                appInfoDao.removeAppFromFavourite(app.className)
+                appInfoDao.removeAppFromFavourite(app.className, app.packageName)
             } else {
-                appInfoDao.addAppToFavourite(app.className)
+                appInfoDao.addAppToFavourite(app.className, app.packageName)
             }
         }
     }
@@ -278,9 +278,9 @@ class HomeViewModel @Inject constructor(
     fun onToggleHideClick(app: AppInfo) {
         viewModelScope.launch {
             if (app.isHidden) {
-                appInfoDao.removeAppFromHidden(app.className)
+                appInfoDao.removeAppFromHidden(app.className, app.packageName)
             } else {
-                appInfoDao.addAppToHidden(app.className)
+                appInfoDao.addAppToHidden(app.className, app.packageName)
             }
         }
     }
@@ -300,7 +300,7 @@ class HomeViewModel @Inject constructor(
             val name = newName.ifBlank {
                 app.appName
             }
-            appInfoDao.renameApp(app.className, name)
+            appInfoDao.renameApp(app.className, app.packageName, name)
         }
     }
 

@@ -30,7 +30,7 @@ class UpdateAllAppsUseCase @Inject constructor(
     ) {
         val installedAppsMap = installedApps.associateBy { it.id }
         val addApps = mutableListOf<AppInfoEntity>()
-        val deleteAppClassNames = mutableListOf<String>()
+        val deleteApps = mutableListOf<AppInfoEntity>()
 
         for (dbApp in dbApps) {
             if (installedAppsMap.containsKey(dbApp.id)) {
@@ -46,7 +46,7 @@ class UpdateAllAppsUseCase @Inject constructor(
                 }
             } else {
                 // Delete the app if it is not in the installed apps list
-                deleteAppClassNames.add(dbApp.className)
+                deleteApps.add(dbApp)
             }
         }
 
@@ -54,8 +54,11 @@ class UpdateAllAppsUseCase @Inject constructor(
             appInfoDao.addApps(addApps)
         }
 
-        if (deleteAppClassNames.isNotEmpty()) {
-            appInfoDao.deleteAppByClass(deleteAppClassNames)
+        for (deleteApp in deleteApps) {
+            appInfoDao.deleteAppByClassAndPackage(
+                className = deleteApp.className,
+                packageName = deleteApp.packageName
+            )
         }
     }
 

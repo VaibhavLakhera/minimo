@@ -29,5 +29,5 @@ data class AppInfoEntity(
 ) {
     @get:Ignore
     val id: String
-        get() = className + userHandle
+        get() = packageName + className + userHandle
 }

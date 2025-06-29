@@ -84,5 +84,5 @@ data class InstalledApp(
     val userHandle: Int
 ) {
     val id: String
-        get() = className + userHandle
+        get() = packageName + className + userHandle
 }

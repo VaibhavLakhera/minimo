@@ -27,23 +27,23 @@ interface AppInfoDao {
     @Query("SELECT * FROM appInfoEntity WHERE is_favourite = 1 AND user_handle = :userHandle ORDER BY COALESCE( NULLIF(alternate_app_name, ''), app_name ) COLLATE NOCASE")
     fun getFavouriteAppsFlow(userHandle: Int): Flow<List<AppInfoEntity>>
 
-    @Query("UPDATE appInfoEntity SET is_favourite = 1 WHERE class_name = :className")
-    suspend fun addAppToFavourite(className: String)
+    @Query("UPDATE appInfoEntity SET is_favourite = 1 WHERE class_name = :className AND package_name = :packageName")
+    suspend fun addAppToFavourite(className: String, packageName: String)
 
-    @Query("UPDATE appInfoEntity SET is_favourite = 0 WHERE class_name = :className")
-    suspend fun removeAppFromFavourite(className: String)
+    @Query("UPDATE appInfoEntity SET is_favourite = 0 WHERE class_name = :className AND package_name = :packageName")
+    suspend fun removeAppFromFavourite(className: String, packageName: String)
 
-    @Query("UPDATE appInfoEntity SET is_hidden = 1, is_favourite = 0 WHERE class_name = :className")
-    suspend fun addAppToHidden(className: String)
+    @Query("UPDATE appInfoEntity SET is_hidden = 1, is_favourite = 0 WHERE class_name = :className AND package_name = :packageName")
+    suspend fun addAppToHidden(className: String, packageName: String)
 
-    @Query("UPDATE appInfoEntity SET is_hidden = 0 WHERE class_name = :className")
-    suspend fun removeAppFromHidden(className: String)
+    @Query("UPDATE appInfoEntity SET is_hidden = 0 WHERE class_name = :className AND package_name = :packageName")
+    suspend fun removeAppFromHidden(className: String, packageName: String)
 
-    @Query("UPDATE appInfoEntity SET alternate_app_name = :newName WHERE class_name = :className")
-    suspend fun renameApp(className: String, newName: String)
+    @Query("UPDATE appInfoEntity SET alternate_app_name = :newName WHERE class_name = :className AND package_name = :packageName")
+    suspend fun renameApp(className: String, packageName: String, newName: String)
 
-    @Query("DELETE FROM appInfoEntity WHERE class_name IN (:classNames)")
-    suspend fun deleteAppByClass(classNames: List<String>)
+    @Query("DELETE FROM appInfoEntity WHERE class_name = :className AND package_name = :packageName")
+    suspend fun deleteAppByClassAndPackage(className: String, packageName: String)
 
     @Query("DELETE FROM appInfoEntity WHERE package_name = :packageName")
     suspend fun deleteAppByPackage(packageName: String)

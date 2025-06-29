@@ -54,9 +54,9 @@ class IntroViewModel @Inject constructor(
     fun onToggleFavouriteAppClick(appInfo: AppInfo) {
         viewModelScope.launch {
             if (appInfo.isFavourite) {
-                appInfoDao.removeAppFromFavourite(appInfo.className)
+                appInfoDao.removeAppFromFavourite(appInfo.className, appInfo.packageName)
             } else {
-                appInfoDao.addAppToFavourite(appInfo.className)
+                appInfoDao.addAppToFavourite(appInfo.className, appInfo.packageName)
             }
         }
     }
