@@ -17,12 +17,15 @@ class AddUpdateAppsUseCase @Inject constructor(
         val dbApps = appInfoDao.getAppsByPackageName(packageName)
         addUpdateAppsInDb(installedApps, dbApps)
 
-        // Remove the apps by className which exists in DB but not in installed apps
+        // Remove the apps by className + packageName which exists in DB but not in installed apps
         // This could happen if any component was disabled or removed
         val installedAppIds = installedApps.map { it.id }
         val removedApps = dbApps.filterNot { installedAppIds.contains(it.id) }
-        if (removedApps.isNotEmpty()) {
-            appInfoDao.deleteAppByClass(removedApps.map { it.className })
+        for (removedApp in removedApps) {
+            appInfoDao.deleteAppByClassAndPackage(
+                className = removedApp.className,
+                packageName = removedApp.packageName
+            )
         }
     }
 

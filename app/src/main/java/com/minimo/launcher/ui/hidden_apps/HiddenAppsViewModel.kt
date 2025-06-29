@@ -49,9 +49,9 @@ class HiddenAppsViewModel @Inject constructor(
     fun onToggleHiddenAppClick(appInfo: AppInfo) {
         viewModelScope.launch {
             if (appInfo.isHidden) {
-                appInfoDao.removeAppFromHidden(appInfo.className)
+                appInfoDao.removeAppFromHidden(appInfo.className, appInfo.packageName)
             } else {
-                appInfoDao.addAppToHidden(appInfo.className)
+                appInfoDao.addAppToHidden(appInfo.className, appInfo.packageName)
             }
         }
     }
