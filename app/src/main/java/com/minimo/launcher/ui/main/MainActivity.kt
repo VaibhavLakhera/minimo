@@ -18,19 +18,20 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.minimo.launcher.ui.navigation.AppNavGraph
 import com.minimo.launcher.ui.navigation.Routes
 import com.minimo.launcher.ui.theme.AppTheme
+import com.minimo.launcher.utils.AppsManager
 import com.minimo.launcher.utils.HomePressedNotifier
-import com.minimo.launcher.utils.PackageUpdatedReceiver
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private var packageUpdatedListener: PackageUpdatedReceiver? = null
+    @Inject
+    lateinit var appsManager: AppsManager
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -38,7 +39,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        setupPackageUpdatedListener()
+        appsManager.registerCallback()
+
         setContent {
             val navController = rememberNavController()
             val state by viewModel.state.collectAsState()
@@ -68,14 +70,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun setupPackageUpdatedListener() {
-        packageUpdatedListener = PackageUpdatedReceiver().also { receiver ->
-            ContextCompat.registerReceiver(
-                this, receiver, receiver.getFilter(), ContextCompat.RECEIVER_NOT_EXPORTED
-            )
-        }
-    }
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_HOME)) {
@@ -84,10 +78,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
-        if (packageUpdatedListener != null) {
-            unregisterReceiver(packageUpdatedListener)
-            packageUpdatedListener = null
-        }
+        appsManager.unregisterCallback()
         super.onDestroy()
     }
 }

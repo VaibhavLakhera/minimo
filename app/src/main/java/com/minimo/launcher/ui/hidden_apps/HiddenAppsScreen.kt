@@ -119,6 +119,7 @@ fun HiddenAppsScreen(
                         modifier = Modifier.animateItem(),
                         appName = appInfo.name,
                         isChecked = appInfo.isHidden,
+                        isWorkProfile = appInfo.isWorkProfile,
                         onToggleClick = { viewModel.onToggleHiddenAppClick(appInfo) }
                     )
                 }

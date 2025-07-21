@@ -15,6 +15,7 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.core.net.toUri
 import com.minimo.launcher.R
+import com.minimo.launcher.ui.entities.AppInfo
 import timber.log.Timber
 
 fun Context.launchApp(packageName: String, className: String, userHandleHashCode: Int) {
@@ -40,22 +41,32 @@ fun Context.launchApp(packageName: String, className: String, userHandleHashCode
     }
 }
 
-fun Context.uninstallApp(packageName: String) {
+fun Context.uninstallApp(appInfo: AppInfo) {
     try {
+        val userManager = getSystemService(Context.USER_SERVICE) as UserManager
+        val targetUserHandle =
+            userManager.userProfiles.find { it.hashCode() == appInfo.userHandle } ?: return
+
         val intent = Intent(Intent.ACTION_DELETE)
-        intent.data = "package:$packageName".toUri()
+        intent.data = Uri.fromParts("package", appInfo.packageName, appInfo.className)
+        intent.putExtra(Intent.EXTRA_USER, targetUserHandle)
         startActivity(intent)
     } catch (exception: Exception) {
         Timber.e(exception)
     }
 }
 
-fun Context.launchAppInfo(packageName: String) {
+fun Context.launchAppInfo(appInfo: AppInfo) {
     try {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        val uri = Uri.fromParts("package", packageName, null)
-        intent.data = uri
-        startActivity(intent)
+        val launcherApps = getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+        val userManager = getSystemService(Context.USER_SERVICE) as UserManager
+
+        val targetUserHandle =
+            userManager.userProfiles.find { it.hashCode() == appInfo.userHandle } ?: return
+
+        val intent = packageManager.getLaunchIntentForPackage(appInfo.packageName) ?: return
+
+        launcherApps.startAppDetailsActivity(intent.component, targetUserHandle, null, null)
     } catch (exception: Exception) {
         Timber.e(exception)
     }

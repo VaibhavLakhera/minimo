@@ -22,7 +22,7 @@ class FavouriteAppsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            appInfoDao.getAllNonHiddenAppsFlow(userHandle = appUtils.getCurrentUserHandle())
+            appInfoDao.getAllNonHiddenAppsFlow()
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
                     val favouriteApps = allApps.filter { it.isFavourite }
@@ -49,9 +49,17 @@ class FavouriteAppsViewModel @Inject constructor(
     fun onToggleFavouriteAppClick(appInfo: AppInfo) {
         viewModelScope.launch {
             if (appInfo.isFavourite) {
-                appInfoDao.removeAppFromFavourite(appInfo.className, appInfo.packageName)
+                appInfoDao.removeAppFromFavourite(
+                    appInfo.className,
+                    appInfo.packageName,
+                    appInfo.userHandle
+                )
             } else {
-                appInfoDao.addAppToFavourite(appInfo.className, appInfo.packageName)
+                appInfoDao.addAppToFavourite(
+                    appInfo.className,
+                    appInfo.packageName,
+                    appInfo.userHandle
+                )
             }
         }
     }

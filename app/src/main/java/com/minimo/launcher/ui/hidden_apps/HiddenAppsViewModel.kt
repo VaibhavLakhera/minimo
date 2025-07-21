@@ -22,7 +22,7 @@ class HiddenAppsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            appInfoDao.getAllAppsFlow(userHandle = appUtils.getCurrentUserHandle())
+            appInfoDao.getAllAppsFlow()
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
                     val hiddenApps = allApps.filter { it.isHidden }
@@ -49,9 +49,17 @@ class HiddenAppsViewModel @Inject constructor(
     fun onToggleHiddenAppClick(appInfo: AppInfo) {
         viewModelScope.launch {
             if (appInfo.isHidden) {
-                appInfoDao.removeAppFromHidden(appInfo.className, appInfo.packageName)
+                appInfoDao.removeAppFromHidden(
+                    appInfo.className,
+                    appInfo.packageName,
+                    appInfo.userHandle
+                )
             } else {
-                appInfoDao.addAppToHidden(appInfo.className, appInfo.packageName)
+                appInfoDao.addAppToHidden(
+                    appInfo.className,
+                    appInfo.packageName,
+                    appInfo.userHandle
+                )
             }
         }
     }

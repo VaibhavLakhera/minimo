@@ -24,7 +24,8 @@ class AddUpdateAppsUseCase @Inject constructor(
         for (removedApp in removedApps) {
             appInfoDao.deleteAppByClassAndPackage(
                 className = removedApp.className,
-                packageName = removedApp.packageName
+                packageName = removedApp.packageName,
+                userHandle = removedApp.userHandle
             )
         }
     }

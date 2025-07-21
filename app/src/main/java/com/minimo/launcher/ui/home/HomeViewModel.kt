@@ -1,7 +1,7 @@
 package com.minimo.launcher.ui.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.AppInfoDao
@@ -50,7 +50,7 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            appInfoDao.getAllAppsFlow(userHandle = appUtils.getCurrentUserHandle())
+            appInfoDao.getAllAppsFlow()
                 .collect { appInfoList ->
                     val allApps = appUtils.mapToAppInfo(appInfoList)
                     _state.update {
@@ -67,7 +67,7 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            appInfoDao.getFavouriteAppsFlow(userHandle = appUtils.getCurrentUserHandle())
+            appInfoDao.getFavouriteAppsFlow()
                 .collect { appInfoList ->
                     _state.update {
                         it.copy(
@@ -82,100 +82,100 @@ class HomeViewModel @Inject constructor(
             preferenceHelper.getHomeAppsAlignment()
                 .distinctUntilChanged()
                 .collect { alignment ->
-                val textAlign = when (alignment) {
-                    HomeAppsAlignment.Start -> TextAlign.Start
-                    HomeAppsAlignment.Center -> TextAlign.Center
-                    HomeAppsAlignment.End -> TextAlign.End
+                    val arrangement = when (alignment) {
+                        HomeAppsAlignment.Start -> Arrangement.Start
+                        HomeAppsAlignment.Center -> Arrangement.Center
+                        HomeAppsAlignment.End -> Arrangement.End
+                    }
+                    _state.update {
+                        it.copy(appsArrangement = arrangement)
+                    }
                 }
-                _state.update {
-                    it.copy(appsTextAlign = textAlign)
-                }
-            }
         }
 
         viewModelScope.launch {
             preferenceHelper.getHomeClockAlignment()
                 .distinctUntilChanged()
                 .collect { alignment ->
-                val horizontalAlignment = when (alignment) {
-                    HomeClockAlignment.Start -> Alignment.Start
-                    HomeClockAlignment.Center -> Alignment.CenterHorizontally
-                    HomeClockAlignment.End -> Alignment.End
+                    val horizontalAlignment = when (alignment) {
+                        HomeClockAlignment.Start -> Alignment.Start
+                        HomeClockAlignment.Center -> Alignment.CenterHorizontally
+                        HomeClockAlignment.End -> Alignment.End
+                    }
+                    _state.update {
+                        it.copy(homeClockAlignment = horizontalAlignment)
+                    }
                 }
-                _state.update {
-                    it.copy(homeClockAlignment = horizontalAlignment)
-                }
-            }
         }
 
         viewModelScope.launch {
             preferenceHelper.getShowHomeClock()
                 .distinctUntilChanged()
                 .collect { show ->
-                _state.update {
-                    it.copy(showHomeClock = show)
+                    _state.update {
+                        it.copy(showHomeClock = show)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
             preferenceHelper.getHomeTextSizeFlow()
                 .distinctUntilChanged()
                 .collect { size ->
-                _state.update {
-                    it.copy(homeTextSize = size)
+                    _state.update {
+                        it.copy(homeTextSize = size)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
             preferenceHelper.getAutoOpenKeyboardAllApps()
                 .distinctUntilChanged()
                 .collect { open ->
-                _state.update {
-                    it.copy(autoOpenKeyboardAllApps = open)
+                    _state.update {
+                        it.copy(autoOpenKeyboardAllApps = open)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
             preferenceHelper.getHomeClockMode()
                 .distinctUntilChanged()
                 .collect { mode ->
-                _state.update {
-                    it.copy(homeClockMode = mode)
+                    _state.update {
+                        it.copy(homeClockMode = mode)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
             preferenceHelper.getDoubleTapToLock()
                 .distinctUntilChanged()
                 .collect { enable ->
-                _state.update {
-                    it.copy(doubleTapToLock = enable)
+                    _state.update {
+                        it.copy(doubleTapToLock = enable)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
             preferenceHelper.getTwentyFourHourFormat()
                 .distinctUntilChanged()
                 .collect { enable ->
-                _state.update {
-                    it.copy(twentyFourHourFormat = enable)
+                    _state.update {
+                        it.copy(twentyFourHourFormat = enable)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
             preferenceHelper.getShowBatteryLevel()
                 .distinctUntilChanged()
                 .collect { enable ->
-                _state.update {
-                    it.copy(showBatteryLevel = enable)
+                    _state.update {
+                        it.copy(showBatteryLevel = enable)
+                    }
                 }
-            }
         }
 
         viewModelScope.launch {
@@ -262,9 +262,9 @@ class HomeViewModel @Inject constructor(
     fun onToggleFavouriteAppClick(app: AppInfo) {
         viewModelScope.launch {
             if (app.isFavourite) {
-                appInfoDao.removeAppFromFavourite(app.className, app.packageName)
+                appInfoDao.removeAppFromFavourite(app.className, app.packageName, app.userHandle)
             } else {
-                appInfoDao.addAppToFavourite(app.className, app.packageName)
+                appInfoDao.addAppToFavourite(app.className, app.packageName, app.userHandle)
             }
         }
     }
@@ -278,9 +278,9 @@ class HomeViewModel @Inject constructor(
     fun onToggleHideClick(app: AppInfo) {
         viewModelScope.launch {
             if (app.isHidden) {
-                appInfoDao.removeAppFromHidden(app.className, app.packageName)
+                appInfoDao.removeAppFromHidden(app.className, app.packageName, app.userHandle)
             } else {
-                appInfoDao.addAppToHidden(app.className, app.packageName)
+                appInfoDao.addAppToHidden(app.className, app.packageName, app.userHandle)
             }
         }
     }

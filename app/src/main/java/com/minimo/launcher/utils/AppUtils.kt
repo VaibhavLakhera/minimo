@@ -51,7 +51,8 @@ class AppUtils @Inject constructor(
     fun mapToAppInfo(
         entities: List<AppInfoEntity>
     ): List<AppInfo> {
-        return entities.map { it.toAppInfo() }
+        val myUserHandle = getMyUserHandle()
+        return entities.map { it.toAppInfo(myUserHandle) }
     }
 
     fun getAppsWithSearch(searchText: String, apps: List<AppInfo>): List<AppInfo> {
@@ -62,7 +63,7 @@ class AppUtils @Inject constructor(
         }
     }
 
-    private fun AppInfoEntity.toAppInfo(): AppInfo {
+    private fun AppInfoEntity.toAppInfo(myUserHandle: Int): AppInfo {
         return AppInfo(
             packageName = packageName,
             className = className,
@@ -70,11 +71,12 @@ class AppUtils @Inject constructor(
             appName = appName,
             alternateAppName = alternateAppName,
             isFavourite = isFavourite,
-            isHidden = isHidden
+            isHidden = isHidden,
+            isWorkProfile = userHandle != myUserHandle,
         )
     }
 
-    fun getCurrentUserHandle() = Process.myUserHandle().hashCode()
+    private fun getMyUserHandle() = Process.myUserHandle().hashCode()
 }
 
 data class InstalledApp(
