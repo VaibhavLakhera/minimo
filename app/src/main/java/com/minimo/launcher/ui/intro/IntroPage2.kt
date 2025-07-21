@@ -48,6 +48,7 @@ internal fun IntroPage2(
                     modifier = Modifier.animateItem(),
                     appName = appInfo.name,
                     isChecked = appInfo.isFavourite,
+                    isWorkProfile = appInfo.isWorkProfile,
                     onToggleClick = { viewModel.onToggleFavouriteAppClick(appInfo) }
                 )
             }

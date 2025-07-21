@@ -8,7 +8,7 @@ import javax.inject.Singleton
 class RemoveAppsUseCase @Inject constructor(
     private val appInfoDao: AppInfoDao
 ) {
-    suspend operator fun invoke(packageName: String) {
-        appInfoDao.deleteAppByPackage(packageName)
+    suspend operator fun invoke(packageName: String, userHandle: Int) {
+        appInfoDao.deleteAppByPackage(packageName, userHandle)
     }
 }

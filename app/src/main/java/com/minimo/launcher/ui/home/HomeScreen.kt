@@ -272,16 +272,17 @@ fun HomeScreen(
                             appName = appInfo.name,
                             isFavourite = appInfo.isFavourite,
                             isHidden = appInfo.isHidden,
+                            isWorkProfile = appInfo.isWorkProfile,
                             onClick = {
                                 viewModel.onLaunchAppClick(appInfo)
                             },
                             onToggleFavouriteClick = { viewModel.onToggleFavouriteAppClick(appInfo) },
                             onRenameClick = { viewModel.onRenameAppClick(appInfo) },
                             onToggleHideClick = { viewModel.onToggleHideClick(appInfo) },
-                            onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
-                            textAlign = state.appsTextAlign,
+                            onAppInfoClick = { context.launchAppInfo(appInfo) },
+                            appsArrangement = state.appsArrangement,
                             onLongClick = ::hideKeyboardWithClearFocus,
-                            onUninstallClick = { context.uninstallApp(appInfo.packageName) },
+                            onUninstallClick = { context.uninstallApp(appInfo) },
                             textSize = if (state.applyHomeAppSizeToAllApps) state.homeTextSize.sp else 20.sp,
                         )
                     }
@@ -352,6 +353,7 @@ fun HomeScreen(
                                 appName = appInfo.name,
                                 isFavourite = appInfo.isFavourite,
                                 isHidden = appInfo.isHidden,
+                                isWorkProfile = appInfo.isWorkProfile,
                                 onClick = { viewModel.onLaunchAppClick(appInfo) },
                                 onToggleFavouriteClick = {
                                     viewModel.onToggleFavouriteAppClick(
@@ -360,10 +362,10 @@ fun HomeScreen(
                                 },
                                 onRenameClick = { viewModel.onRenameAppClick(appInfo) },
                                 onToggleHideClick = { viewModel.onToggleHideClick(appInfo) },
-                                onAppInfoClick = { context.launchAppInfo(appInfo.packageName) },
-                                textAlign = state.appsTextAlign,
+                                onAppInfoClick = { context.launchAppInfo(appInfo) },
+                                appsArrangement = state.appsArrangement,
                                 textSize = state.homeTextSize.sp,
-                                onUninstallClick = { context.uninstallApp(appInfo.packageName) }
+                                onUninstallClick = { context.uninstallApp(appInfo) }
                             )
                         }
                     }

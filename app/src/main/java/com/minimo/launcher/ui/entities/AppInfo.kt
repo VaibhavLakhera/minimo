@@ -7,7 +7,8 @@ data class AppInfo(
     val appName: String,
     val alternateAppName: String,
     val isFavourite: Boolean,
-    val isHidden: Boolean
+    val isHidden: Boolean,
+    val isWorkProfile: Boolean
 ) {
     val name: String
         get() = alternateAppName.ifEmpty { appName }
