@@ -18,8 +18,8 @@ interface AppInfoDao {
     @Query("SELECT * FROM appInfoEntity WHERE is_hidden = 0 ORDER BY COALESCE( NULLIF(alternate_app_name, ''), app_name ) COLLATE NOCASE")
     fun getAllNonHiddenAppsFlow(): Flow<List<AppInfoEntity>>
 
-    @Query("SELECT * FROM appInfoEntity WHERE package_name = :packageName")
-    suspend fun getAppsByPackageName(packageName: String): List<AppInfoEntity>
+    @Query("SELECT * FROM appInfoEntity WHERE package_name = :packageName AND user_handle = :userHandle")
+    suspend fun getAppsByPackageName(packageName: String, userHandle: Int): List<AppInfoEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addApps(apps: List<AppInfoEntity>)

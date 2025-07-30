@@ -12,10 +12,12 @@ class AddUpdateAppsUseCase @Inject constructor(
     private val appUtils: AppUtils,
     private val appInfoDao: AppInfoDao
 ) {
-    suspend operator fun invoke(packageName: String) {
-        val installedApps = appUtils.getInstalledApps(packageName)
-        val dbApps = appInfoDao.getAppsByPackageName(packageName)
+    suspend operator fun invoke(packageName: String, userHandle: Int, checkAppRemoval: Boolean) {
+        val installedApps = appUtils.getInstalledApps(packageName, userHandle)
+        val dbApps = appInfoDao.getAppsByPackageName(packageName, userHandle)
         addUpdateAppsInDb(installedApps, dbApps)
+
+        if (!checkAppRemoval) return
 
         // Remove the apps by className + packageName which exists in DB but not in installed apps
         // This could happen if any component was disabled or removed

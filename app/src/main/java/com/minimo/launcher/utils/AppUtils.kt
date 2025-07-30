@@ -13,7 +13,7 @@ class AppUtils @Inject constructor(
     @ApplicationContext
     private val context: Context
 ) {
-    fun getInstalledApps(packageName: String? = null): List<InstalledApp> {
+    fun getInstalledApps(): List<InstalledApp> {
         val userManager = context.getSystemService(Context.USER_SERVICE) as UserManager
         val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
 
@@ -22,7 +22,7 @@ class AppUtils @Inject constructor(
         val installedApps = mutableListOf<InstalledApp>()
 
         for (profile in userManager.userProfiles) {
-            val activities = launcherApps.getActivityList(packageName, profile)
+            val activities = launcherApps.getActivityList(null, profile)
             for (activity in activities) {
                 val appName = activity.label.toString()
                 val appPackageName = activity.componentName.packageName
@@ -42,6 +42,41 @@ class AppUtils @Inject constructor(
                         )
                     )
                 }
+            }
+        }
+
+        return installedApps
+    }
+
+    fun getInstalledApps(packageName: String, userHandle: Int): List<InstalledApp> {
+        val userManager = context.getSystemService(Context.USER_SERVICE) as UserManager
+        val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+        val profile = userManager.userProfiles.find { it.hashCode() == userHandle }
+        if (profile == null) return emptyList()
+
+        val selfPackageName = context.packageName
+
+        val installedApps = mutableListOf<InstalledApp>()
+
+        val activities = launcherApps.getActivityList(packageName, profile)
+        for (activity in activities) {
+            val appName = activity.label.toString()
+            val appPackageName = activity.componentName.packageName
+            val appClassName = activity.componentName.className
+
+            /*
+            * Ignore the self package name.
+            * Add all user apps to the list.
+            * */
+            if (appPackageName.contains(selfPackageName, true).not()) {
+                installedApps.add(
+                    InstalledApp(
+                        appName = appName,
+                        packageName = appPackageName,
+                        className = appClassName,
+                        userHandle = profile.hashCode()
+                    )
+                )
             }
         }
 
