@@ -7,12 +7,14 @@ import android.content.Intent
 import android.content.pm.LauncherApps
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Process
 import android.os.UserManager
 import android.provider.AlarmClock
 import android.provider.CalendarContract
 import android.provider.Settings
 import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
 import com.minimo.launcher.R
 import com.minimo.launcher.ui.entities.AppInfo
@@ -267,6 +269,33 @@ private fun Context.openDefaultCalendarOption2() {
                 Intent.CATEGORY_APP_CALENDAR
             )
         )
+        startActivity(intent)
+    } catch (exception: Exception) {
+        Timber.e(exception)
+    }
+}
+
+fun Context.isNotificationPermissionGranted(): Boolean {
+    return NotificationManagerCompat.getEnabledListenerPackages(this).contains(packageName)
+}
+
+private const val EXTRA_FRAGMENT_HIGHLIGHT_KEY = ":settings:fragment_args_key"
+private const val EXTRA_FRAGMENT_ARGS = ":settings:fragment_args"
+fun Context.openNotificationSettings() {
+    try {
+        val componentName = ComponentName(this, LauncherNotificationListenerService::class.java)
+
+        val showFragmentArgs = Bundle()
+        showFragmentArgs.putString(
+            EXTRA_FRAGMENT_HIGHLIGHT_KEY,
+            componentName.flattenToString(),
+        )
+
+        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .putExtra(EXTRA_FRAGMENT_HIGHLIGHT_KEY, componentName.flattenToString())
+            .putExtra(EXTRA_FRAGMENT_ARGS, showFragmentArgs)
+
         startActivity(intent)
     } catch (exception: Exception) {
         Timber.e(exception)

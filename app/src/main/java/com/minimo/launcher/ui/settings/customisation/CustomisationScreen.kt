@@ -56,6 +56,8 @@ import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
 import com.minimo.launcher.utils.StringUtils
 import com.minimo.launcher.utils.hasLockScreenPermission
+import com.minimo.launcher.utils.isNotificationPermissionGranted
+import com.minimo.launcher.utils.openNotificationSettings
 import com.minimo.launcher.utils.removeLockScreenPermission
 import com.minimo.launcher.utils.requestLockScreenPermission
 import kotlin.math.roundToInt
@@ -69,6 +71,7 @@ fun CustomisationScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     var showEnableAccessibilityDialog by remember { mutableStateOf(false) }
+    var showEnableNotificationPermissionDialog by remember { mutableStateOf(false) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -76,6 +79,10 @@ fun CustomisationScreen(
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             if (!context.hasLockScreenPermission()) {
                 viewModel.onLockScreenPermissionNotEnableOnStarted()
+            }
+
+            if (!context.isNotificationPermissionGranted()) {
+                viewModel.onNotificationPermissionNotGrantedOnStarted()
             }
         }
     }
@@ -402,17 +409,52 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleHideAppDrawerArrow
             )
 
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            ToggleItem(
+                title = stringResource(R.string.notification_dots),
+                subtitle = stringResource(R.string.display_a_notification_dot_on_the_home_screen_apps),
+                isChecked = state.notificationDot,
+                onToggleClick = {
+                    if (state.notificationDot) {
+                        viewModel.onToggleNotificationDot()
+                    } else {
+                        if (context.isNotificationPermissionGranted()) {
+                            viewModel.onToggleNotificationDot()
+                        } else {
+                            showEnableNotificationPermissionDialog = true
+                        }
+                    }
+                }
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
         }
 
         if (showEnableAccessibilityDialog) {
-            EnableAccessibilityDialog(onConfirm = {
-                viewModel.onToggleDoubleTapToLock()
-                context.requestLockScreenPermission()
-                showEnableAccessibilityDialog = false
-            }, onDismiss = {
-                showEnableAccessibilityDialog = false
-            })
+            EnableAccessibilityDialog(
+                onConfirm = {
+                    viewModel.onToggleDoubleTapToLock()
+                    context.requestLockScreenPermission()
+                    showEnableAccessibilityDialog = false
+                },
+                onDismiss = {
+                    showEnableAccessibilityDialog = false
+                }
+            )
+        }
+
+        if (showEnableNotificationPermissionDialog) {
+            EnableNotificationsDialog(
+                onConfirm = {
+                    context.openNotificationSettings()
+                    showEnableNotificationPermissionDialog = false
+                    viewModel.onToggleNotificationDot()
+                },
+                onDismiss = {
+                    showEnableNotificationPermissionDialog = false
+                }
+            )
         }
     }
 }
@@ -606,6 +648,36 @@ private fun EnableAccessibilityDialog(
                 onClick = onDismiss
             ) {
                 Text(text = stringResource(id = R.string.dismiss))
+            }
+        }
+    )
+}
+
+@Composable
+fun EnableNotificationsDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.notification_access_required)) },
+        text = {
+            Text(
+                stringResource(R.string.notification_access_required_description)
+            )
+        },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(
+                    stringResource(R.string.open_settings)
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    stringResource(R.string.dismiss)
+                )
             }
         }
     )

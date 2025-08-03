@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.LauncherApps
+import android.os.Handler
+import android.os.Looper
 import android.os.UserHandle
 import com.minimo.launcher.data.usecase.AddUpdateAppsUseCase
 import com.minimo.launcher.data.usecase.RemoveAppsUseCase
@@ -15,6 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 class AppsManager @Inject constructor(
@@ -26,6 +30,7 @@ class AppsManager @Inject constructor(
 ) : LauncherApps.Callback() {
     private val launcherApps = context.getSystemService(LauncherApps::class.java)
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val mutex = Mutex()
 
     private val managedProfileReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -33,7 +38,9 @@ class AppsManager @Inject constructor(
                 Intent.ACTION_MANAGED_PROFILE_ADDED,
                 Intent.ACTION_MANAGED_PROFILE_REMOVED -> {
                     coroutineScope.launch {
-                        updateAllAppsUseCase.invoke()
+                        mutex.withLock {
+                            updateAllAppsUseCase.invoke()
+                        }
                     }
                 }
             }
@@ -41,7 +48,7 @@ class AppsManager @Inject constructor(
     }
 
     fun registerCallback() {
-        launcherApps.registerCallback(this)
+        launcherApps.registerCallback(this, Handler(Looper.getMainLooper()))
 
         val intentFilter = IntentFilter().apply {
             addAction(Intent.ACTION_MANAGED_PROFILE_ADDED)
@@ -53,21 +60,35 @@ class AppsManager @Inject constructor(
     override fun onPackageRemoved(packageName: String?, user: UserHandle?) {
         if (packageName == null || user == null) return
         coroutineScope.launch {
-            removeAppsUseCase.invoke(packageName, user.hashCode())
+            mutex.withLock {
+                removeAppsUseCase.invoke(packageName, user.hashCode())
+            }
         }
     }
 
     override fun onPackageAdded(packageName: String?, user: UserHandle?) {
         if (packageName == null || user == null) return
         coroutineScope.launch {
-            addUpdateAppsUseCase.invoke(packageName)
+            mutex.withLock {
+                addUpdateAppsUseCase.invoke(
+                    packageName = packageName,
+                    userHandle = user.hashCode(),
+                    checkAppRemoval = false
+                )
+            }
         }
     }
 
     override fun onPackageChanged(packageName: String?, user: UserHandle?) {
         if (packageName == null || user == null) return
         coroutineScope.launch {
-            addUpdateAppsUseCase.invoke(packageName)
+            mutex.withLock {
+                addUpdateAppsUseCase.invoke(
+                    packageName = packageName,
+                    userHandle = user.hashCode(),
+                    checkAppRemoval = true
+                )
+            }
         }
     }
 
@@ -78,8 +99,14 @@ class AppsManager @Inject constructor(
     ) {
         if (packageNames == null || user == null) return
         coroutineScope.launch {
-            packageNames.forEach {
-                addUpdateAppsUseCase.invoke(it)
+            mutex.withLock {
+                packageNames.forEach { packageName ->
+                    addUpdateAppsUseCase.invoke(
+                        packageName = packageName,
+                        userHandle = user.hashCode(),
+                        checkAppRemoval = false
+                    )
+                }
             }
         }
     }
@@ -91,8 +118,13 @@ class AppsManager @Inject constructor(
     ) {
         if (packageNames == null || user == null) return
         coroutineScope.launch {
-            packageNames.forEach {
-                removeAppsUseCase.invoke(it, user.hashCode())
+            mutex.withLock {
+                packageNames.forEach { packageName ->
+                    removeAppsUseCase.invoke(
+                        packageName = packageName,
+                        userHandle = user.hashCode()
+                    )
+                }
             }
         }
     }
@@ -100,8 +132,13 @@ class AppsManager @Inject constructor(
     override fun onPackagesSuspended(packageNames: Array<out String>?, user: UserHandle?) {
         if (packageNames == null || user == null) return
         coroutineScope.launch {
-            packageNames.forEach {
-                removeAppsUseCase.invoke(it, user.hashCode())
+            mutex.withLock {
+                packageNames.forEach { packageName ->
+                    removeAppsUseCase.invoke(
+                        packageName = packageName,
+                        userHandle = user.hashCode()
+                    )
+                }
             }
         }
     }
@@ -109,8 +146,14 @@ class AppsManager @Inject constructor(
     override fun onPackagesUnsuspended(packageNames: Array<out String>?, user: UserHandle?) {
         if (packageNames == null || user == null) return
         coroutineScope.launch {
-            packageNames.forEach {
-                addUpdateAppsUseCase.invoke(it)
+            mutex.withLock {
+                packageNames.forEach { packageName ->
+                    addUpdateAppsUseCase.invoke(
+                        packageName = packageName,
+                        userHandle = user.hashCode(),
+                        checkAppRemoval = false
+                    )
+                }
             }
         }
     }

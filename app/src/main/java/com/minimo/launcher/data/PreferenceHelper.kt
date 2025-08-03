@@ -45,6 +45,7 @@ class PreferenceHelper @Inject constructor(
         private val KEY_BLACK_THEME = booleanPreferencesKey("KEY_BLACK_THEME")
         private val KEY_AUTO_OPEN_APP = booleanPreferencesKey("KEY_AUTO_OPEN_APP")
         private val KEY_HIDE_APP_DRAWER_ARROW = booleanPreferencesKey("KEY_HIDE_APP_DRAWER_ARROW")
+        private val KEY_NOTIFICATION_DOT = booleanPreferencesKey("KEY_NOTIFICATION_DOT")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -284,5 +285,15 @@ class PreferenceHelper @Inject constructor(
 
     fun getHideAppDrawerArrow(): Flow<Boolean> {
         return preferences.data.map { it[KEY_HIDE_APP_DRAWER_ARROW] ?: false }
+    }
+
+    suspend fun setNotificationDot(enable: Boolean) {
+        preferences.edit {
+            it[KEY_NOTIFICATION_DOT] = enable
+        }
+    }
+
+    fun getNotificationDot(): Flow<Boolean> {
+        return preferences.data.map { it[KEY_NOTIFICATION_DOT] ?: false }
     }
 }
