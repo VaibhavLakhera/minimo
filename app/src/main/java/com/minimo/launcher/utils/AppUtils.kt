@@ -84,10 +84,18 @@ class AppUtils @Inject constructor(
     }
 
     fun mapToAppInfo(
-        entities: List<AppInfoEntity>
+        entities: List<AppInfoEntity>,
+        notificationDots: List<NotificationDot> = emptyList()
     ): List<AppInfo> {
         val myUserHandle = getMyUserHandle()
-        return entities.map { it.toAppInfo(myUserHandle) }
+        return entities.map {
+            it.toAppInfo(
+                myUserHandle = myUserHandle,
+                showNotificationDot = notificationDots.any { notificationDot ->
+                    notificationDot.packageName == it.packageName && notificationDot.userHandle == it.userHandle
+                }
+            )
+        }
     }
 
     fun getAppsWithSearch(searchText: String, apps: List<AppInfo>): List<AppInfo> {
@@ -98,7 +106,7 @@ class AppUtils @Inject constructor(
         }
     }
 
-    private fun AppInfoEntity.toAppInfo(myUserHandle: Int): AppInfo {
+    private fun AppInfoEntity.toAppInfo(myUserHandle: Int, showNotificationDot: Boolean): AppInfo {
         return AppInfo(
             packageName = packageName,
             className = className,
@@ -108,10 +116,21 @@ class AppUtils @Inject constructor(
             isFavourite = isFavourite,
             isHidden = isHidden,
             isWorkProfile = userHandle != myUserHandle,
+            showNotificationDot = showNotificationDot
         )
     }
 
     private fun getMyUserHandle() = Process.myUserHandle().hashCode()
+}
+
+fun List<AppInfo>.updateNotificationDots(notificationDots: List<NotificationDot>): List<AppInfo> {
+    return map { appInfo ->
+        appInfo.copy(
+            showNotificationDot = notificationDots.any { notificationDot ->
+                notificationDot.packageName == appInfo.packageName && notificationDot.userHandle == appInfo.userHandle
+            }
+        )
+    }
 }
 
 data class InstalledApp(

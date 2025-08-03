@@ -25,4 +25,5 @@ data class CustomisationState(
     val applyHomeAppSizeToAllApps: Boolean = false,
     val autoOpenApp: Boolean = false,
     val hideAppDrawerArrow: Boolean = false,
+    val notificationDot: Boolean = false
 )

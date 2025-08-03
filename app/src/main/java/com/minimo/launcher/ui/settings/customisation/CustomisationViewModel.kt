@@ -203,6 +203,16 @@ class CustomisationViewModel @Inject constructor(
                     }
                 }
         }
+
+        viewModelScope.launch {
+            preferenceHelper.getNotificationDot()
+                .distinctUntilChanged()
+                .collect { enable ->
+                    _state.update {
+                        it.copy(notificationDot = enable)
+                    }
+                }
+        }
     }
 
     fun onThemeModeChanged(mode: ThemeMode) {
@@ -323,6 +333,18 @@ class CustomisationViewModel @Inject constructor(
     fun onToggleHideAppDrawerArrow() {
         viewModelScope.launch {
             preferenceHelper.hideAppDrawerArrow(_state.value.hideAppDrawerArrow.not())
+        }
+    }
+
+    fun onToggleNotificationDot() {
+        viewModelScope.launch {
+            preferenceHelper.setNotificationDot(_state.value.notificationDot.not())
+        }
+    }
+
+    fun onNotificationPermissionNotGrantedOnStarted() {
+        viewModelScope.launch {
+            preferenceHelper.setNotificationDot(false)
         }
     }
 }

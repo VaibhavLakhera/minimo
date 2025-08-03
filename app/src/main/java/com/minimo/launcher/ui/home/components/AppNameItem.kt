@@ -1,12 +1,15 @@
 package com.minimo.launcher.ui.home.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +37,7 @@ fun AppNameItem(
     isWorkProfile: Boolean,
     appsArrangement: Arrangement.Horizontal,
     textSize: TextUnit,
+    showNotificationDot: Boolean,
     onClick: () -> Unit,
     onToggleFavouriteClick: () -> Unit,
     onRenameClick: () -> Unit,
@@ -45,11 +49,11 @@ fun AppNameItem(
     var appBottomSheetVisible by remember { mutableStateOf(false) }
     val lineHeight by remember { derivedStateOf { textSize * 1.2 } }
 
-    val paddingValues = remember(isWorkProfile) {
-        if (isWorkProfile) {
+    val paddingValues = remember(isWorkProfile, showNotificationDot) {
+        if (isWorkProfile || showNotificationDot) {
             PaddingValues(
-                start = 0.dp,
-                end = Dimens.APP_HORIZONTAL_SPACING,
+                start = if (isWorkProfile) 0.dp else Dimens.APP_HORIZONTAL_SPACING,
+                end = if (showNotificationDot) 0.dp else Dimens.APP_HORIZONTAL_SPACING,
                 top = 16.dp,
                 bottom = 16.dp
             )
@@ -82,6 +86,7 @@ fun AppNameItem(
                 contentDescription = null
             )
         }
+
         Text(
             text = appName,
             color = MaterialTheme.colorScheme.onSurface,
@@ -90,6 +95,18 @@ fun AppNameItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+
+        if (showNotificationDot) {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 11.dp)
+                    .size(10.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.onSurface,
+                        shape = CircleShape
+                    )
+            )
+        }
     }
 
     if (appBottomSheetVisible) {

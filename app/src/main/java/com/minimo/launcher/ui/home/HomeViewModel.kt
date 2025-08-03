@@ -12,6 +12,8 @@ import com.minimo.launcher.utils.AppUtils
 import com.minimo.launcher.utils.HomeAppsAlignment
 import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomePressedNotifier
+import com.minimo.launcher.utils.NotificationDotsNotifier
+import com.minimo.launcher.utils.updateNotificationDots
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -33,7 +35,8 @@ class HomeViewModel @Inject constructor(
     private val appInfoDao: AppInfoDao,
     private val appUtils: AppUtils,
     private val preferenceHelper: PreferenceHelper,
-    private val homePressedNotifier: HomePressedNotifier
+    private val homePressedNotifier: HomePressedNotifier,
+    private val notificationDotsNotifier: NotificationDotsNotifier,
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
@@ -52,7 +55,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             appInfoDao.getAllAppsFlow()
                 .collect { appInfoList ->
-                    val allApps = appUtils.mapToAppInfo(appInfoList)
+                    val allApps = appUtils.mapToAppInfo(
+                        entities = appInfoList,
+                        notificationDots = notificationDotsNotifier.getNotificationDots()
+                    )
                     _state.update {
                         it.copy(
                             allApps = allApps,
@@ -72,10 +78,32 @@ class HomeViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             initialLoaded = true,
-                            favouriteApps = appUtils.mapToAppInfo(appInfoList)
+                            favouriteApps = appUtils.mapToAppInfo(
+                                entities = appInfoList,
+                                notificationDots = notificationDotsNotifier.getNotificationDots()
+                            )
                         )
                     }
                 }
+        }
+
+        viewModelScope.launch {
+            notificationDotsNotifier.notificationDots.collect { notificationDotSet ->
+                val allApps = _state.value.allApps.updateNotificationDots(notificationDotSet)
+                val favouriteApps =
+                    _state.value.favouriteApps.updateNotificationDots(notificationDotSet)
+                _state.update {
+                    it.copy(
+                        allApps = allApps,
+                        filteredAllApps = getAppsWithSearch(
+                            searchText = it.searchText,
+                            apps = allApps,
+                            includeHiddenApps = it.showHiddenAppsInSearch
+                        ),
+                        favouriteApps = favouriteApps
+                    )
+                }
+            }
         }
 
         viewModelScope.launch {
